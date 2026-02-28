@@ -129,7 +129,26 @@
           
           signInWithPopup(auth, provider)
             .then((result) => {
-              alert("Welcome Admin " + result.user.displayName + "!");
+              const ADMIN_EMAIL = "marinomelsha79_bbm27@mepcoeng.ac.in";
+              
+              // Check if Google sign-in email matches admin email
+              if (result.user.email === ADMIN_EMAIL) {
+                // Admin Google login successful
+                localStorage.setItem("adminLoggedIn", "true");
+                localStorage.setItem("adminEmail", result.user.email);
+                alert("Welcome Admin " + result.user.displayName + "!");
+                
+                // Show admin panel
+                document.getElementById("loginSection").style.display = "none";
+                document.getElementById("adminPanel").style.display = "flex";
+              } else {
+                // Google email doesn't match admin account
+                signOut(auth);
+                alert("❌ Access Denied. Only " + ADMIN_EMAIL + " can access admin panel.");
+                
+                btn.disabled = false;
+                btn.textContent = "🔍 Continue with Google";
+              }
             })
             .catch(error => {
               console.error("Google Admin Login Error:", error);
