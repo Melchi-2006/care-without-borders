@@ -34,21 +34,21 @@
     // Make auth available globally
     window.auth = auth;
 
-    // Check if user is logged in
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is logged in - show admin panel
-        document.getElementById("loginSection").style.display = "none";
-        document.getElementById("adminPanel").style.display = "flex";
-      } else {
-        // User is not logged in - show login form
-        document.getElementById("loginSection").style.display = "flex";
-        document.getElementById("adminPanel").style.display = "none";
-      }
-    });
-
     // Admin Login
     window.addEventListener("DOMContentLoaded", () => {
+      // Check if user is logged in AFTER DOM is ready
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is logged in - show admin panel
+          document.getElementById("loginSection").style.display = "none";
+          document.getElementById("adminPanel").style.display = "flex";
+        } else {
+          // User is not logged in - show login form
+          document.getElementById("loginSection").style.display = "flex";
+          document.getElementById("adminPanel").style.display = "none";
+        }
+      });
+
       const loginForm = document.getElementById("adminLoginForm");
       const togglePass = document.getElementById("toggleAdminPassword");
       const passwordInput = document.getElementById("adminPassword");
