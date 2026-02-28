@@ -4,7 +4,274 @@
   <meta charset="UTF-8">
   <title>Admin Dashboard - Care Without Borders</title>
   <link rel="stylesheet" href="style.css">
+  
+  <!-- Firebase v10 Modular SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword,
+      GoogleAuthProvider, 
+      signInWithPopup,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMHhwzdjBEr9GaMNnhxugg0K71WrPN0n4",
+      authDomain: "care-without-borders-789dd.firebaseapp.com",
+      projectId: "care-without-borders-789dd",
+      storageBucket: "care-without-borders-789dd.firebasestorage.app",
+      messagingSenderId: "736136702535",
+      appId: "1:736136702535:web:c862ef87108bd027bb9f62",
+      measurementId: "G-9PLWT8WHC3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Make auth available globally
+    window.auth = auth;
+
+    // Check if user is logged in
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is logged in - show admin panel
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("adminPanel").style.display = "flex";
+      } else {
+        // User is not logged in - show login form
+        document.getElementById("loginSection").style.display = "flex";
+        document.getElementById("adminPanel").style.display = "none";
+      }
+    });
+
+    // Admin Login
+    window.addEventListener("DOMContentLoaded", () => {
+      const loginForm = document.getElementById("adminLoginForm");
+      const togglePass = document.getElementById("toggleAdminPassword");
+      const passwordInput = document.getElementById("adminPassword");
+      const emailInput = document.getElementById("adminEmail");
+
+      if (loginForm) {
+        // Password toggle
+        if (togglePass) {
+          togglePass.addEventListener("click", () => {
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+          });
+        }
+
+        // Email/Password Login
+        loginForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          
+          const email = emailInput.value.trim();
+          const password = passwordInput.value;
+
+          if (!email || !password) {
+            alert("Please enter email and password");
+            return;
+          }
+
+          signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+              alert("Admin Login Successful!");
+              // Dashboard will show automatically via onAuthStateChanged
+            })
+            .catch(error => {
+              console.error("Admin Login Error:", error);
+              let message = "Login failed. ";
+              
+              if (error.code === "auth/invalid-credential") {
+                message += "Email or password is incorrect.";
+              } else if (error.code === "auth/user-not-found") {
+                message += "This email is not registered.";
+              } else {
+                message += error.message;
+              }
+              
+              alert(message);
+            });
+        });
+      }
+
+      // Google Login for Admin
+      const googleAdminBtn = document.getElementById("googleAdminLogin");
+      if (googleAdminBtn) {
+        googleAdminBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          
+          const btn = googleAdminBtn;
+          btn.disabled = true;
+          btn.textContent = "🔍 Logging in...";
+          
+          const provider = new GoogleAuthProvider();
+          provider.setCustomParameters({ 'prompt': 'select_account' });
+          
+          signInWithPopup(auth, provider)
+            .then((result) => {
+              alert("Welcome Admin " + result.user.displayName + "!");
+            })
+            .catch(error => {
+              console.error("Google Admin Login Error:", error);
+              
+              if (error.code === "auth/unauthorized-domain") {
+                alert("⚠️ Unauthorized Domain. Add localhost to Firebase authorized domains.");
+              } else if (error.code !== "auth/popup-closed-by-user" && error.code !== "auth/cancelled-popup-request") {
+                alert("Google Login Error: " + error.message);
+              }
+              
+              btn.disabled = false;
+              btn.textContent = "🔍 Continue with Google";
+            });
+        });
+      }
+
+      // Logout button
+      const logoutBtn = document.querySelector(".logout-btn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+          if (confirm("Are you sure you want to logout?")) {
+            signOut(auth).then(() => {
+              alert("Logged out successfully!");
+              window.location.href = "index.html";
+            });
+          }
+        });
+      }
+    });
+  </script>
+  
   <style>
+    /* Login Section Styles */
+    #loginSection {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .admin-login-card {
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      max-width: 450px;
+      width: 90%;
+    }
+
+    .admin-login-card h2 {
+      color: #0f766e;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .admin-login-card p {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .admin-form-group {
+      margin-bottom: 20px;
+    }
+
+    .admin-form-group label {
+      display: block;
+      color: #333;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .admin-form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0f2f1;
+      border-radius: 10px;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+      position: relative;
+    }
+
+    .admin-form-group input:focus {
+      outline: none;
+      border-color: #0f766e;
+    }
+
+    .admin-password-field {
+      position: relative;
+    }
+
+    .admin-password-field span {
+      position: absolute;
+      right: 15px;
+      top: 38px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .admin-login-btn {
+      width: 100%;
+      background: #0f766e;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+
+    .admin-login-btn:hover {
+      background: #0d6359;
+    }
+
+    .admin-divider {
+      text-align: center;
+      margin: 20px 0;
+      color: #999;
+      font-size: 14px;
+    }
+
+    .admin-google-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 2px solid #0f766e;
+      background: white;
+      color: #0f766e;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .admin-google-btn:hover {
+      background: #f0f9f8;
+    }
+
+    .admin-google-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #adminPanel {
+      display: none;
+    }
+
     .admin-container {
       display: flex;
       min-height: 100vh;
@@ -266,6 +533,38 @@
   </style>
 </head>
 <body>
+
+<!-- LOGIN SECTION -->
+<div id="loginSection">
+  <div class="admin-login-card">
+    <h2>🔐 Admin Login</h2>
+    <p>Care Without Borders</p>
+
+    <form id="adminLoginForm">
+      <div class="admin-form-group">
+        <label>Email</label>
+        <input type="email" id="adminEmail" placeholder="marinomelsha79_bbm27@mepcoeng.ac.in" required>
+      </div>
+
+      <div class="admin-form-group admin-password-field">
+        <label>Password</label>
+        <input type="password" id="adminPassword" placeholder="Melchi@2006" required>
+        <span id="toggleAdminPassword">👁</span>
+      </div>
+
+      <button type="submit" class="admin-login-btn">Login to Admin Panel</button>
+
+      <div class="admin-divider">OR</div>
+
+      <button type="button" id="googleAdminLogin" class="admin-google-btn">
+        🔍 Continue with Google
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel">
   <div class="admin-container">
     <!-- SIDEBAR -->
     <div class="sidebar">
@@ -504,6 +803,7 @@
       </section>
     </div>
   </div>
+</div>
 
   <script type="module" src="js/role.js"></script>
   <script>
