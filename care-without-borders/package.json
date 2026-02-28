@@ -1,0 +1,17 @@
+{
+  "name": "care-without-borders",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "vanilla-router-dom": "^1.0.3"
+  }
+}

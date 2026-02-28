@@ -1,16 +1,189 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Register</title>
+  <meta charset="UTF-8">
+  <title>Register | Care Without Borders</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase v10 Modular SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      GoogleAuthProvider, 
+      signInWithPopup 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // 🔥 Firebase config (must match across all pages)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMHhwzdjBEr9GaMNnhxugg0K71WrPN0n4",
+      authDomain: "care-without-borders-789dd.firebaseapp.com",
+      projectId: "care-without-borders-789dd",
+      storageBucket: "care-without-borders-789dd.firebasestorage.app",
+      messagingSenderId: "736136702535",
+      appId: "1:736136702535:web:c862ef87108bd027bb9f62",
+      measurementId: "G-9PLWT8WHC3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // REGISTER FORM
+    window.addEventListener("DOMContentLoaded", () => {
+
+      const form = document.getElementById("registerForm");
+      const togglePass = document.getElementById("togglePassword");
+      const toggleConfirm = document.getElementById("toggleConfirm");
+      const passwordInput = document.getElementById("password");
+      const confirmInput = document.getElementById("confirmPassword");
+
+      // Password toggle
+      togglePass.addEventListener("click", () => {
+        passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+      });
+
+      toggleConfirm.addEventListener("click", () => {
+        confirmInput.type = confirmInput.type === "password" ? "text" : "password";
+      });
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("name");
+        const email = document.getElementById("email");
+        const password = passwordInput.value;
+        const confirm = confirmInput.value;
+
+        // Basic Validation
+        if (password.length < 6) {
+          passwordInput.classList.add("invalid");
+          return;
+        }
+
+        if (password !== confirm) {
+          confirmInput.classList.add("invalid");
+          return;
+        }
+
+        createUserWithEmailAndPassword(auth, email.value, password)
+          .then(() => {
+            alert("Registration Successful! You can now login.");
+            window.location.href = "login.html";
+          })
+          .catch(error => {
+            console.error("Registration Error:", error);
+            let message = "Registration failed. ";
+            
+            if (error.code === "auth/email-already-in-use") {
+              message += "This email is already registered. Please login instead.";
+            } else if (error.code === "auth/weak-password") {
+              message += "Password is too weak. Use at least 6 characters.";
+            } else if (error.code === "auth/invalid-email") {
+              message += "Invalid email format.";
+            } else {
+              message += error.message;
+            }
+            
+            alert(message);
+          });
+      });
+
+      // Google Signup
+      document.getElementById("googleSignup")
+        .addEventListener("click", () => {
+          const provider = new GoogleAuthProvider();
+          signInWithPopup(auth, provider)
+            .then((result) => {
+              alert("Welcome " + result.user.displayName + "! Registration successful.");
+              window.location.href = "patient.html";
+            })
+            .catch(error => {
+              console.error("Google Signup Error:", error);
+              let message = "";
+              
+              if (error.code === "auth/unauthorized-domain") {
+                message = "⚠️ Unauthorized Domain\n\n";
+                message += "Please add this domain to Firebase Console:\n";
+                message += "1. Go to https://console.firebase.google.com/\n";
+                message += "2. Select 'care-without-borders-789dd' project\n";
+                message += "3. Go to Authentication > Settings\n";
+                message += "4. Add your domain to 'Authorized domains'\n\n";
+                message += "For local testing, add: localhost and 127.0.0.1";
+              } else if (error.code === "auth/popup-closed-by-user") {
+                message = "Google signup cancelled.";
+              } else {
+                message = "Google Signup Error: " + error.message;
+              }
+              
+              alert(message);
+            });
+        });
+    });
+  </script>
 </head>
 <body>
-  <h2>Register (Patient Only)</h2>
 
-  <input type="text" id="name" placeholder="Full Name"><br>
-  <input type="email" id="email" placeholder="Email"><br>
-  <input type="password" id="password" placeholder="Password"><br>
-  <button id="registerBtn">Register</button>
+<div class="split-container">
 
-  <script type="module" src="js/auth.js"></script>
+  <!-- LEFT IMAGE PANEL -->
+  <div class="left-panel">
+    <img src="images/near.jpg" alt="Healthcare">
+
+    <div class="overlay-text">
+      <h1>Join Care Without Borders</h1>
+      <p>Start your journey towards better healthcare.</p>
+    </div>
+  </div>
+
+  <!-- RIGHT FORM PANEL -->
+  <div class="right-panel">
+    <div class="auth-card">
+      <h2>Create Account</h2>
+
+      <form id="registerForm">
+
+        <div class="floating-input">
+          <input type="text" id="name" required placeholder=" ">
+          <label>Full Name</label>
+        </div>
+
+        <div class="floating-input">
+          <input type="email" id="email" required placeholder=" ">
+          <label>Email</label>
+        </div>
+
+        <div class="floating-input password-field">
+          <input type="password" id="password" required placeholder=" ">
+          <label>Password</label>
+          <span id="togglePassword">👁</span>
+        </div>
+
+        <div class="floating-input password-field">
+          <input type="password" id="confirmPassword" required placeholder=" ">
+          <label>Confirm Password</label>
+          <span id="toggleConfirm">👁</span>
+        </div>
+
+        <button type="submit" class="btn-solid large">Register</button>
+
+        <div class="divider">OR</div>
+
+        <button type="button" id="googleSignup" class="google-btn">
+          🔍 Continue with Google
+        </button>
+
+      </form>
+
+      <p class="bottom-text">
+        Already have an account?
+        <a href="login.html">Login</a>
+      </p>
+
+    </div>
+  </div>
+
+</div>
+
 </body>
 </html>

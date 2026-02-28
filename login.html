@@ -1,15 +1,176 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Login</title>
+  <meta charset="UTF-8">
+  <title>Login | Care Without Borders</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase v10 Modular SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword,
+      GoogleAuthProvider, 
+      signInWithPopup 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMHhwzdjBEr9GaMNnhxugg0K71WrPN0n4",
+      authDomain: "care-without-borders-789dd.firebaseapp.com",
+      projectId: "care-without-borders-789dd",
+      storageBucket: "care-without-borders-789dd.firebasestorage.app",
+      messagingSenderId: "736136702535",
+      appId: "1:736136702535:web:c862ef87108bd027bb9f62",
+      measurementId: "G-9PLWT8WHC3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // LOGIN FORM
+    window.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("loginForm");
+      const togglePass = document.getElementById("togglePassword");
+      const passwordInput = document.getElementById("password");
+      const emailInput = document.getElementById("email");
+
+      // Password toggle
+      togglePass.addEventListener("click", () => {
+        passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+      });
+
+      // Email/Password Login
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        // Validation
+        if (!email) {
+          alert("Please enter your email");
+          return;
+        }
+        if (!password) {
+          alert("Please enter your password");
+          return;
+        }
+
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            alert("Login Successful!");
+            // Redirect based on user role
+            window.location.href = "patient.html";
+          })
+          .catch(error => {
+            console.error("Login Error:", error);
+            let message = "Login failed. ";
+            
+            if (error.code === "auth/invalid-credential") {
+              message += "Email or password is incorrect. Please check your credentials.";
+            } else if (error.code === "auth/user-not-found") {
+              message += "This email is not registered. Please sign up first.";
+            } else if (error.code === "auth/wrong-password") {
+              message += "Incorrect password. Please try again.";
+            } else if (error.code === "auth/invalid-email") {
+              message += "Invalid email format.";
+            } else {
+              message += error.message;
+            }
+            
+            alert(message);
+          });
+      });
+
+      // Google Login
+      document.getElementById("googleLogin").addEventListener("click", (e) => {
+        e.preventDefault();
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            alert("Welcome " + result.user.displayName + "!");
+            window.location.href = "patient.html";
+          })
+          .catch(error => {
+            console.error("Google Login Error:", error);
+            let message = "";
+            
+            if (error.code === "auth/unauthorized-domain") {
+              message = "⚠️ Unauthorized Domain\n\n";
+              message += "Please add this domain to Firebase Console:\n";
+              message += "1. Go to https://console.firebase.google.com/\n";
+              message += "2. Select 'care-without-borders-789dd' project\n";
+              message += "3. Go to Authentication > Settings\n";
+              message += "4. Add your domain to 'Authorized domains'\n\n";
+              message += "For local testing, add: localhost and 127.0.0.1";
+            } else if (error.code === "auth/popup-closed-by-user") {
+              message = "Google login cancelled.";
+            } else {
+              message = "Google Login Error: " + error.message;
+            }
+            
+            alert(message);
+          });
+      });
+    });
+  </script>
 </head>
 <body>
-  <h2>Login</h2>
 
-  <input type="email" id="email" placeholder="Email"><br>
-  <input type="password" id="password" placeholder="Password"><br>
-  <button id="loginBtn">Login</button>
+<div class="split-container">
 
-  <script type="module" src="js/auth.js"></script>
+  <!-- LEFT SIDE IMAGE -->
+<div class="left-panel">
+  <img src="images/premium.jpg" alt="Healthcare Premium">
+
+  <div class="overlay-text">
+    <h1>Care Without Borders</h1>
+    <p>Compassion. Technology. Trust.</p>
+  </div>
+</div>
+
+  <!-- RIGHT SIDE FORM -->
+  <div class="right-panel">
+
+    <div class="auth-card">
+      <h2>Welcome Back</h2>
+
+      <form id="loginForm">
+
+        <!-- Floating Email -->
+        <div class="floating-input">
+          <input type="email" id="email" required>
+          <label>Email</label>
+        </div>
+
+        <!-- Floating Password -->
+        <div class="floating-input password-field">
+          <input type="password" id="password" required>
+          <label>Password</label>
+          <span id="togglePassword">👁</span>
+        </div>
+
+        <button type="submit" class="btn-solid large">Login</button>
+
+        <div class="divider">OR</div>
+
+        <button type="button" id="googleLogin" class="google-btn">
+          🔍 Continue with Google
+        </button>
+
+      </form>
+
+      <p class="bottom-text">
+        Don’t have an account? <a href="register.html">Register</a>
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>

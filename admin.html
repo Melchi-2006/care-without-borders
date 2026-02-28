@@ -1,20 +1,549 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Admin Dashboard</title>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - Care Without Borders</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: white;
+      padding: 30px 0;
+      position: sticky;
+      top: 0;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+
+    .sidebar h2 {
+      padding: 0 20px;
+      margin-bottom: 30px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar li {
+      margin: 0;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 15px 20px;
+      color: white;
+      text-decoration: none;
+      transition: background 0.3s;
+      border-left: 4px solid transparent;
+      cursor: pointer;
+    }
+
+    .sidebar a:hover {
+      background: rgba(255,255,255,0.2);
+      border-left: 4px solid white;
+    }
+
+    .sidebar a.active {
+      background: rgba(255,255,255,0.2);
+      border-left: 4px solid white;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      background: #F5F5F4;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e0f2f1;
+    }
+
+    .admin-header h1 {
+      color: #0f766e;
+      font-size: 35px;
+      margin: 0;
+    }
+
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #dc2626;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .form-card {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      max-width: 600px;
+    }
+
+    .form-card h2 {
+      color: #0f766e;
+      margin-top: 0;
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #333;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0f2f1;
+      border-radius: 10px;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #0f766e;
+    }
+
+    .btn-submit {
+      background: #0f766e;
+      color: white;
+      border: none;
+      padding: 12px 40px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.3s;
+      width: 100%;
+    }
+
+    .btn-submit:hover {
+      background: #0d6359;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      color: #0f766e;
+      font-size: 32px;
+      margin: 0 0 10px 0;
+    }
+
+    .stat-card p {
+      color: #666;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table thead {
+      background: #e0f2f1;
+    }
+
+    table th {
+      color: #0f766e;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    table td {
+      padding: 15px;
+      border-bottom: 1px solid #e0f2f1;
+      color: #333;
+    }
+
+    table tbody tr:hover {
+      background: #f8f8f8;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-right: 5px;
+    }
+
+    .btn-edit {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-delete {
+      background: #ef4444;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .admin-container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        position: relative;
+      }
+
+      .sidebar ul {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .sidebar a {
+        padding: 10px 15px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
 </head>
 <body>
-  <h2>Admin Dashboard</h2>
+  <div class="admin-container">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <h2>Admin Panel</h2>
+      <ul>
+        <li><a class="nav-link active" onclick="showSection('dashboard')">📊 Dashboard</a></li>
+        <li><a class="nav-link" onclick="showSection('doctors')">👨‍⚕️ Doctors</a></li>
+        <li><a class="nav-link" onclick="showSection('patients')">👥 Patients</a></li>
+        <li><a class="nav-link" onclick="showSection('appointments')">📅 Appointments</a></li>
+        <li><a class="nav-link" onclick="showSection('settings')">⚙️ Settings</a></li>
+      </ul>
+    </div>
 
-  <h3>Add Doctor</h3>
-  <input type="text" id="docName" placeholder="Doctor Name"><br>
-  <input type="email" id="docEmail" placeholder="Doctor Email"><br>
-  <input type="password" id="docPassword" placeholder="Password"><br>
-  <button id="addDoctorBtn">Add Doctor</button>
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <div class="admin-header">
+        <h1>Admin Dashboard</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
 
-  <br><br>
-  <button onclick="logout()">Logout</button>
+      <!-- DASHBOARD SECTION -->
+      <section id="dashboard" class="section active">
+        <h2 style="color: #0f766e;">Overview</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>10,234</h3>
+            <p>Total Patients</p>
+          </div>
+          <div class="stat-card">
+            <h3>489</h3>
+            <p>Total Doctors</p>
+          </div>
+          <div class="stat-card">
+            <h3>1,234</h3>
+            <p>Appointments</p>
+          </div>
+          <div class="stat-card">
+            <h3>98%</h3>
+            <p>Satisfaction</p>
+          </div>
+        </div>
+
+        <h2 style="color: #0f766e;">Recent Appointments</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Patient Name</th>
+                <th>Doctor Name</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>John Doe</td>
+                <td>Dr. Smith</td>
+                <td>2026-02-28</td>
+                <td><span style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px;">Completed</span></td>
+                <td>
+                  <button class="action-btn btn-edit">Edit</button>
+                  <button class="action-btn btn-delete">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Jane Smith</td>
+                <td>Dr. Johnson</td>
+                <td>2026-02-28</td>
+                <td><span style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px;">Pending</span></td>
+                <td>
+                  <button class="action-btn btn-edit">Edit</button>
+                  <button class="action-btn btn-delete">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- DOCTORS SECTION -->
+      <section id="doctors" class="section">
+        <h2 style="color: #0f766e;">Manage Doctors</h2>
+        <div class="form-card">
+          <h2>Add New Doctor</h2>
+          <form onsubmit="addDoctor(event)">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="docName" placeholder="Doctor Name" required>
+            </div>
+            <div class="form-group">
+              <label>Specialization</label>
+              <select id="docSpecialization" required>
+                <option value="">Select Specialization</option>
+                <option value="Cardiology">Cardiology</option>
+                <option value="Neurology">Neurology</option>
+                <option value="General Practice">General Practice</option>
+                <option value="Pediatrics">Pediatrics</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="docEmail" placeholder="Doctor Email" required>
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="docPassword" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn-submit">Add Doctor</button>
+          </form>
+        </div>
+
+        <h2 style="color: #0f766e; margin-top: 40px;">Doctors List</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Specialization</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dr. Smith</td>
+                <td>Cardiology</td>
+                <td>smith@hospital.com</td>
+                <td><span style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px;">Active</span></td>
+                <td>
+                  <button class="action-btn btn-edit">Edit</button>
+                  <button class="action-btn btn-delete">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PATIENTS SECTION -->
+      <section id="patients" class="section">
+        <h2 style="color: #0f766e;">Manage Patients</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>John Doe</td>
+                <td>john@example.com</td>
+                <td>+1 234 567 8900</td>
+                <td>2026-01-15</td>
+                <td>
+                  <button class="action-btn btn-edit">Edit</button>
+                  <button class="action-btn btn-delete">Delete</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Jane Smith</td>
+                <td>jane@example.com</td>
+                <td>+1 234 567 8901</td>
+                <td>2026-02-10</td>
+                <td>
+                  <button class="action-btn btn-edit">Edit</button>
+                  <button class="action-btn btn-delete">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- APPOINTMENTS SECTION -->
+      <section id="appointments" class="section">
+        <h2 style="color: #0f766e;">Manage Appointments</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Date & Time</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>John Doe</td>
+                <td>Dr. Smith</td>
+                <td>2026-02-28 10:00 AM</td>
+                <td>Video Consultation</td>
+                <td><span style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px;">Completed</span></td>
+                <td>
+                  <button class="action-btn btn-edit">Edit</button>
+                  <button class="action-btn btn-delete">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SETTINGS SECTION -->
+      <section id="settings" class="section">
+        <h2 style="color: #0f766e;">Settings</h2>
+        <div class="form-card">
+          <h2>Platform Settings</h2>
+          <div class="form-group">
+            <label>Platform Name</label>
+            <input type="text" value="Care Without Borders" placeholder="Platform Name">
+          </div>
+          <div class="form-group">
+            <label>Support Email</label>
+            <input type="email" value="support@carewithoutborders.com" placeholder="Support Email">
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" value="+1 800 123 4567" placeholder="Phone Number">
+          </div>
+          <div class="form-group">
+            <label>Maximum Consultation Fee ($)</label>
+            <input type="number" value="100" placeholder="Maximum Fee">
+          </div>
+          <button class="btn-submit">Save Settings</button>
+        </div>
+      </section>
+    </div>
+  </div>
 
   <script type="module" src="js/role.js"></script>
+  <script>
+    function showSection(sectionId) {
+      // Hide all sections
+      const sections = document.querySelectorAll('.section');
+      sections.forEach(section => {
+        section.classList.remove('active');
+      });
+
+      // Remove active class from all nav links
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+      });
+
+      // Show selected section
+      document.getElementById(sectionId).classList.add('active');
+
+      // Add active class to clicked nav link
+      event.target.classList.add('active');
+    }
+
+    function addDoctor(event) {
+      event.preventDefault();
+      const name = document.getElementById('docName').value;
+      const email = document.getElementById('docEmail').value;
+      const specialization = document.getElementById('docSpecialization').value;
+      
+      alert(`Doctor added: ${name} (${specialization})`);
+      
+      // Reset form
+      event.target.reset();
+    }
+
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        window.location.href = 'index.html';
+      }
+    }
+  </script>
 </body>
 </html>

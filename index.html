@@ -1,12 +1,153 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Care Without Borders</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <h1>Care Without Borders</h1>
-  <a href="login.html">Login</a>
-  <a href="register.html">Register</a>
+<body><div class="bg-blur bg1"></div>
+<div class="bg-blur bg2"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo">❤️ Care Without Borders</div>
+  <div class="nav-buttons">
+    <button class="btn-outline" onclick="goadmin()">Admin</button>
+    <button class="btn-outline" onclick="goLogin()">Login</button>
+    <button class="btn-solid" onclick="goRegister()">Register</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero reveal">
+  <div class="hero-left">
+    <h1>Welcome to Care Without Borders</h1>
+    <p>Accessible Healthcare for Everyone, Everywhere</p>
+    <div class="hero-buttons">
+      <button class="btn-solid large" onclick="goRegister()">Get Started →</button>
+      <button class="btn-outline large" onclick="goLogin()">Login</button>
+    </div>
+  </div>
+<div class="hero-right">
+  <img src="doctor.jpg" alt="Doctor">
+</div>
+</section>
+
+<!-- STATS -->
+<section class="stats reveal">
+  <div>
+    <h2 class="counter" data-target="10000">0</h2>
+    <p>Patients</p>
+  </div>
+  <div>
+    <h2 class="counter" data-target="500">0</h2>
+    <p>Doctors</p>
+  </div>
+  <div>
+    <h2 class="counter" data-target="50">0</h2>
+    <p>Clinics</p>
+  </div>
+  <div>
+    <h2>24/7</h2>
+    <p>Support</p>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features reveal">
+  <h2>Comprehensive Healthcare Platform</h2>
+
+  <div class="feature-grid">
+
+    <div class="card">
+      <h3>HD Video Consultations</h3>
+      <p>Secure, high-quality doctor video calls.</p>
+    </div>
+
+    <div class="card">
+      <h3>AI Health Assistant</h3>
+      <p>Instant symptom analysis and guidance.</p>
+    </div>
+
+    <div class="card">
+      <h3>Medicine Search</h3>
+      <p>Search complete medicine database.</p>
+    </div>
+
+    <div class="card">
+      <h3>Clinic Locator</h3>
+      <p>Find nearby hospitals easily.</p>
+    </div>
+
+    <div class="card">
+      <h3>Digital Prescriptions</h3>
+      <p>Receive secure digital prescriptions.</p>
+    </div>
+
+    <div class="card">
+      <h3>Health Analytics</h3>
+      <p>Track healthcare insights and trends.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how reveal">
+  <h2>How It Works</h2>
+  <div class="how-grid">
+    <div class="card">
+      <h1>01</h1>
+      <h3>Create Account</h3>
+      <p>Sign up as patient or doctor.</p>
+    </div>
+    <div class="card">
+      <h1>02</h1>
+      <h3>Book Consultation</h3>
+      <p>Schedule video consultation.</p>
+    </div>
+    <div class="card">
+      <h1>03</h1>
+      <h3>Get Prescription</h3>
+      <p>Receive digital prescription instantly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials reveal">
+  <h2>What Our Users Say</h2>
+
+  <div class="testimonial-slider">
+    <div class="testimonial active">
+      <p>"The consultation was smooth and helpful."</p>
+      <strong>Priya S.</strong>
+    </div>
+
+    <div class="testimonial">
+      <p>"Managing patients digitally is effortless."</p>
+      <strong>Dr. Arun</strong>
+    </div>
+
+    <div class="testimonial">
+      <p>"Found nearby clinics easily."</p>
+      <strong>Rahul K.</strong>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta reveal">
+  <h2>Ready to Experience Better Healthcare?</h2>
+  <p>Join thousands of patients today.</p>
+  <button class="btn-solid large" onclick="goRegister()">Create Free Account</button>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Care Without Borders. Healthcare for Everyone.</p>
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>
