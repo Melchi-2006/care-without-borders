@@ -1,73 +1,382 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Patient Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Dashboard | Care Without Borders</title>
+  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .patient-header {
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: white;
+      padding: 30px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .patient-header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .patient-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .dashboard-card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      border-left: 5px solid #0f766e;
+    }
+
+    .dashboard-card h2 {
+      color: #0f766e;
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #0f766e;
+      box-shadow: 0 0 0 3px rgba(15,118,110,0.1);
+    }
+
+    .btn-primary {
+      background: #0f766e;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: #0d5c56;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(15,118,110,0.3);
+    }
+
+    .chat-container {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      height: 500px;
+    }
+
+    #chatMessages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .message {
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      animation: slideIn 0.3s ease;
+    }
+
+    .message.user-msg {
+      background: #0f766e;
+      color: white;
+      margin-left: 20px;
+      text-align: right;
+    }
+
+    .message.ai-msg {
+      background: #e0f2f1;
+      color: #0f766e;
+      margin-right: 20px;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .chat-input button {
+      background: #0f766e;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .records-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .record-item {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background: #f9f9f9;
+    }
+
+    .record-item strong {
+      color: #0f766e;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-box h3 {
+      margin: 0;
+      font-size: 12px;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    .stat-box .number {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 10px 0 0 0;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .alerts {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .alerts.show {
+      display: block;
+    }
+
+    .success {
+      background: #d4edda;
+      border-left-color: #28a745;
+      color: #155724;
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <h1>Care Without Borders - Patient</h1>
-  <button onclick="logout()">Logout</button>
-</header>
-
-<div class="container">
-
-  <!-- Appointment -->
-  <div class="card">
-    <h2>Book Appointment</h2>
-    <input type="date" id="appointmentDate">
-    <button id="bookBtn">Book</button>
+<div class="patient-header">
+  <div>
+    <h1>❤️ Patient Dashboard</h1>
+    <p style="margin: 5px 0 0 0; opacity: 0.9;">Welcome back! Take care of your health</p>
   </div>
-
-  <!-- Video Call -->
-  <div class="card">
-    <h2>Instant Video Consultation</h2>
-    <input type="text" id="roomName" placeholder="Enter Room Name">
-    <button onclick="startCall()">Start Call</button>
-    <div id="jitsiContainer" style="margin-top:10px;"></div>
-  </div>
-<h2>AI Medical Chatbot</h2>
-
-<div class="chat-container">
-  <div id="chatMessages"></div>
-
-  <div class="chat-input">
-    <input type="text" id="chatInput" placeholder="Ask your medical question..." />
-    <button id="sendBtn">Send</button>
-  </div>
+  <button class="btn-primary" onclick="logout()" style="background: rgba(255,255,255,0.2);">Logout</button>
 </div>
 
-<script src="js/patient.js"></script>
-  <!-- Chatbot -->
-  <div class="card">
-    <h2>Medical Chatbot</h2>
-    <input type="text" id="chatInput" placeholder="Describe symptoms...">
-    <button onclick="chatBot()">Ask</button>
-    <p id="chatResponse"></p>
+<div class="patient-container">
+
+  <!-- Alerts -->
+  <div id="alerts" class="alerts"></div>
+
+  <!-- Quick Stats -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <h3>Upcoming Appointments</h3>
+      <div class="number" id="appointmentsCount">0</div>
+    </div>
+    <div class="stat-box">
+      <h3>Medical Records</h3>
+      <div class="number" id="recordsCount">0</div>
+    </div>
+    <div class="stat-box">
+      <h3>Prescriptions</h3>
+      <div class="number" id="prescriptionsCount">0</div>
+    </div>
+    <div class="stat-box">
+      <h3>Health Score</h3>
+      <div class="number" id="healthScore">85%</div>
+    </div>
   </div>
 
-  <!-- Map -->
-  <div class="card">
-    <h2>Nearby Hospitals</h2>
-    <iframe
-      width="100%"
-      height="300"
-      src="https://www.openstreetmap.org/export/embed.html">
-    </iframe>
-  </div>
+  <!-- Main Dashboard Grid -->
+  <div class="dashboard-grid">
 
-  <!-- EHR -->
-  <div class="card">
-    <h2>Your Medical Records</h2>
-    <p>No records yet.</p>
-  </div>
+    <!-- Book Appointment -->
+    <div class="dashboard-card">
+      <h2>📅 Book an Appointment</h2>
+      <form id="appointmentForm">
+        <div class="form-group">
+          <label>Select Doctor</label>
+          <select id="doctorSelect" required>
+            <option value="">-- Choose Doctor --</option>
+            <option value="Dr. Smith">Dr. Smith - Cardiology</option>
+            <option value="Dr. Johnson">Dr. Johnson - Neurology</option>
+            <option value="Dr. Davis">Dr. Davis - Orthopedics</option>
+            <option value="Dr. Wilson">Dr. Wilson - General Practice</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Appointment Date</label>
+          <input type="date" id="appointmentDate" required>
+        </div>
+        <div class="form-group">
+          <label>Time</label>
+          <input type="time" id="appointmentTime" required>
+        </div>
+        <div class="form-group">
+          <label>Reason for Visit</label>
+          <input type="text" id="visitReason" placeholder="Brief description..." required>
+        </div>
+        <button type="button" class="btn-primary" onclick="bookAppointment()" style="width: 100%;">Book Appointment</button>
+      </form>
+      <div id="appointmentsList" style="margin-top: 15px;"></div>
+    </div>
 
-  <!-- Disease Graph -->
-  <div class="card">
-    <h2>Disease Spread Graph</h2>
-    <canvas id="diseaseChart"></canvas>
+    <!-- Video Consultation -->
+    <div class="dashboard-card">
+      <h2>📹 Video Consultation</h2>
+      <p style="color: #666; font-size: 14px;">Start an instant HD video call with your doctor</p>
+      <div class="form-group">
+        <label>Consultation Room</label>
+        <input type="text" id="roomName" placeholder="e.g., Patient-001-Consultation">
+      </div>
+      <button class="btn-primary" onclick="startCall()" style="width: 100%;">Start Video Call</button>
+      <div id="jitsiContainer" style="margin-top: 15px;"></div>
+    </div>
+
+    <!-- Medical Records -->
+    <div class="dashboard-card">
+      <h2>📋 Your Medical Records</h2>
+      <p style="color: #666; font-size: 14px;">View your health history and prescriptions</p>
+      <div id="ehrList" class="records-list">
+        <p style="color: #999; text-align: center;">Loading medical records...</p>
+      </div>
+    </div>
+
+    <!-- Medicine Search -->
+    <div class="dashboard-card">
+      <h2>💊 Medicine Search</h2>
+      <p style="color: #666; font-size: 14px;">Find information about medicines</p>
+      <div class="form-group">
+        <input type="text" id="medicineSearch" placeholder="Search medicine name...">
+      </div>
+      <button class="btn-primary" onclick="searchMedicine()" style="width: 100%;">Search</button>
+      <div id="medicineResult" style="margin-top: 12px; padding: 10px; background: #f9f9f9; border-radius: 8px; display: none;">
+      </div>
+    </div>
+
+    <!-- AI Health Assistant -->
+    <div class="dashboard-card full-width">
+      <h2>🤖 AI Health Assistant</h2>
+      <p style="color: #666; font-size: 14px;">Get instant health guidance and symptom analysis</p>
+      <div class="chat-container">
+        <div id="chatMessages"></div>
+        <div class="chat-input">
+          <input type="text" id="chatInput" placeholder="Ask your health question...">
+          <button id="sendBtn">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nearby Hospitals -->
+    <div class="dashboard-card full-width">
+      <h2>🏥 Nearby Healthcare Facilities</h2>
+      <p style="color: #666; font-size: 14px;">Find hospitals, clinics, and health centers near you</p>
+      <iframe width="100%" height="400"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.791034153496!2d77.22860731542267!3d28.613939592447267!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce5141ced8e15%3A0x37ffce30c87cc03f!2sHospital!5e0!3m2!1sen!2sin!4v1234567890123"
+        style="border: none; border-radius: 8px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+
+    <!-- Health Analytics -->
+    <div class="dashboard-card full-width">
+      <h2>📊 Health Analytics</h2>
+      <p style="color: #666; font-size: 14px;">Monitor your health metrics and trends</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+          <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Blood Pressure Trend</p>
+          <canvas id="bpChart"></canvas>
+        </div>
+        <div>
+          <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Health Score Trend</p>
+          <canvas id="healthChart"></canvas>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>

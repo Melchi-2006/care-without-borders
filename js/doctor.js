@@ -3,75 +3,302 @@ import {
   signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
 import {
   collection,
   getDocs,
-  addDoc
+  addDoc,
+  query,
+  where,
+  updateDoc,
+  deleteDoc,
+  doc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// Protect page
+onAuthStateChanged(auth, (user) => {
+  if (!user) window.location.href = "login.html";
+  else {
+    loadAppointments();
+    loadEHR();
+    initCharts();
+  }
+});
+
+// Logout Function
 window.logout = async function () {
   await signOut(auth);
   window.location.href = "login.html";
 };
 
-// Protect page
-onAuthStateChanged(auth, (user) => {
-  if (!user) window.location.href = "login.html";
-});
+// Show Alert Message
+function showAlert(message, type = "success") {
+  const alertDiv = document.createElement("div");
+  alertDiv.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    background: ${type === "success" ? "#28a745" : "#ffc107"};
+    color: white;
+    border-radius: 8px;
+    z-index: 9999;
+  `;
+  alertDiv.textContent = message;
+  document.body.appendChild(alertDiv);
+  setTimeout(() => alertDiv.remove(), 4000);
+}
 
-// Load appointments
+// Load Appointments
 async function loadAppointments() {
-  const querySnapshot = await getDocs(collection(db, "appointments"));
-  const container = document.getElementById("appointmentsList");
-  container.innerHTML = "";
+  try {
+    const querySnapshot = await getDocs(collection(db, "appointments"));
+    const list = document.getElementById("appointmentsList");
+    list.innerHTML = "";
 
-  if (querySnapshot.empty) {
-    container.innerHTML = "<p>No appointments yet.</p>";
+    let todayCount = 0;
+    let pendingCount = 0;
+    const today = new Date().toISOString().split('T')[0];
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.date === today) todayCount++;
+      if (data.status === "pending") pendingCount++;
+
+      const appointmentDate = new Date(data.date).toLocaleDateString();
+      const statusClass = `status-${data.status}`;
+
+      list.innerHTML += `
+        <div class="appointment-item">
+          <div class="appointment-info">
+            <strong>${data.patientName || data.patientEmail}</strong>
+            <p>📅 ${appointmentDate} at ${data.time}</p>
+            <p>Reason: ${data.reason}</p>
+            <span class="status-badge status-${data.status}">${data.status}</span>
+          </div>
+          <div class="appointment-actions">
+            <button class="btn-secondary" onclick="confirmAppointment('${doc.id}')">Confirm</button>
+            <button class="btn-secondary" onclick="completeAppointment('${doc.id}')">Complete</button>
+            <button class="btn-danger" onclick="cancelAppointment('${doc.id}')">Cancel</button>
+          </div>
+        </div>
+      `;
+    });
+
+    if (list.innerHTML === "") {
+      list.innerHTML = '<p style="color: #999; text-align: center;">No appointments yet</p>';
+    }
+
+    document.getElementById("todayAppointments").textContent = todayCount;
+    document.getElementById("pendingAppointments").textContent = pendingCount;
+  } catch (error) {
+    console.error("Error loading appointments:", error);
+  }
+}
+
+// Confirm Appointment
+window.confirmAppointment = async function (docId) {
+  try {
+    await updateDoc(doc(db, "appointments", docId), {
+      status: "confirmed"
+    });
+    showAlert("Appointment confirmed");
+    loadAppointments();
+  } catch (error) {
+    showAlert("Error confirming appointment", "warning");
+  }
+};
+
+// Complete Appointment
+window.completeAppointment = async function (docId) {
+  try {
+    await updateDoc(doc(db, "appointments", docId), {
+      status: "completed"
+    });
+    showAlert("Appointment marked as completed");
+    loadAppointments();
+  } catch (error) {
+    showAlert("Error completing appointment", "warning");
+  }
+};
+
+// Cancel Appointment
+window.cancelAppointment = async function (docId) {
+  if (!confirm("Are you sure you want to cancel this appointment?")) return;
+  try {
+    await updateDoc(doc(db, "appointments", docId), {
+      status: "cancelled"
+    });
+    showAlert("Appointment cancelled");
+    loadAppointments();
+  } catch (error) {
+    showAlert("Error cancelling appointment", "warning");
+  }
+};
+
+// Save EHR
+window.saveEHR = async function () {
+  const patientId = document.getElementById("patientId").value;
+  const diagnosis = document.getElementById("diagnosis").value;
+  const prescription = document.getElementById("prescription").value;
+  const dosage = document.getElementById("dosage").value;
+  const followUpDate = document.getElementById("followUpDate").value;
+
+  if (!patientId || !diagnosis || !prescription) {
+    showAlert("Please fill required fields", "warning");
     return;
   }
 
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    container.innerHTML += `
-      <div style="border:1px solid #ddd;padding:10px;margin-bottom:5px;">
-        <strong>Patient:</strong> ${data.patientName || "Unknown"} <br>
-        <strong>Date:</strong> ${data.date} <br>
-        <strong>Status:</strong> ${data.status}
-      </div>
-    `;
-  });
+  try {
+    await addDoc(collection(db, "ehr"), {
+      patientId,
+      diagnosis,
+      prescription,
+      dosage,
+      followUpDate,
+      doctorId: auth.currentUser.uid,
+      doctorEmail: auth.currentUser.email,
+      date: new Date().toLocaleDateString()
+    });
+
+    showAlert("Patient record saved successfully");
+    document.getElementById("ehrForm").reset();
+    loadEHR();
+  } catch (error) {
+    showAlert("Error saving EHR: " + error.message, "warning");
+  }
+};
+
+// Load EHR Records
+async function loadEHR() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "ehr"));
+    const list = document.getElementById("ehrList");
+    list.innerHTML = "";
+
+    let count = 0;
+    querySnapshot.forEach((doc) => {
+      count++;
+      const data = doc.data();
+      list.innerHTML += `
+        <div class="record-item">
+          <strong>Patient:</strong> ${data.patientId}
+          <p><strong>Diagnosis:</strong> ${data.diagnosis}</p>
+          <p><strong>Prescription:</strong> ${data.prescription}</p>
+          ${data.dosage ? `<p><strong>Dosage:</strong> ${data.dosage}</p>` : ''}
+          ${data.followUpDate ? `<p><strong>Follow-up:</strong> ${data.followUpDate}</p>` : ''}
+          <p style="color: #999; font-size: 12px;"><strong>Date:</strong> ${data.date}</p>
+        </div>
+      `;
+    });
+
+    if (count === 0) {
+      list.innerHTML = '<p style="color: #999; text-align: center;">No patient records yet</p>';
+    }
+    document.getElementById("totalRecords").textContent = count;
+    document.getElementById("totalPatients").textContent = new Set([...querySnapshot.docs.map(d => d.data().patientId)]).size;
+  } catch (error) {
+    console.error("Error loading EHR:", error);
+  }
 }
 
-loadAppointments();
+// Search Patient
+window.searchPatient = async function () {
+  const searchTerm = document.getElementById("patientSearchInput").value.toLowerCase();
+  const resultsDiv = document.getElementById("searchResults");
 
-// Jitsi Video
+  if (!searchTerm) {
+    resultsDiv.innerHTML = "";
+    return;
+  }
+
+  try {
+    const querySnapshot = await getDocs(collection(db, "ehr"));
+    resultsDiv.innerHTML = "";
+    let found = false;
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.patientId.toLowerCase().includes(searchTerm)) {
+        found = true;
+        resultsDiv.innerHTML += `
+          <div class="record-item">
+            <strong>${data.patientId}</strong>
+            <p><strong>Diagnosis:</strong> ${data.diagnosis}</p>
+            <p><strong>Prescription:</strong> ${data.prescription}</p>
+            <p style="color: #999; font-size: 12px;"><strong>Last Update:</strong> ${data.date}</p>
+          </div>
+        `;
+      }
+    });
+
+    if (!found) {
+      resultsDiv.innerHTML = '<p style="color: #999;">No records found</p>';
+    }
+  } catch (error) {
+    resultsDiv.innerHTML = '<p style="color: red;">Error searching records</p>';
+  }
+};
+
+// Jitsi Video Call
 window.startCall = function () {
-  const roomName = document.getElementById("roomName").value;
+  const roomName = document.getElementById("roomName").value || "doctor-" + Date.now();
+  
+  if (!window.JitsiMeetExternalAPI) {
+    alert("Video service not loaded. Please refresh page.");
+    return;
+  }
 
   const domain = "meet.jit.si";
   const options = {
     roomName: roomName,
     width: "100%",
     height: 400,
-    parentNode: document.querySelector("#jitsiContainer")
+    parentNode: document.querySelector("#jitsiContainer"),
+    configOverwrite: {
+      startWithAudioMuted: false,
+      startWithVideoMuted: false,
+      disableModeratorIndicator: true
+    }
   };
 
-  new JitsiMeetExternalAPI(domain, options);
+  try {
+    new JitsiMeetExternalAPI(domain, options);
+  } catch (error) {
+    alert("Error starting video call: " + error.message);
+  }
 };
 
-// Save EHR
-document.getElementById("saveEhrBtn").addEventListener("click", async () => {
-  const patientId = document.getElementById("patientId").value;
-  const diagnosis = document.getElementById("diagnosis").value;
-  const prescription = document.getElementById("prescription").value;
-
-  await addDoc(collection(db, "ehr"), {
-    patientId,
-    diagnosis,
-    prescription,
-    date: new Date().toLocaleDateString()
-  });
-
-  alert("EHR Saved!");
-});
+// Initialize Charts
+function initCharts() {
+  const chartCanvas = document.getElementById("consultationChart");
+  if (chartCanvas) {
+    new Chart(chartCanvas, {
+      type: "bar",
+      data: {
+        labels: ["This Month", "Last Month", "2 Months Ago"],
+        datasets: [
+          {
+            label: "Completed Consultations",
+            data: [12, 19, 8],
+            backgroundColor: "#0f766e"
+          },
+          {
+            label: "Pending Consultations",
+            data: [3, 2, 1],
+            backgroundColor: "#14b8a6"
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true },
+          title: { display: true, text: "Consultation Analytics" }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+}

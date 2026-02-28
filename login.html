@@ -87,14 +87,24 @@
       // Google Login
       document.getElementById("googleLogin").addEventListener("click", (e) => {
         e.preventDefault();
+        
+        const btn = document.getElementById("googleLogin");
+        btn.disabled = true;
+        btn.textContent = "🔍 Logging in...";
+        
         const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ 'prompt': 'select_account' });
+        
         signInWithPopup(auth, provider)
           .then((result) => {
+            console.log("Google Login Success:", result.user.email);
             alert("Welcome " + result.user.displayName + "!");
             window.location.href = "patient.html";
           })
           .catch(error => {
-            console.error("Google Login Error:", error);
+            console.error("Google Login Error Code:", error.code);
+            console.error("Google Login Error Message:", error.message);
+            
             let message = "";
             
             if (error.code === "auth/unauthorized-domain") {
@@ -105,13 +115,20 @@
               message += "3. Go to Authentication > Settings\n";
               message += "4. Add your domain to 'Authorized domains'\n\n";
               message += "For local testing, add: localhost and 127.0.0.1";
+              alert(message);
             } else if (error.code === "auth/popup-closed-by-user") {
-              message = "Google login cancelled.";
+              // User cancelled - just reset button, don't show alert
+              console.log("User cancelled Google login popup");
+            } else if (error.code === "auth/cancelled-popup-request") {
+              console.log("Popup was cancelled");
             } else {
               message = "Google Login Error: " + error.message;
+              alert(message);
             }
             
-            alert(message);
+            // Reset button
+            btn.disabled = false;
+            btn.textContent = "🔍 Continue with Google";
           });
       });
     });

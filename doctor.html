@@ -1,50 +1,422 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Doctor Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Dashboard | Care Without Borders</title>
+  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .doctor-header {
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: white;
+      padding: 30px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .doctor-header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .doctor-header p {
+      margin: 5px 0 0 0;
+      opacity: 0.9;
+    }
+
+    .doctor-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .dashboard-card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      border-left: 5px solid #0f766e;
+    }
+
+    .dashboard-card h2 {
+      color: #0f766e;
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #0f766e;
+      box-shadow: 0 0 0 3px rgba(15,118,110,0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .btn-primary {
+      background: #0f766e;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: #0d5c56;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(15,118,110,0.3);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .appointments-list {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .appointment-item {
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      background: #f9f9f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .appointment-info {
+      flex: 1;
+    }
+
+    .appointment-info strong {
+      color: #0f766e;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .appointment-info p {
+      margin: 3px 0;
+      color: #666;
+      font-size: 13px;
+    }
+
+    .appointment-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .patient-records {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .record-item {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background: #f9f9f9;
+    }
+
+    .record-item strong {
+      color: #0f766e;
+    }
+
+    .record-item p {
+      margin: 5px 0;
+      color: #666;
+      font-size: 13px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-box h3 {
+      margin: 0;
+      font-size: 12px;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    .stat-box .number {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 10px 0 0 0;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-confirmed {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-completed {
+      background: #cfe2ff;
+      color: #084298;
+    }
+
+    .status-cancelled {
+      background: #f8d7da;
+      color: #842029;
+    }
+
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .schedule-slot {
+      padding: 10px;
+      background: #e0f2f1;
+      border: 1px solid #0f766e;
+      border-radius: 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 12px;
+    }
+
+    .schedule-slot:hover {
+      background: #0f766e;
+      color: white;
+    }
+
+    .schedule-slot.occupied {
+      background: #f8d7da;
+      color: #842029;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <h1>Care Without Borders - Doctor</h1>
-  <button onclick="logout()">Logout</button>
-</header>
+<div class="doctor-header">
+  <div>
+    <h1>👨⚕️ Doctor Dashboard</h1>
+    <p>Welcome Dr. Smith! Manage your appointments and patient care</p>
+  </div>
+  <button class="btn-primary" onclick="logout()" style="background: rgba(255,255,255,0.2);">Logout</button>
+</div>
 
-<div class="container">
+<div class="doctor-container">
 
-  <!-- Appointments -->
-  <div class="card">
-    <h2>Appointments</h2>
-    <div id="appointmentsList">
-      <p>No appointments yet.</p>
+  <!-- Quick Stats -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <h3>Today's Appointments</h3>
+      <div class="number" id="todayAppointments">0</div>
+    </div>
+    <div class="stat-box">
+      <h3>Pending Appointments</h3>
+      <div class="number" id="pendingAppointments">0</div>
+    </div>
+    <div class="stat-box">
+      <h3>Total Patients</h3>
+      <div class="number" id="totalPatients">0</div>
+    </div>
+    <div class="stat-box">
+      <h3>EHR Records</h3>
+      <div class="number" id="totalRecords">0</div>
     </div>
   </div>
 
-  <!-- Start Video Call -->
-  <div class="card">
-    <h2>Start Video Consultation</h2>
-    <input type="text" id="roomName" placeholder="Enter Room Name">
-    <button onclick="startCall()">Start Call</button>
-    <div id="jitsiContainer" style="margin-top:10px;"></div>
-  </div>
+  <!-- Main Dashboard Grid -->
+  <div class="dashboard-grid">
 
-  <!-- Add EHR -->
-  <div class="card">
-    <h2>Add / Update EHR</h2>
-    <input type="text" id="patientId" placeholder="Patient ID">
-    <input type="text" id="diagnosis" placeholder="Diagnosis">
-    <input type="text" id="prescription" placeholder="Prescription">
-    <button id="saveEhrBtn">Save Record</button>
-  </div>
-
-  <!-- Patient Records -->
-  <div class="card">
-    <h2>Patient Records</h2>
-    <div id="ehrList">
-      <p>No records available.</p>
+    <!-- Manage Schedule -->
+    <div class="dashboard-card">
+      <h2>📅 My Schedule</h2>
+      <p style="color: #666; font-size: 14px;">Available time slots for today</p>
+      <div class="schedule-grid">
+        <div class="schedule-slot">09:00</div>
+        <div class="schedule-slot">10:00</div>
+        <div class="schedule-slot occupied">11:00</div>
+        <div class="schedule-slot">12:00</div>
+        <div class="schedule-slot occupied">13:00</div>
+        <div class="schedule-slot">14:00</div>
+        <div class="schedule-slot">15:00</div>
+      </div>
     </div>
+
+    <!-- Appointments List -->
+    <div class="dashboard-card full-width">
+      <h2>📋 Patient Appointments</h2>
+      <p style="color: #666; font-size: 14px;">Manage and view all your appointments</p>
+      <div class="appointments-list" id="appointmentsList">
+        <p style="color: #999; text-align: center;">Loading appointments...</p>
+      </div>
+    </div>
+
+    <!-- Add/Update EHR -->
+    <div class="dashboard-card">
+      <h2>📝 Add Patient Record</h2>
+      <p style="color: #666; font-size: 14px;">Create or update patient EHR</p>
+      <form id="ehrForm">
+        <div class="form-group">
+          <label>Patient ID / Email</label>
+          <input type="text" id="patientId" placeholder="patient@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>Diagnosis</label>
+          <input type="text" id="diagnosis" placeholder="e.g., Hypertension" required>
+        </div>
+        <div class="form-group">
+          <label>Prescription</label>
+          <textarea id="prescription" placeholder="Detailed prescription..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Dosage</label>
+          <input type="text" id="dosage" placeholder="e.g., 2 tablets daily">
+        </div>
+        <div class="form-group">
+          <label>Follow-up Date</label>
+          <input type="date" id="followUpDate">
+        </div>
+        <button type="button" class="btn-primary" onclick="saveEHR()" style="width: 100%;">Save Patient Record</button>
+      </form>
+    </div>
+
+    <!-- Video Consultation -->
+    <div class="dashboard-card">
+      <h2>📹 Video Consultation</h2>
+      <p style="color: #666; font-size: 14px;">Start a consultation with patient</p>
+      <div class="form-group">
+        <label>Consultation Room</label>
+        <input type="text" id="roomName" placeholder="e.g., Doctor-001-Consultation">
+      </div>
+      <button class="btn-primary" onclick="startCall()" style="width: 100%;">Start Video Call</button>
+      <div id="jitsiContainer" style="margin-top: 15px;"></div>
+    </div>
+
+    <!-- Patient Records -->
+    <div class="dashboard-card full-width">
+      <h2>📚 Patient Medical Records</h2>
+      <p style="color: #666; font-size: 14px;">View and manage all patient EHR data</p>
+      <div class="patient-records" id="ehrList">
+        <p style="color: #999; text-align: center;">Loading patient records...</p>
+      </div>
+    </div>
+
+    <!-- Patient Search -->
+    <div class="dashboard-card">
+      <h2>🔍 Search Patient</h2>
+      <p style="color: #666; font-size: 14px;">Find patient records quickly</p>
+      <div class="form-group">
+        <input type="text" id="patientSearchInput" placeholder="Search by name or ID...">
+      </div>
+      <button class="btn-primary" onclick="searchPatient()" style="width: 100%;">Search</button>
+      <div id="searchResults" style="margin-top: 15px;"></div>
+    </div>
+
+    <!-- Consultation Analytics -->
+    <div class="dashboard-card">
+      <h2>📊 Analytics</h2>
+      <p style="color: #666; font-size: 14px;">Your consultation statistics</p>
+      <div style="margin-top: 15px;">
+        <canvas id="consultationChart"></canvas>
+      </div>
+    </div>
+
   </div>
 
 </div>
