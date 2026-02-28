@@ -34,21 +34,28 @@
     // Make auth available globally
     window.auth = auth;
 
-    // Admin Login
-    window.addEventListener("DOMContentLoaded", () => {
-      // Check if user is logged in AFTER DOM is ready
-      onAuthStateChanged(auth, (user) => {
+    // Set up auth state listener IMMEDIATELY (outside DOMContentLoaded)
+    // This runs continuously to check if user is logged in
+    onAuthStateChanged(auth, (user) => {
+      const loginSection = document.getElementById("loginSection");
+      const adminPanel = document.getElementById("adminPanel");
+      
+      // Only update if elements exist
+      if (loginSection && adminPanel) {
         if (user) {
           // User is logged in - show admin panel
-          document.getElementById("loginSection").style.display = "none";
-          document.getElementById("adminPanel").style.display = "flex";
+          loginSection.style.display = "none";
+          adminPanel.style.display = "flex";
         } else {
           // User is not logged in - show login form
-          document.getElementById("loginSection").style.display = "flex";
-          document.getElementById("adminPanel").style.display = "none";
+          loginSection.style.display = "flex";
+          adminPanel.style.display = "none";
         }
-      });
+      }
+    });
 
+    // Admin Login - set up event listeners
+    window.addEventListener("DOMContentLoaded", () => {
       const loginForm = document.getElementById("adminLoginForm");
       const togglePass = document.getElementById("toggleAdminPassword");
       const passwordInput = document.getElementById("adminPassword");
@@ -582,7 +589,7 @@
     <div class="main-content">
       <div class="admin-header">
         <h1>Admin Dashboard</h1>
-        <button class="logout-btn" onclick="logout()">Logout</button>
+        <button class="logout-btn">Logout</button>
       </div>
 
       <!-- DASHBOARD SECTION -->
@@ -837,12 +844,6 @@
       
       // Reset form
       event.target.reset();
-    }
-
-    function logout() {
-      if (confirm('Are you sure you want to logout?')) {
-        window.location.href = 'index.html';
-      }
     }
   </script>
 </body>
