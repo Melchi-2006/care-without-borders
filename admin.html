@@ -40,9 +40,12 @@
       const loginSection = document.getElementById("loginSection");
       const adminPanel = document.getElementById("adminPanel");
       
+      // Check both Firebase auth AND localStorage admin session
+      const isAdminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
+      
       // Only update if elements exist
       if (loginSection && adminPanel) {
-        if (user) {
+        if (user || isAdminLoggedIn) {
           // User is logged in - show admin panel
           loginSection.style.display = "none";
           adminPanel.style.display = "flex";
@@ -81,24 +84,32 @@
             return;
           }
 
+          // HARDCODED ADMIN CREDENTIALS
+          const ADMIN_EMAIL = "marinomelsha79_bbm27@mepcoeng.ac.in";
+          const ADMIN_PASSWORD = "Melchi@2006";
+
+          // Check if credentials match hardcoded admin
+          if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+            // Admin login successful - set session in localStorage
+            localStorage.setItem("adminLoggedIn", "true");
+            localStorage.setItem("adminEmail", email);
+            alert("Admin Login Successful!");
+            
+            // Show admin panel
+            document.getElementById("loginSection").style.display = "none";
+            document.getElementById("adminPanel").style.display = "flex";
+            return;
+          }
+
+          // If not admin credentials, try Firebase (for future use)
           signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-              alert("Admin Login Successful!");
+              alert("Login Successful!");
               // Dashboard will show automatically via onAuthStateChanged
             })
             .catch(error => {
-              console.error("Admin Login Error:", error);
-              let message = "Login failed. ";
-              
-              if (error.code === "auth/invalid-credential") {
-                message += "Email or password is incorrect.";
-              } else if (error.code === "auth/user-not-found") {
-                message += "This email is not registered.";
-              } else {
-                message += error.message;
-              }
-              
-              alert(message);
+              console.error("Login Error:", error);
+              alert("Email or password is incorrect. Please check your credentials.");
             });
         });
       }
@@ -140,8 +151,16 @@
       if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
           if (confirm("Are you sure you want to logout?")) {
+            // Clear admin session
+            localStorage.removeItem("adminLoggedIn");
+            localStorage.removeItem("adminEmail");
+            
+            // Also sign out from Firebase if logged in via Firebase
             signOut(auth).then(() => {
               alert("Logged out successfully!");
+              window.location.href = "index.html";
+            }).catch(() => {
+              // Even if Firebase logout fails, clear the page
               window.location.href = "index.html";
             });
           }
