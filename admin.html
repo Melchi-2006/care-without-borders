@@ -37,15 +37,16 @@
     // Set up auth state listener IMMEDIATELY (outside DOMContentLoaded)
     // This runs continuously to check if user is logged in
     onAuthStateChanged(auth, (user) => {
+      // Only process if admin is not already logged in via localStorage
+      const isAdminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
+      if (isAdminLoggedIn) return; // Don't redirect admin users
+      
       const loginSection = document.getElementById("loginSection");
       const adminPanel = document.getElementById("adminPanel");
       
-      // Check both Firebase auth AND localStorage admin session
-      const isAdminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
-      
       // Only update if elements exist
       if (loginSection && adminPanel) {
-        if (user || isAdminLoggedIn) {
+        if (user) {
           // User is logged in - show admin panel
           loginSection.style.display = "none";
           adminPanel.style.display = "flex";
