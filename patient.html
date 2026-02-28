@@ -371,6 +371,40 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* Typing Indicator Animation */
+    .typing-indicator {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: #0f766e;
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% {
+        opacity: 0.3;
+        transform: translateY(0);
+      }
+      30% {
+        opacity: 1;
+        transform: translateY(-10px);
+      }
+    }
   </style>
 </head>
 <body>
@@ -534,7 +568,7 @@
 
     <!-- AI Chatbot Panel -->
     <div id="chatbot" class="panel-content">
-      <div class="panel-title">AI Health Assistant</div>
+      <div class="panel-title">AI Health Assistant 🤖 <span style="font-size: 12px; color: #28a745; font-weight: normal;"> (Online API)</span></div>
       
       <div class="chat-container">
         <div id="chatMessages"></div>
@@ -544,8 +578,8 @@
         </div>
       </div>
 
-      <div style="margin-top: 20px; background: #e8f5f4; padding: 15px; border-radius: 8px;">
-        <p style="margin: 0; color: #0f766e; font-size: 13px;">💡 <strong>Tip:</strong> You can ask about symptoms, side effects, general health tips, or medicines. For serious concerns, always consult a doctor.</p>
+      <div style="margin-top: 20px; background: #d4edda; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
+        <p style="margin: 0; color: #155724; font-size: 13px;">✅ <strong>AI is Online:</strong> Connected to intelligent health assistant API for advanced medical insights and guidance.</p>
       </div>
     </div>
 

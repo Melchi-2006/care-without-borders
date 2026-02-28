@@ -381,31 +381,55 @@ async function sendMessage() {
 
   appendMessage("You", message);
   chatInput.value = "";
-
-  // First, use the improved offline AI system (primary)
-  let response = getOfflineAIResponse(message);
   
-  // If no good offline response found, try API
-  if (!response) {
-    try {
-      const apiResponse = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message })
-      });
+  // Create AI message element with loading indicator
+  const aiMessageId = "ai-message-" + Date.now();
+  const chatDiv = document.createElement("div");
+  chatDiv.className = "message ai-msg";
+  chatDiv.id = aiMessageId;
+  chatDiv.innerHTML = `<strong>AI Doctor:</strong> <span class="typing-indicator"><span></span><span></span><span></span></span>`;
+  chatMessages.appendChild(chatDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 
-      if (apiResponse.ok) {
-        const data = await apiResponse.json();
-        response = data.reply;
-      } else {
-        response = getGeneralAIResponse();
-      }
-    } catch (error) {
-      response = getGeneralAIResponse();
+  let response = null;
+
+  // Try API first (PRIMARY SOURCE)
+  try {
+    const apiResponse = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message })
+    });
+
+    if (apiResponse.ok) {
+      const data = await apiResponse.json();
+      response = data.reply || data.response || data.answer; // Try multiple response fields
+      console.log("✅ API Response:", response);
+    } else {
+      console.warn("API returned non-ok status:", apiResponse.status);
+      response = null;
+    }
+  } catch (error) {
+    console.warn("API call failed, using offline responses:", error.message);
+    response = null;
+  }
+
+  // Fallback to offline AI if API fails
+  if (!response) {
+    response = getOfflineAIResponse(message);
+    if (response) {
+      console.log("💾 Using offline response");
     }
   }
 
-  appendMessage("AI Doctor", response);
+  // Final fallback to general response
+  if (!response) {
+    response = getGeneralAIResponse();
+  }
+
+  // Update message with actual response
+  updateMessage(chatDiv, "AI Doctor", response);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function getOfflineAIResponse(userMessage) {
@@ -445,9 +469,24 @@ function appendMessage(sender, text) {
   const msgDiv = document.createElement("div");
   const className = sender === "You" ? "user-msg" : "ai-msg";
   msgDiv.className = `message ${className}`;
-  msgDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+  msgDiv.id = sender === "You" ? "" : "ai-message-" + Date.now();
+  
+  // Add loading animation if from AI
+  if (sender === "AI Doctor") {
+    msgDiv.innerHTML = `<strong>${sender}:</strong> <span class="typing-indicator"><span></span><span></span><span></span></span>`;
+  } else {
+    msgDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+  }
+  
   chatMessages.appendChild(msgDiv);
   chatMessages.scrollTop = chatMessages.scrollHeight;
+  
+  return msgDiv;
+}
+
+// Update message content
+function updateMessage(element, sender, text) {
+  element.innerHTML = `<strong>${sender}:</strong> ${text}`;
 }
 
 // Jitsi Video Call
