@@ -2,15 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Register | Care Without Borders</title>
+  <title>Doctor Registration | Care Without Borders</title>
   <link rel="stylesheet" href="style.css">
 
   <script>
-    // ==================== PATIENT REGISTRATION ====================
+    // ==================== DOCTOR REGISTRATION ====================
     
     window.addEventListener("DOMContentLoaded", () => {
-
-      const form = document.getElementById("registerForm");
+      const form = document.getElementById("doctorRegisterForm");
       const togglePass = document.getElementById("togglePassword");
       const toggleConfirm = document.getElementById("toggleConfirm");
       const passwordInput = document.getElementById("password");
@@ -30,6 +29,9 @@
         
         const name = document.getElementById("name").value.trim();
         const email = document.getElementById("email").value.trim();
+        const licenseNumber = document.getElementById("licenseNumber").value.trim();
+        const specialization = document.getElementById("specialization").value;
+        const phone = document.getElementById("phone").value.trim();
         const password = passwordInput.value;
         const confirm = confirmInput.value;
 
@@ -44,6 +46,18 @@
         }
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
           alert("❌ Please enter a valid email");
+          return;
+        }
+        if (!licenseNumber) {
+          alert("❌ Please enter your medical license number");
+          return;
+        }
+        if (!specialization) {
+          alert("❌ Please select your specialization");
+          return;
+        }
+        if (!phone) {
+          alert("❌ Please enter your phone number");
           return;
         }
         if (!password) {
@@ -62,22 +76,29 @@
         // Show loading state
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
-        submitBtn.textContent = "🔄 Creating account...";
+        submitBtn.textContent = "🔄 Registering...";
         submitBtn.disabled = true;
 
         // Send registration request to backend
-        fetch('/api/auth/register-patient', {
+        fetch('/api/auth/register-doctor', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ email, password, name })
+          body: JSON.stringify({ 
+            email, 
+            password, 
+            name,
+            licenseNumber,
+            specialization,
+            phone
+          })
         })
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            alert(`✅ ${data.message}\n\nYou can now login with your email and password.`);
-            window.location.href = 'login.html';
+            alert(`✅ ${data.message}\n\nYou can now login as a doctor.`);
+            window.location.href = 'doctor-login.html';
           } else {
             alert(`❌ ${data.error}`);
             submitBtn.textContent = originalText;
@@ -93,6 +114,15 @@
       });
     });
   </script>
+
+  <style>
+    .specialization-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: -5px;
+    }
+  </style>
 </head>
 <body>
 
@@ -100,49 +130,76 @@
 
   <!-- LEFT IMAGE PANEL -->
   <div class="left-panel">
-    <img src="images/near.jpg" alt="Healthcare">
+    <img src="images/premium.jpg" alt="Doctor">
 
     <div class="overlay-text">
-      <h1>Join Care Without Borders</h1>
-      <p>Start your journey towards better healthcare.</p>
+      <h1>🏥 Doctor Registration</h1>
+      <p>Join our network of healthcare professionals</p>
     </div>
   </div>
 
   <!-- RIGHT FORM PANEL -->
   <div class="right-panel">
-    <div class="auth-card">
-      <h2>Create Account</h2>
+    <div class="auth-card" style="max-height: 90vh; overflow-y: auto;">
+      <h2>Doctor Registration</h2>
 
-      <form id="registerForm">
+      <form id="doctorRegisterForm">
 
         <div class="floating-input">
-          <input type="text" id="name" required placeholder=" ">
+          <input type="text" id="name" required>
           <label>Full Name</label>
         </div>
 
         <div class="floating-input">
-          <input type="email" id="email" required placeholder=" ">
-          <label>Email</label>
+          <input type="email" id="email" required>
+          <label>Email Address</label>
+        </div>
+
+        <div class="floating-input">
+          <input type="text" id="licenseNumber" required>
+          <label>Medical License Number</label>
+        </div>
+
+        <div class="floating-input">
+          <select id="specialization" required>
+            <option value="">Select Specialization</option>
+            <option value="Cardiology">Cardiology</option>
+            <option value="Neurology">Neurology</option>
+            <option value="Orthopedics">Orthopedics</option>
+            <option value="Pediatrics">Pediatrics</option>
+            <option value="Psychiatry">Psychiatry</option>
+            <option value="Dermatology">Dermatology</option>
+            <option value="Dentistry">Dentistry</option>
+            <option value="General Practice">General Practice</option>
+            <option value="Surgery">Surgery</option>
+            <option value="Oncology">Oncology</option>
+          </select>
+          <label>Specialization</label>
+        </div>
+
+        <div class="floating-input">
+          <input type="tel" id="phone" required>
+          <label>Phone Number</label>
         </div>
 
         <div class="floating-input password-field">
-          <input type="password" id="password" required placeholder=" ">
+          <input type="password" id="password" required>
           <label>Password</label>
           <span id="togglePassword" style="cursor: pointer;">👁</span>
         </div>
 
         <div class="floating-input password-field">
-          <input type="password" id="confirmPassword" required placeholder=" ">
+          <input type="password" id="confirmPassword" required>
           <label>Confirm Password</label>
           <span id="toggleConfirm" style="cursor: pointer;">👁</span>
         </div>
 
-        <button type="submit" class="btn-solid large">Create Account</button>
+        <button type="submit" class="btn-solid large">Register as Doctor</button>
 
       </form>
 
       <p class="bottom-text">
-        Already have an account? <a href="login.html">Login</a> | <a href="index.html">Back to Home</a>
+        Already registered? <a href="doctor-login.html">Doctor Login</a> | <a href="index.html">Back to Home</a>
       </p>
 
     </div>

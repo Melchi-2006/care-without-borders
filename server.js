@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const razorpayRoutes = require('./api/razorpay');
 const emailService = require('./api/email-service');
+const authService = require('./api/auth-service');
 
 const app = express();
 
@@ -33,7 +34,132 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'Server is running', timestamp: new Date() });
 });
 
-// Razorpay routes
+// ============ AUTHENTICATION ROUTES ============
+
+// Register Doctor
+app.post('/api/auth/register-doctor', (req, res) => {
+  try {
+    const { email, password, licenseNumber, name, specialization, phone } = req.body;
+    
+    const result = authService.registerDoctor({
+      email,
+      password,
+      licenseNumber,
+      name,
+      specialization,
+      phone
+    });
+    
+    if (result.success) {
+      res.status(201).json(result);
+    } else {
+      res.status(400).json(result);
+    }
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ success: false, error: 'Registration failed' });
+  }
+});
+
+// Register Patient
+app.post('/api/auth/register-patient', (req, res) => {
+  try {
+    const { email, password, name, phone, age, gender } = req.body;
+    
+    const result = authService.registerPatient({
+      email,
+      password,
+      name,
+      phone,
+      age,
+      gender
+    });
+    
+    if (result.success) {
+      res.status(201).json(result);
+    } else {
+      res.status(400).json(result);
+    }
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ success: false, error: 'Registration failed' });
+  }
+});
+
+// Login Doctor
+app.post('/api/auth/login-doctor', (req, res) => {
+  try {
+    const { email, password, licenseNumber } = req.body;
+    
+    if (!email || !password || !licenseNumber) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Email, password, and license number are required' 
+      });
+    }
+    
+    const result = authService.loginDoctor(email, password, licenseNumber);
+    
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(401).json(result);
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ success: false, error: 'Login failed' });
+  }
+});
+
+// Login Patient
+app.post('/api/auth/login-patient', (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Email and password are required' 
+      });
+    }
+    
+    const result = authService.loginPatient(email, password);
+    
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(401).json(result);
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ success: false, error: 'Login failed' });
+  }
+});
+
+// Get current user
+app.get('/api/auth/user/:userType/:id', (req, res) => {
+  try {
+    const { userType, id } = req.params;
+    
+    let user = null;
+    if (userType === 'doctor') {
+      user = authService.getDoctorById(id);
+    } else if (userType === 'patient') {
+      user = authService.getPatientById(id);
+    }
+    
+    if (user) {
+      res.json({ success: true, user });
+    } else {
+      res.status(404).json({ success: false, error: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Get user error:', error);
+    res.status(500).json({ success: false, error: 'Error fetching user' });
+  }
+});
+
+// ============ RAZORPAY ROUTES ============
 app.use('/api', razorpayRoutes);
 
 // ============ EMAIL ROUTES ============

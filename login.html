@@ -6,8 +6,7 @@
   <link rel="stylesheet" href="style.css">
 
   <script>
-    // ==================== LOCAL PATIENT AUTHENTICATION ====================
-    // Simple authentication without Firebase dependency
+    // ==================== PATIENT LOGIN ====================
     
     window.addEventListener("DOMContentLoaded", () => {
       const form = document.getElementById("loginForm");
@@ -20,31 +19,7 @@
         passwordInput.type = passwordInput.type === "password" ? "text" : "password";
       });
 
-      // Demo patients for testing
-      const DEMO_PATIENTS = [
-        {
-          email: "patient@example.com",
-          password: "patient123",
-          name: "John Doe"
-        },
-        {
-          email: "alice@example.com",
-          password: "alice123",
-          name: "Alice Johnson"
-        },
-        {
-          email: "bob@example.com",
-          password: "bob123",
-          name: "Bob Williams"
-        }
-      ];
-
-      // Initialize demo credentials in localStorage if not exists
-      if (!localStorage.getItem('patientCredentials')) {
-        localStorage.setItem('patientCredentials', JSON.stringify(DEMO_PATIENTS));
-      }
-
-      // Email/Password Login
+      // Login handler
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         
@@ -60,58 +35,47 @@
           alert("❌ Please enter your password");
           return;
         }
+        if (password.length < 6) {
+          alert("❌ Password must be at least 6 characters");
+          return;
+        }
 
-        // Get stored credentials
-        const storedCredentials = JSON.parse(localStorage.getItem('patientCredentials') || '[]');
-        
-        // Find matching patient
-        const patient = storedCredentials.find(p => 
-          p.email === email && 
-          p.password === password
-        );
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "🔄 Logging in...";
+        submitBtn.disabled = true;
 
-        if (patient) {
-          // Login successful
-          localStorage.setItem('patientLoggedIn', 'true');
-          localStorage.setItem('patientEmail', email);
-          localStorage.setItem('patientName', patient.name);
-          
-          alert(`✅ Login Successful! Welcome ${patient.name}`);
-          window.location.href = "patient.html";
-        } else {
-          // Check what's wrong
-          const emailExists = storedCredentials.some(p => p.email === email);
-          
-          if (!emailExists) {
-            alert("❌ Email not registered. Would you like to create an account?");
+        // Send login request to backend
+        fetch('/api/auth/login-patient', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Save session data
+            localStorage.setItem('patientLoggedIn', 'true');
+            localStorage.setItem('patientToken', data.token.token);
+            localStorage.setItem('patientData', JSON.stringify(data.patient));
+            
+            alert(`✅ Welcome ${data.patient.name}!`);
+            window.location.href = 'patient.html';
           } else {
-            alert("❌ Incorrect password. Please try again.");
+            alert(`❌ ${data.error}`);
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
           }
-        }
-      });
-
-      // Show demo credentials
-      document.getElementById("demoCredentials").addEventListener("click", (e) => {
-        e.preventDefault();
-        const credentials = JSON.parse(localStorage.getItem('patientCredentials') || '[]');
-        let message = "📋 DEMO CREDENTIALS FOR TESTING:\n\n";
-        credentials.forEach((patient, idx) => {
-          message += `Patient ${idx + 1}:\n`;
-          message += `  Email: ${patient.email}\n`;
-          message += `  Password: ${patient.password}\n\n`;
+        })
+        .catch(error => {
+          console.error('Login error:', error);
+          alert('❌ Login failed. Please try again.');
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
         });
-        alert(message);
-      });
-
-      // Quick fill with first demo account
-      document.getElementById("useDemoAccount").addEventListener("click", (e) => {
-        e.preventDefault();
-        const credentials = JSON.parse(localStorage.getItem('patientCredentials') || '[]');
-        if (credentials.length > 0) {
-          emailInput.value = credentials[0].email;
-          passwordInput.value = credentials[0].password;
-          alert("✅ Demo credentials filled! Click Login to proceed.");
-        }
       });
     });
   </script>
@@ -153,21 +117,11 @@
 
         <button type="submit" class="btn-solid large">Login</button>
 
-        <div class="divider">TESTING</div>
-
-        <button type="button" id="useDemoAccount" class="btn-outline" style="width: 100%; margin-bottom: 10px; padding: 12px; background: #e8f5e9; color: #2e7d32; border: 2px solid #2e7d32; border-radius: 8px; cursor: pointer; font-weight: 600;">
-          ✅ Fill Demo Credentials
-        </button>
-
-        <button type="button" id="demoCredentials" class="btn-outline" style="width: 100%; padding: 12px; background: #e3f2fd; color: #1876d2; border: 2px solid #1876d2; border-radius: 8px; cursor: pointer; font-weight: 600;">
-          📋 Show All Demo Accounts
-        </button>
-
       </form>
 
-      <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin-top: 15px; font-size: 13px; color: #856404;">
-        <strong>💡 Demo Mode:</strong> Use the button above to fill demo credentials for testing. For production, edit localStorage 'patientCredentials' with your own secure credentials.
-      </div>
+      <p class="bottom-text">
+        Don't have an account? <a href="register.html">Create Account</a> | <a href="index.html">Back to Home</a>
+      </p>
     </div>
 
   </div>

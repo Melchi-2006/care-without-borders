@@ -6,8 +6,7 @@
   <link rel="stylesheet" href="style.css">
 
   <script>
-    // ==================== LOCAL DOCTOR AUTHENTICATION ====================
-    // Simple authentication without Firebase dependency
+    // ==================== DOCTOR LOGIN ====================
     
     window.addEventListener("DOMContentLoaded", () => {
       const form = document.getElementById("doctorLoginForm");
@@ -21,34 +20,7 @@
         passwordInput.type = passwordInput.type === "password" ? "text" : "password";
       });
 
-      // Demo credentials for testing
-      const DEMO_DOCTORS = [
-        {
-          email: "doctor@example.com",
-          password: "doctor123",
-          licenseNumber: "MCI2024001",
-          name: "Dr. Smith"
-        },
-        {
-          email: "dr.sharma@example.com",
-          password: "sharma123",
-          licenseNumber: "MCI2024002",
-          name: "Dr. Sharma"
-        },
-        {
-          email: "dr.patel@example.com",
-          password: "patel123",
-          licenseNumber: "MCI2024003",
-          name: "Dr. Patel"
-        }
-      ];
-
-      // Initialize demo credentials in localStorage if not exists
-      if (!localStorage.getItem('doctorCredentials')) {
-        localStorage.setItem('doctorCredentials', JSON.stringify(DEMO_DOCTORS));
-      }
-
-      // Email/Password Login
+      // Login handler
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         
@@ -65,71 +37,51 @@
           alert("❌ Please enter your password");
           return;
         }
+        if (password.length < 6) {
+          alert("❌ Password must be at least 6 characters");
+          return;
+        }
         if (!licenseNumber) {
           alert("❌ Please enter your medical license number");
           return;
         }
 
-        // Get stored credentials
-        const storedCredentials = JSON.parse(localStorage.getItem('doctorCredentials') || '[]');
-        
-        // Find matching doctor
-        const doctor = storedCredentials.find(d => 
-          d.email === email && 
-          d.password === password && 
-          d.licenseNumber === licenseNumber
-        );
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "🔄 Logging in...";
+        submitBtn.disabled = true;
 
-        if (doctor) {
-          // Login successful
-          localStorage.setItem('doctorLoggedIn', 'true');
-          localStorage.setItem('doctorEmail', email);
-          localStorage.setItem('doctorName', doctor.name);
-          localStorage.setItem('doctorLicense', licenseNumber);
-          
-          alert(`✅ Login Successful! Welcome ${doctor.name}`);
-          window.location.href = "doctor.html";
-        } else {
-          // Check what's wrong
-          const emailExists = storedCredentials.some(d => d.email === email);
-          
-          if (!emailExists) {
-            alert("❌ Email not registered. Please check or create an account.");
+        // Send login request to backend
+        fetch('/api/auth/login-doctor', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password, licenseNumber })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Save session data
+            localStorage.setItem('doctorLoggedIn', 'true');
+            localStorage.setItem('doctorToken', data.token.token);
+            localStorage.setItem('doctorData', JSON.stringify(data.doctor));
+            
+            alert(`✅ Welcome ${data.doctor.name}!`);
+            window.location.href = 'doctor.html';
           } else {
-            const docWithEmail = storedCredentials.find(d => d.email === email);
-            if (docWithEmail.password !== password) {
-              alert("❌ Incorrect password. Please try again.");
-            } else if (docWithEmail.licenseNumber !== licenseNumber) {
-              alert("❌ Medical license number does not match. Please verify.");
-            }
+            alert(`❌ ${data.error}`);
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
           }
-        }
-      });
-
-      // Show demo credentials
-      document.getElementById("demoCredentials").addEventListener("click", (e) => {
-        e.preventDefault();
-        const credentials = JSON.parse(localStorage.getItem('doctorCredentials') || '[]');
-        let message = "📋 DEMO CREDENTIALS FOR TESTING:\n\n";
-        credentials.forEach((doc, idx) => {
-          message += `Doctor ${idx + 1}:\n`;
-          message += `  Email: ${doc.email}\n`;
-          message += `  Password: ${doc.password}\n`;
-          message += `  License: ${doc.licenseNumber}\n\n`;
+        })
+        .catch(error => {
+          console.error('Login error:', error);
+          alert('❌ Login failed. Please try again.');
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
         });
-        alert(message);
-      });
-
-      // Quick fill with first demo account
-      document.getElementById("useDemoAccount").addEventListener("click", (e) => {
-        e.preventDefault();
-        const credentials = JSON.parse(localStorage.getItem('doctorCredentials') || '[]');
-        if (credentials.length > 0) {
-          emailInput.value = credentials[0].email;
-          licenseInput.value = credentials[0].licenseNumber;
-          passwordInput.value = credentials[0].password;
-          alert("✅ Demo credentials filled! Click Login to proceed.");
-        }
       });
     });
   </script>
@@ -177,24 +129,14 @@
 
         <button type="submit" class="btn-solid large">Login</button>
 
-        <div class="divider">TESTING</div>
-
-        <button type="button" id="useDemoAccount" class="btn-outline" style="width: 100%; margin-bottom: 10px; padding: 12px; background: #e8f5e9; color: #2e7d32; border: 2px solid #2e7d32; border-radius: 8px; cursor: pointer; font-weight: 600;">
-          ✅ Fill Demo Credentials
-        </button>
-
-        <button type="button" id="demoCredentials" class="btn-outline" style="width: 100%; padding: 12px; background: #e3f2fd; color: #1876d2; border: 2px solid #1876d2; border-radius: 8px; cursor: pointer; font-weight: 600;">
-          📋 Show All Demo Accounts
-        </button>
-
       </form>
 
-      <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin-top: 15px; font-size: 13px; color: #856404;">
-        <strong>💡 Demo Mode:</strong> Use the button above to fill demo credentials for testing. For production, edit localStorage 'doctorCredentials' with your own secure credentials.
-      </div>
+      <p class="bottom-text">
+        Don't have an account? <a href="doctor-register.html">Doctor Registration</a>
+      </p>
 
       <p class="bottom-text">
-        <a href="login.html">Patient Login</a> | <a href="index.html">Back to Home</a>
+        <a href="index.html">Back to Home</a> | <a href="login.html">Patient Login</a>
       </p>
     </div>
 
