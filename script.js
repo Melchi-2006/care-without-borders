@@ -31,31 +31,35 @@ function revealOnScroll() {
   });
 }
 
-window.addEventListener("scroll", revealOnScroll);
-revealOnScroll();
+if (reveals.length > 0) {
+  window.addEventListener("scroll", revealOnScroll);
+  revealOnScroll();
+}
 
 // COUNTER ANIMATION
 const counters = document.querySelectorAll(".counter");
 
-counters.forEach(counter => {
-  counter.innerText = "0";
+if (counters.length > 0) {
+  counters.forEach(counter => {
+    counter.innerText = "0";
 
-  const updateCounter = () => {
-    const target = +counter.getAttribute("data-target");
-    const current = +counter.innerText;
+    const updateCounter = () => {
+      const target = +counter.getAttribute("data-target");
+      const current = +counter.innerText;
 
-    const increment = target / 100;
+      const increment = target / 100;
 
-    if (current < target) {
-      counter.innerText = Math.ceil(current + increment);
-      setTimeout(updateCounter, 20);
-    } else {
-      counter.innerText = target.toLocaleString() + "+";
-    }
-  };
+      if (current < target) {
+        counter.innerText = Math.ceil(current + increment);
+        setTimeout(updateCounter, 20);
+      } else {
+        counter.innerText = target.toLocaleString() + "+";
+      }
+    };
 
-  updateCounter();
-});
+    updateCounter();
+  });
+}
 // FADE IN ON LOAD
 window.addEventListener("load", () => {
   document.body.classList.add("fade-in");
@@ -64,30 +68,38 @@ window.addEventListener("load", () => {
 const testimonials = document.querySelectorAll(".testimonial");
 let currentTestimonial = 0;
 
-setInterval(() => {
-  testimonials[currentTestimonial].classList.remove("active");
-  currentTestimonial = (currentTestimonial + 1) % testimonials.length;
-  testimonials[currentTestimonial].classList.add("active");
-}, 4000);
+if (testimonials.length > 0) {
+  setInterval(() => {
+    if (testimonials[currentTestimonial]) {
+      testimonials[currentTestimonial].classList.remove("active");
+    }
+    currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+    if (testimonials[currentTestimonial]) {
+      testimonials[currentTestimonial].classList.add("active");
+    }
+  }, 4000);
+}
 function toggleDarkMode() {
   document.body.classList.toggle("dark");
 }
 // MAGNETIC BUTTON EFFECT
 const buttons = document.querySelectorAll(".btn-solid, .btn-outline");
 
-buttons.forEach(btn => {
-  btn.addEventListener("mousemove", (e) => {
-    const rect = btn.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
+if (buttons.length > 0) {
+  buttons.forEach(btn => {
+    btn.addEventListener("mousemove", (e) => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
 
-    btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
-  });
+      btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+    });
 
-  btn.addEventListener("mouseleave", () => {
-    btn.style.transform = "translate(0, 0)";
+    btn.addEventListener("mouseleave", () => {
+      btn.style.transform = "translate(0, 0)";
+    });
   });
-});
+}
 
 // Note: Firebase is initialized on individual pages (index.html, login.html, admin.html, etc.)
 // Not globally here to avoid conflicts
