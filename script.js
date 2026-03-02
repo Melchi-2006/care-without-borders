@@ -88,17 +88,11 @@ buttons.forEach(btn => {
     btn.style.transform = "translate(0, 0)";
   });
 });
-// 🔥 FIREBASE CONFIG (REPLACE WITH YOURS)
-const firebaseConfig = {
-  apiKey: "AIzaSyBMHhwzdjBEr9GaMNnhxugg0K71WrPN0n4",
-  authDomain: "care-without-borders-789dd.firebaseapp.com",
-  projectId: "care-without-borders-789dd",
-};
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+// Note: Firebase is initialized on individual pages (index.html, login.html, admin.html, etc.)
+// Not globally here to avoid conflicts
 
-// PASSWORD SHOW / HIDE
+// PASSWORD SHOW / HIDE - Only runs if elements exist
 const toggle = document.getElementById("togglePassword");
 const passwordInput = document.getElementById("password");
 
@@ -109,7 +103,7 @@ if (toggle && passwordInput) {
   });
 }
 
-// FORM VALIDATION + LOGIN
+// FORM VALIDATION + LOGIN - Only runs if form exists
 const form = document.getElementById("loginForm");
 
 if (form) {
@@ -119,35 +113,19 @@ if (form) {
     const email = document.getElementById("email");
     const password = document.getElementById("password");
 
-    if (!email.value.includes("@")) {
-      email.classList.add("invalid");
-      return;
+    if (email && password) {
+      if (!email.value.includes("@")) {
+        email.classList.add("invalid");
+        return;
+      }
+
+      if (password.value.length < 6) {
+        password.classList.add("invalid");
+        return;
+      }
+
+      // Firebase auth will be handled by login.html's own script
+      alert("Use the modular Firebase setup on login.html");
     }
-
-    if (password.value.length < 6) {
-      password.classList.add("invalid");
-      return;
-    }
-
-    auth.signInWithEmailAndPassword(email.value, password.value)
-      .then(() => {
-        alert("Login Successful!");
-        window.location.href = "dashboard.html";
-      })
-      .catch(error => alert(error.message));
-  });
-}
-
-// GOOGLE LOGIN
-const googleLoginBtn = document.getElementById("googleLogin");
-if (googleLoginBtn) {
-  googleLoginBtn.addEventListener("click", () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-
-    auth.signInWithPopup(provider)
-      .then(() => {
-        window.location.href = "dashboard.html";
-      })
-      .catch(error => alert(error.message));
   });
 }
