@@ -5,6 +5,11 @@
   <title>Admin Dashboard - Care Without Borders</title>
   <link rel="stylesheet" href="style.css">
   
+  <script>
+    console.log("🔧 Admin.html is loading - Page started");
+    console.log("Current URL:", window.location.href);
+  </script>
+  
   <!-- Firebase v10 Modular SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -37,23 +42,32 @@
     // Set up auth state listener IMMEDIATELY (outside DOMContentLoaded)
     // This runs continuously to check if user is logged in
     onAuthStateChanged(auth, (user) => {
+      console.log("🔧 onAuthStateChanged triggered. Firebase user:", user ? user.email : "None");
+      
       // Check if admin is logged in via hardcoded credentials (stored in localStorage)
       const isAdminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
+      console.log("🔧 isAdminLoggedIn from localStorage:", isAdminLoggedIn);
       
       const loginSection = document.getElementById("loginSection");
       const adminPanel = document.getElementById("adminPanel");
+      
+      console.log("🔧 Elements found - loginSection:", !!loginSection, "adminPanel:", !!adminPanel);
       
       // Only update if elements exist
       if (loginSection && adminPanel) {
         if (isAdminLoggedIn) {
           // User is logged in as admin - show admin panel
+          console.log("🔧 Showing admin panel");
           loginSection.style.display = "none";
           adminPanel.style.display = "flex";
         } else {
           // User is NOT logged in as admin - show admin login form
+          console.log("🔧 Showing login section");
           loginSection.style.display = "flex";
           adminPanel.style.display = "none";
         }
+      } else {
+        console.log("🔧 ERROR: Elements not found in DOM");
       }
     });
 
