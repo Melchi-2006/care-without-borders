@@ -716,6 +716,10 @@
               <input type="email" id="docEmail" placeholder="Doctor Email" required>
             </div>
             <div class="form-group">
+              <label>Medical License Number</label>
+              <input type="text" id="docLicense" placeholder="Medical License Number" required>
+            </div>
+            <div class="form-group">
               <label>Password</label>
               <input type="password" id="docPassword" placeholder="Password" required>
             </div>
@@ -878,8 +882,10 @@
       const name = document.getElementById('docName').value;
       const email = document.getElementById('docEmail').value;
       const specialization = document.getElementById('docSpecialization').value;
+      const licenseNumber = document.getElementById('docLicense').value;
+      const password = document.getElementById('docPassword').value;
       
-      alert(`Doctor added: ${name} (${specialization})`);
+      alert(`Doctor added: ${name} (${specialization})\nLicense: ${licenseNumber}\nEmail: ${email}`);
       
       // Reset form
       event.target.reset();
