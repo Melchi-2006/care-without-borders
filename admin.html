@@ -37,21 +37,20 @@
     // Set up auth state listener IMMEDIATELY (outside DOMContentLoaded)
     // This runs continuously to check if user is logged in
     onAuthStateChanged(auth, (user) => {
-      // Only process if admin is not already logged in via localStorage
+      // Check if admin is logged in via hardcoded credentials (stored in localStorage)
       const isAdminLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
-      if (isAdminLoggedIn) return; // Don't redirect admin users
       
       const loginSection = document.getElementById("loginSection");
       const adminPanel = document.getElementById("adminPanel");
       
       // Only update if elements exist
       if (loginSection && adminPanel) {
-        if (user) {
-          // User is logged in - show admin panel
+        if (isAdminLoggedIn) {
+          // User is logged in as admin - show admin panel
           loginSection.style.display = "none";
           adminPanel.style.display = "flex";
         } else {
-          // User is not logged in - show login form
+          // User is NOT logged in as admin - show admin login form
           loginSection.style.display = "flex";
           adminPanel.style.display = "none";
         }
@@ -192,7 +191,7 @@
   <style>
     /* Login Section Styles */
     #loginSection {
-      display: none;
+      display: flex;
       position: fixed;
       top: 0;
       left: 0;
