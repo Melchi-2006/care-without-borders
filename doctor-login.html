@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Doctor Login | Care Without Borders</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase v10 Modular SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword,
+      GoogleAuthProvider, 
+      signInWithPopup 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMHhwzdjBEr9GaMNnhxugg0K71WrPN0n4",
+      authDomain: "care-without-borders-789dd.firebaseapp.com",
+      projectId: "care-without-borders-789dd",
+      storageBucket: "care-without-borders-789dd.firebasestorage.app",
+      messagingSenderId: "736136702535",
+      appId: "1:736136702535:web:c862ef87108bd027bb9f62",
+      measurementId: "G-9PLWT8WHC3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // DOCTOR LOGIN FORM
+    window.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("doctorLoginForm");
+      const togglePass = document.getElementById("togglePassword");
+      const passwordInput = document.getElementById("password");
+      const emailInput = document.getElementById("email");
+      const licenseInput = document.getElementById("licenseNumber");
+
+      // Password toggle
+      togglePass.addEventListener("click", () => {
+        passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+      });
+
+      // Email/Password Login
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        const licenseNumber = licenseInput.value.trim();
+
+        // Validation
+        if (!email) {
+          alert("Please enter your email");
+          return;
+        }
+        if (!password) {
+          alert("Please enter your password");
+          return;
+        }
+        if (!licenseNumber) {
+          alert("Please enter your medical license number");
+          return;
+        }
+
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            // Verify doctor role and license
+            const user = userCredential.user;
+            const doctorRef = ref(db, 'doctors/' + user.uid);
+            
+            get(doctorRef)
+              .then((snapshot) => {
+                if (snapshot.exists()) {
+                  const doctorData = snapshot.val();
+                  
+                  // Verify license number
+                  if (doctorData.licenseNumber === licenseNumber) {
+                    alert("Login Successful! Welcome Dr. " + (doctorData.name || email));
+                    // Redirect to doctor dashboard
+                    window.location.href = "doctor.html";
+                  } else {
+                    alert("Incorrect medical license number. Please verify and try again.");
+                  }
+                } else {
+                  alert("You are not registered as a doctor. Please register first.");
+                }
+              })
+              .catch((error) => {
+                console.error("Database Error:", error);
+                alert("Error verifying doctor credentials. Please try again.");
+              });
+          })
+          .catch(error => {
+            console.error("Login Error:", error);
+            let message = "Login failed. ";
+            
+            if (error.code === "auth/invalid-credential") {
+              message += "Email or password is incorrect. Please check your credentials.";
+            } else if (error.code === "auth/user-not-found") {
+              message += "This email is not registered. Please sign up first.";
+            } else if (error.code === "auth/wrong-password") {
+              message += "Incorrect password. Please try again.";
+            } else if (error.code === "auth/invalid-email") {
+              message += "Invalid email format.";
+            } else {
+              message += error.message;
+            }
+            
+            alert(message);
+          });
+      });
+
+      // Google Login for Doctors
+      document.getElementById("googleLogin").addEventListener("click", (e) => {
+        e.preventDefault();
+        
+        const btn = document.getElementById("googleLogin");
+        btn.disabled = true;
+        btn.textContent = "🔍 Logging in...";
+        
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ 'prompt': 'select_account' });
+        
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            console.log("Google Login Success:", result.user.email);
+            
+            // Verify doctor role
+            const user = result.user;
+            const doctorRef = ref(db, 'doctors/' + user.uid);
+            
+            get(doctorRef)
+              .then((snapshot) => {
+                if (snapshot.exists()) {
+                  alert("Login Successful! Welcome Dr. " + (snapshot.val().name || user.email));
+                  window.location.href = "doctor.html";
+                } else {
+                  alert("You are not registered as a doctor. Please register first.");
+                  btn.disabled = false;
+                  btn.textContent = "🔍 Login with Google";
+                }
+              })
+              .catch((error) => {
+                console.error("Database Error:", error);
+                alert("Error verifying doctor credentials.");
+                btn.disabled = false;
+                btn.textContent = "🔍 Login with Google";
+              });
+          })
+          .catch((error) => {
+            console.error("Google Sign-In Error:", error);
+            alert("Failed to login with Google: " + error.message);
+            btn.disabled = false;
+            btn.textContent = "🔍 Login with Google";
+          });
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="bg-blur bg1"></div>
+  <div class="bg-blur bg2"></div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="logo">❤️ Care Without Borders</div>
+    <div class="nav-buttons">
+      <button class="btn-outline" onclick="goHome()">Home</button>
+      <button class="btn-outline" onclick="goLogin()">Patient Login</button>
+      <button class="btn-outline" onclick="goadmin()">Admin</button>
+    </div>
+  </nav>
+
+  <!-- DOCTOR LOGIN SECTION -->
+  <section class="auth-container reveal">
+    <div class="auth-box">
+      <h1>🏥 Doctor Login</h1>
+      <p>Access your medical dashboard</p>
+
+      <!-- Doctor Login Form -->
+      <form id="doctorLoginForm">
+        <div class="form-group">
+          <label for="email">Email Address *</label>
+          <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="licenseNumber">Medical License Number *</label>
+          <input type="text" id="licenseNumber" placeholder="Enter your medical license number" required>
+        </div>
+
+        <div class="form-group password-group">
+          <label for="password">Password *</label>
+          <div class="password-wrapper">
+            <input type="password" id="password" placeholder="Enter your password" required>
+            <button type="button" id="togglePassword" class="toggle-password">👁️</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-solid full-width">Login</button>
+      </form>
+
+      <!-- Google Login -->
+      <div class="divider">
+        <span>OR</span>
+      </div>
+
+      <button id="googleLogin" class="btn-google">
+        🔍 Login with Google
+      </button>
+
+      <!-- Links -->
+      <div class="auth-links">
+        <p>Not registered yet? <a href="doctor-register.html">Register as Doctor</a></p>
+        <p><a href="login.html">Patient Login</a></p>
+        <p><a href="index.html">Back to Home</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Care Without Borders. Healthcare for Everyone.</p>
+  </footer>
+
+  <script>
+    function goHome() {
+      window.location.href = "index.html";
+    }
+
+    function goLogin() {
+      window.location.href = "login.html";
+    }
+
+    function goadmin() {
+      window.location.href = "admin.html";
+    }
+  </script>
+</body>
+</html>

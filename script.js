@@ -9,6 +9,11 @@ function goRegister() {
 function goadmin() {
   window.location.href = "admin.html";
 }
+
+function goDoctorLogin() {
+  window.location.href = "doctor-login.html";
+}
+
 // SCROLL REVEAL
 const reveals = document.querySelectorAll(".reveal");
 
