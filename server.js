@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const razorpayRoutes = require('./api/razorpay');
+const emailService = require('./api/email-service');
 
 const app = express();
 
@@ -34,6 +35,120 @@ app.get('/api/health', (req, res) => {
 
 // Razorpay routes
 app.use('/api', razorpayRoutes);
+
+// ============ EMAIL ROUTES ============
+
+// Send prescription email
+app.post('/api/send-prescription-email', async (req, res) => {
+  try {
+    const { to, subject, htmlContent } = req.body;
+    
+    // Validate request
+    if (!to || !subject || !htmlContent) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: to, subject, htmlContent'
+      });
+    }
+    
+    // Send email
+    const result = await emailService.sendPrescriptionEmail(to, subject, htmlContent);
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Prescription sent successfully',
+        messageId: result.messageId,
+        timestamp: result.timestamp
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Email send error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Send appointment reminder
+app.post('/api/send-appointment-reminder', async (req, res) => {
+  try {
+    const { to, appointmentData } = req.body;
+    
+    if (!to || !appointmentData) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: to, appointmentData'
+      });
+    }
+    
+    const result = await emailService.sendAppointmentReminder(to, appointmentData);
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Reminder sent successfully',
+        timestamp: result.timestamp
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Reminder send error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Test email configuration
+app.get('/api/test-email', async (req, res) => {
+  try {
+    const result = await emailService.sendTestEmail();
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Validate email
+app.post('/api/validate-email', (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email is required'
+      });
+    }
+    
+    const isValid = emailService.isValidEmail(email);
+    res.json({
+      success: true,
+      email,
+      isValid
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
 
 // Serve HTML files
 app.get('/', (req, res) => {

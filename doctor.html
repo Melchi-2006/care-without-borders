@@ -474,6 +474,187 @@
       color: #842029;
       cursor: not-allowed;
     }
+
+    /* Prescription Tab Styles */
+    .call-interface-container {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .video-container {
+      flex: 1;
+    }
+
+    .prescription-panel {
+      width: 350px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      max-height: 600px;
+      border: 2px solid #0f766e;
+    }
+
+    .prescription-header {
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: white;
+      padding: 15px;
+      border-radius: 10px 10px 0 0;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .prescription-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+
+    .prescription-form-group {
+      margin-bottom: 12px;
+    }
+
+    .prescription-form-group label {
+      display: block;
+      color: #0f766e;
+      font-weight: 600;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .prescription-form-group input,
+    .prescription-form-group textarea,
+    .prescription-form-group select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    .prescription-form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .prescription-form-group input:focus,
+    .prescription-form-group textarea:focus,
+    .prescription-form-group select:focus {
+      outline: none;
+      border-color: #0f766e;
+      box-shadow: 0 0 0 3px rgba(15,118,110,0.1);
+    }
+
+    .prescription-actions {
+      display: flex;
+      gap: 10px;
+      padding: 15px;
+      border-top: 1px solid #eee;
+      background: #f9f9f9;
+    }
+
+    .btn-send-prescription {
+      flex: 1;
+      background: #0f766e;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-send-prescription:hover {
+      background: #0d5c56;
+    }
+
+    .btn-save-eehr {
+      flex: 1;
+      background: #6c99a3;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-save-eehr:hover {
+      background: #5a8190;
+    }
+
+    .call-status {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .call-status.active::before {
+      content: "●";
+      color: #4caf50;
+      font-size: 14px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .prescription-field {
+      background: #f5f5f5;
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .medicine-suggestion {
+      background: #e0f2f1;
+      padding: 8px;
+      border-left: 3px solid #0f766e;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #0f766e;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 5px;
+    }
+
+    .medicine-suggestion:hover {
+      background: #0f766e;
+      color: white;
+    }
+
+    @media (max-width: 1024px) {
+      .call-interface-container {
+        flex-direction: column;
+      }
+
+      .prescription-panel {
+        width: 100%;
+        max-height: 400px;
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -588,11 +769,72 @@
       <h2>📹 Video Consultation</h2>
       <p style="color: #666; font-size: 14px;">Start a consultation with patient</p>
       <div class="form-group">
+        <label>Patient Email (for prescription)</label>
+        <input type="email" id="consultationPatientEmail" placeholder="patient@example.com">
+      </div>
+      <div class="form-group">
         <label>Consultation Room</label>
         <input type="text" id="roomName" placeholder="e.g., Doctor-001-Consultation">
       </div>
       <button class="btn-primary" onclick="startCall()" style="width: 100%;">Start Video Call</button>
-      <div id="jitsiContainer" style="margin-top: 15px;"></div>
+      
+      <!-- Call Interface with Prescription Panel -->
+      <div id="callInterface" class="hidden" style="margin-top: 20px;">
+        <div class="call-interface-container">
+          <div class="video-container">
+            <div id="jitsiContainer" style="border-radius: 12px; overflow: hidden; background: #000; min-height: 400px;"></div>
+          </div>
+          
+          <!-- Prescription Panel -->
+          <div class="prescription-panel">
+            <div class="prescription-header">
+              <span>📋 Prescription</span>
+              <button class="btn-secondary" onclick="closeCallInterface()" style="background: rgba(255,255,255,0.3); border: none; color: white; padding: 5px 10px; cursor: pointer;">✕</button>
+            </div>
+            
+            <div class="prescription-content">
+              <div class="call-status active">Live Consultation Active</div>
+              
+              <form id="prescriptionForm">
+                <div class="prescription-form-group">
+                  <label>Patient Name</label>
+                  <input type="text" id="prescriptionPatientName" placeholder="Patient Name" readonly>
+                </div>
+                
+                <div class="prescription-form-group">
+                  <label>Diagnosis</label>
+                  <input type="text" id="prescriptionDiagnosis" placeholder="e.g., Hypertension" required>
+                </div>
+                
+                <div class="prescription-form-group">
+                  <label>Prescription</label>
+                  <textarea id="prescriptionDetails" placeholder="Enter medicine name, dosage, frequency and duration...&#10;Example:&#10;1. Paracetamol 500mg - 2 tablets twice daily for 5 days&#10;2. Amoxicillin 250mg - 1 tablet thrice daily for 7 days" required></textarea>
+                </div>
+
+                <div class="prescription-form-group">
+                  <label>Quick Medicines (Click to add)</label>
+                  <div id="medicineQuickAdd"></div>
+                </div>
+                
+                <div class="prescription-form-group">
+                  <label>Follow-up Date</label>
+                  <input type="date" id="prescriptionFollowUpDate">
+                </div>
+                
+                <div class="prescription-form-group">
+                  <label>Additional Notes</label>
+                  <textarea id="prescriptionNotes" placeholder="Diet, lifestyle advice, precautions, etc."></textarea>
+                </div>
+              </form>
+            </div>
+            
+            <div class="prescription-actions">
+              <button class="btn-send-prescription" onclick="sendPrescriptionEmail()">📧 Send Email</button>
+              <button class="btn-save-eehr" onclick="savePrescriptionToEHR()">💾 Save to EHR</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Patient Records -->
@@ -1015,6 +1257,264 @@
       window.location.href = 'login.html';
     }
   }
+
+  // ==================== PRESCRIPTION FUNCTIONS ====================
+
+  // Load quick medicine suggestions
+  function loadMedicineSuggestions() {
+    const medicines = [
+      'Paracetamol 500mg',
+      'Ibuprofen 400mg',
+      'Amoxicillin 250mg',
+      'Aspirin 75mg',
+      'Metformin 500mg',
+      'Lisinopril 10mg',
+      'Atorvastatin 20mg',
+      'Omeprazole 20mg'
+    ];
+    
+    const container = document.getElementById('medicineQuickAdd');
+    container.innerHTML = '';
+    medicines.forEach(medicine => {
+      const pill = document.createElement('div');
+      pill.className = 'medicine-suggestion';
+      pill.textContent = medicine;
+      pill.onclick = () => addToPrescrition(medicine);
+      container.appendChild(pill);
+    });
+  }
+
+  // Add medicine to prescription
+  function addToPrescrition(medicine) {
+    const prescriptionField = document.getElementById('prescriptionDetails');
+    const current = prescriptionField.value.trim();
+    const dosagePrompt = prompt(`Enter dosage for ${medicine}:\nExample: 2 tablets twice daily for 5 days`);
+    
+    if (dosagePrompt) {
+      const line = `${medicine} - ${dosagePrompt}`;
+      prescriptionField.value = current ? current + '\n' + line : line;
+    }
+  }
+
+  // Start video call and show prescription panel
+  function startCall() {
+    const patientEmail = document.getElementById('consultationPatientEmail').value;
+    const roomName = document.getElementById('roomName').value || 'doctor-patient-' + Date.now();
+    
+    if (!patientEmail) {
+      alert('⚠️ Please enter patient email address to send prescription');
+      return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(patientEmail)) {
+      alert('⚠️ Please enter a valid email address');
+      return;
+    }
+    
+    // Store current patient email
+    localStorage.setItem('currentConsultationEmail', patientEmail);
+    
+    // Get patient name if available
+    const patientName = prompt('Enter patient name:') || 'Patient';
+    document.getElementById('prescriptionPatientName').value = patientName;
+    
+    // Show call interface
+    document.getElementById('callInterface').classList.remove('hidden');
+    
+    // Load medicine suggestions
+    loadMedicineSuggestions();
+    
+    // Initialize Jitsi Meet
+    const options = {
+      roomName: roomName,
+      width: '100%',
+      height: 400,
+      parentNode: document.getElementById('jitsiContainer'),
+      configOverwrite: {
+        prejoinPageEnabled: false,
+        startWithAudioMuted: false,
+        startWithVideoMuted: false
+      },
+      interfaceConfigOverwrite: {
+        TOOLBAR_BUTTONS: ['microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen', 'fodeviceselection', 'hangup', 'profile', 'chat', 'recording', 'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand', 'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts', 'tileview', 'toggle_filmstrip', 'download', 'help', 'mute-everyone', 'e2ee', 'security']
+      }
+    };
+    
+    const api = new JitsiMeetExternalAPI('meet.jit.si', options);
+    
+    api.addEventListener('videoConferenceLeft', () => {
+      closeCallInterface();
+    });
+  }
+
+  // Close call interface
+  function closeCallInterface() {
+    document.getElementById('callInterface').classList.add('hidden');
+    document.getElementById('jitsiContainer').innerHTML = '';
+    localStorage.removeItem('currentConsultationEmail');
+  }
+
+  // Send prescription via email
+  function sendPrescriptionEmail() {
+    const patientEmail = localStorage.getItem('currentConsultationEmail') || document.getElementById('consultationPatientEmail').value;
+    const patientName = document.getElementById('prescriptionPatientName').value;
+    const diagnosis = document.getElementById('prescriptionDiagnosis').value;
+    const prescription = document.getElementById('prescriptionDetails').value;
+    const followUpDate = document.getElementById('prescriptionFollowUpDate').value;
+    const notes = document.getElementById('prescriptionNotes').value;
+    
+    if (!patientEmail) {
+      alert('⚠️ Patient email is required');
+      return;
+    }
+    
+    if (!diagnosis || !prescription) {
+      alert('⚠️ Please fill in diagnosis and prescription details');
+      return;
+    }
+    
+    // Get doctor profile
+    const doctorProfile = JSON.parse(localStorage.getItem('doctorProfile') || '{}');
+    const doctorName = doctorProfile.name || 'Dr. Smith';
+    const doctorEmail = doctorProfile.email || 'doctor@example.com';
+    
+    // Prepare email content
+    const emailContent = `
+    <html>
+      <body style="font-family: Arial, sans-serif; color: #333;">
+        <div style="background: #0f766e; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+          <h2>📋 Medical Prescription</h2>
+        </div>
+        
+        <div style="padding: 20px; background: #f9f9f9;">
+          <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+          
+          <div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #0f766e;">
+            <p><strong>Dear ${patientName},</strong></p>
+            <p>Your consultation prescription from <strong>${doctorName}</strong> is ready below.</p>
+          </div>
+          
+          <div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px;">
+            <h3 style="color: #0f766e; border-bottom: 2px solid #0f766e; padding-bottom: 10px;">Diagnosis</h3>
+            <p style="font-size: 16px;"><strong>${diagnosis}</strong></p>
+          </div>
+          
+          <div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px;">
+            <h3 style="color: #0f766e; border-bottom: 2px solid #0f766e; padding-bottom: 10px;">Prescription</h3>
+            <pre style="background: #f5f5f5; padding: 10px; border-radius: 6px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;">${prescription}</pre>
+          </div>
+          
+          ${followUpDate ? `<div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px;">
+            <h3 style="color: #0f766e;">Follow-up Date</h3>
+            <p><strong>${new Date(followUpDate).toLocaleDateString()}</strong></p>
+          </div>` : ''}
+          
+          ${notes ? `<div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px;">
+            <h3 style="color: #0f766e; border-bottom: 2px solid #0f766e; padding-bottom: 10px;">Additional Notes</h3>
+            <p>${notes.replace(/\n/g, '<br>')}</p>
+          </div>` : ''}
+          
+          <div style="background: #e8f5e9; padding: 15px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #4caf50;">
+            <p><strong>Important:</strong> Please take your medicines as prescribed. If symptoms persist or worsen, contact your doctor immediately.</p>
+          </div>
+          
+          <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
+            <p><strong>Doctor Details:</strong></p>
+            <p>Name: ${doctorName}<br>Email: ${doctorEmail}</p>
+            <p style="margin-top: 15px;">This is an automated prescription from Care Without Borders. Please consult your doctor for any clarifications.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+    `;
+    
+    // Send email via backend
+    sendEmailViaBackend(patientEmail, `Prescription from ${doctorName}`, emailContent);
+  }
+
+  // Save prescription to EHR
+  function savePrescriptionToEHR() {
+    const patientEmail = localStorage.getItem('currentConsultationEmail') || document.getElementById('consultationPatientEmail').value;
+    const patientName = document.getElementById('prescriptionPatientName').value;
+    const diagnosis = document.getElementById('prescriptionDiagnosis').value;
+    const prescription = document.getElementById('prescriptionDetails').value;
+    const followUpDate = document.getElementById('prescriptionFollowUpDate').value;
+    const notes = document.getElementById('prescriptionNotes').value;
+    
+    if (!patientEmail || !diagnosis || !prescription) {
+      alert('⚠️ Please fill in patient email, diagnosis, and prescription');
+      return;
+    }
+    
+    // Get doctor profile
+    const doctorProfile = JSON.parse(localStorage.getItem('doctorProfile') || '{}');
+    const doctorName = doctorProfile.name || 'Dr. Smith';
+    
+    // Create EHR record
+    const ehrData = {
+      patientEmail,
+      patientName,
+      doctorName,
+      diagnosis,
+      prescription,
+      followUpDate,
+      notes,
+      dateCreated: new Date().toISOString(),
+      consultationType: 'Video Consultation via Prescription Panel'
+    };
+    
+    // Get existing EHR records
+    let allEHRRecords = JSON.parse(localStorage.getItem('ehrRecords') || '[]');
+    
+    // Add new record
+    allEHRRecords.push(ehrData);
+    
+    // Save back to localStorage
+    localStorage.setItem('ehrRecords', JSON.stringify(allEHRRecords));
+    
+    alert('✅ Prescription saved to patient EHR!');
+    
+    // Send email as well
+    const confirmSendEmail = confirm('Do you want to send this prescription to the patient via email?');
+    if (confirmSendEmail) {
+      sendPrescriptionEmail();
+    }
+  }
+
+  // Backend function to send email
+  function sendEmailViaBackend(to, subject, htmlContent) {
+    // Using backend API endpoint
+    fetch('/api/send-prescription-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        to,
+        subject,
+        htmlContent
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('✅ Prescription sent successfully to ' + to);
+        // Also save to EHR automatically
+        savePrescriptionToEHR();
+      } else {
+        alert('⚠️ Email could not be sent. Please check the email address.');
+        console.error('Email error:', data.error);
+      }
+    })
+    .catch(error => {
+      console.error('Error sending email:', error);
+      alert('⚠️ Error sending email. Will save to EHR only.');
+      savePrescriptionToEHR();
+    });
+  }
+
 </script>
 
 <script src="https://meet.jit.si/external_api.js"></script>
