@@ -99,41 +99,46 @@ const auth = firebase.auth();
 const toggle = document.getElementById("togglePassword");
 const passwordInput = document.getElementById("password");
 
-toggle.addEventListener("click", () => {
-  passwordInput.type =
-    passwordInput.type === "password" ? "text" : "password";
-});
+if (toggle && passwordInput) {
+  toggle.addEventListener("click", () => {
+    passwordInput.type =
+      passwordInput.type === "password" ? "text" : "password";
+  });
+}
 
 // FORM VALIDATION + LOGIN
 const form = document.getElementById("loginForm");
 
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
+if (form) {
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-  const email = document.getElementById("email");
-  const password = document.getElementById("password");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
 
-  if (!email.value.includes("@")) {
-    email.classList.add("invalid");
-    return;
-  }
+    if (!email.value.includes("@")) {
+      email.classList.add("invalid");
+      return;
+    }
 
-  if (password.value.length < 6) {
-    password.classList.add("invalid");
-    return;
-  }
+    if (password.value.length < 6) {
+      password.classList.add("invalid");
+      return;
+    }
 
-  auth.signInWithEmailAndPassword(email.value, password.value)
-    .then(() => {
-      alert("Login Successful!");
-      window.location.href = "dashboard.html";
-    })
-    .catch(error => alert(error.message));
-});
+    auth.signInWithEmailAndPassword(email.value, password.value)
+      .then(() => {
+        alert("Login Successful!");
+        window.location.href = "dashboard.html";
+      })
+      .catch(error => alert(error.message));
+  });
+}
 
 // GOOGLE LOGIN
-document.getElementById("googleLogin")
-  .addEventListener("click", () => {
+const googleLoginBtn = document.getElementById("googleLogin");
+if (googleLoginBtn) {
+  googleLoginBtn.addEventListener("click", () => {
     const provider = new firebase.auth.GoogleAuthProvider();
 
     auth.signInWithPopup(provider)
@@ -142,3 +147,4 @@ document.getElementById("googleLogin")
       })
       .catch(error => alert(error.message));
   });
+}
