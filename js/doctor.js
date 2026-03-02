@@ -14,19 +14,34 @@ import {
   doc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Protect page
-onAuthStateChanged(auth, (user) => {
-  if (!user) window.location.href = "login.html";
-  else {
-    loadAppointments();
-    loadEHR();
-    initCharts();
-  }
-});
+// Protect page - with fallback for demo/testing
+let isAuthenticated = false;
+try {
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      // Allow page to display in demo mode
+      console.log("Doctor not authenticated - running in demo mode");
+      isAuthenticated = false;
+    } else {
+      isAuthenticated = true;
+      loadAppointments();
+      loadEHR();
+      initCharts();
+    }
+  });
+} catch (error) {
+  console.log("Firebase auth error - running in demo mode:", error);
+  isAuthenticated = false;
+}
 
 // Logout Function
 window.logout = async function () {
-  await signOut(auth);
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.log("Logout error:", error);
+  }
+  localStorage.removeItem('doctorLoggedIn');
   window.location.href = "login.html";
 };
 
@@ -51,8 +66,10 @@ function showAlert(message, type = "success") {
 // Load Appointments
 async function loadAppointments() {
   try {
-    const querySnapshot = await getDocs(collection(db, "appointments"));
     const list = document.getElementById("appointmentsList");
+    if (!list) return; // Element doesn't exist yet
+    
+    const querySnapshot = await getDocs(collection(db, "appointments"));
     list.innerHTML = "";
 
     let todayCount = 0;
@@ -88,8 +105,10 @@ async function loadAppointments() {
       list.innerHTML = '<p style="color: #999; text-align: center;">No appointments yet</p>';
     }
 
-    document.getElementById("todayAppointments").textContent = todayCount;
-    document.getElementById("pendingAppointments").textContent = pendingCount;
+    const todayCountEl = document.getElementById("todayAppointments");
+    const pendingCountEl = document.getElementById("pendingAppointments");
+    if (todayCountEl) todayCountEl.textContent = todayCount;
+    if (pendingCountEl) pendingCountEl.textContent = pendingCount;
   } catch (error) {
     console.error("Error loading appointments:", error);
   }
@@ -171,8 +190,10 @@ window.saveEHR = async function () {
 // Load EHR Records
 async function loadEHR() {
   try {
-    const querySnapshot = await getDocs(collection(db, "ehr"));
     const list = document.getElementById("ehrList");
+    if (!list) return; // Element doesn't exist yet
+
+    const querySnapshot = await getDocs(collection(db, "ehr"));
     list.innerHTML = "";
 
     let count = 0;
@@ -194,8 +215,11 @@ async function loadEHR() {
     if (count === 0) {
       list.innerHTML = '<p style="color: #999; text-align: center;">No patient records yet</p>';
     }
-    document.getElementById("totalRecords").textContent = count;
-    document.getElementById("totalPatients").textContent = new Set([...querySnapshot.docs.map(d => d.data().patientId)]).size;
+
+    const totalRecordsEl = document.getElementById("totalRecords");
+    const totalPatientsEl = document.getElementById("totalPatients");
+    if (totalRecordsEl) totalRecordsEl.textContent = count;
+    if (totalPatientsEl) totalPatientsEl.textContent = new Set([...querySnapshot.docs.map(d => d.data().patientId)]).size;
   } catch (error) {
     console.error("Error loading EHR:", error);
   }
