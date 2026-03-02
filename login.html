@@ -5,31 +5,10 @@
   <title>Login | Care Without Borders</title>
   <link rel="stylesheet" href="style.css">
 
-  <!-- Firebase v10 Modular SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { 
-      getAuth, 
-      signInWithEmailAndPassword,
-      GoogleAuthProvider, 
-      signInWithPopup 
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBMHhwzdjBEr9GaMNnhxugg0K71WrPN0n4",
-      authDomain: "care-without-borders-789dd.firebaseapp.com",
-      projectId: "care-without-borders-789dd",
-      storageBucket: "care-without-borders-789dd.firebasestorage.app",
-      messagingSenderId: "736136702535",
-      appId: "1:736136702535:web:c862ef87108bd027bb9f62",
-      measurementId: "G-9PLWT8WHC3"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    // LOGIN FORM
+  <script>
+    // ==================== LOCAL PATIENT AUTHENTICATION ====================
+    // Simple authentication without Firebase dependency
+    
     window.addEventListener("DOMContentLoaded", () => {
       const form = document.getElementById("loginForm");
       const togglePass = document.getElementById("togglePassword");
@@ -41,6 +20,30 @@
         passwordInput.type = passwordInput.type === "password" ? "text" : "password";
       });
 
+      // Demo patients for testing
+      const DEMO_PATIENTS = [
+        {
+          email: "patient@example.com",
+          password: "patient123",
+          name: "John Doe"
+        },
+        {
+          email: "alice@example.com",
+          password: "alice123",
+          name: "Alice Johnson"
+        },
+        {
+          email: "bob@example.com",
+          password: "bob123",
+          name: "Bob Williams"
+        }
+      ];
+
+      // Initialize demo credentials in localStorage if not exists
+      if (!localStorage.getItem('patientCredentials')) {
+        localStorage.setItem('patientCredentials', JSON.stringify(DEMO_PATIENTS));
+      }
+
       // Email/Password Login
       form.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -50,86 +53,65 @@
 
         // Validation
         if (!email) {
-          alert("Please enter your email");
+          alert("❌ Please enter your email");
           return;
         }
         if (!password) {
-          alert("Please enter your password");
+          alert("❌ Please enter your password");
           return;
         }
 
-        signInWithEmailAndPassword(auth, email, password)
-          .then((userCredential) => {
-            alert("Login Successful!");
-            // Redirect based on user role
-            window.location.href = "patient.html";
-          })
-          .catch(error => {
-            console.error("Login Error:", error);
-            let message = "Login failed. ";
-            
-            if (error.code === "auth/invalid-credential") {
-              message += "Email or password is incorrect. Please check your credentials.";
-            } else if (error.code === "auth/user-not-found") {
-              message += "This email is not registered. Please sign up first.";
-            } else if (error.code === "auth/wrong-password") {
-              message += "Incorrect password. Please try again.";
-            } else if (error.code === "auth/invalid-email") {
-              message += "Invalid email format.";
-            } else {
-              message += error.message;
-            }
-            
-            alert(message);
-          });
+        // Get stored credentials
+        const storedCredentials = JSON.parse(localStorage.getItem('patientCredentials') || '[]');
+        
+        // Find matching patient
+        const patient = storedCredentials.find(p => 
+          p.email === email && 
+          p.password === password
+        );
+
+        if (patient) {
+          // Login successful
+          localStorage.setItem('patientLoggedIn', 'true');
+          localStorage.setItem('patientEmail', email);
+          localStorage.setItem('patientName', patient.name);
+          
+          alert(`✅ Login Successful! Welcome ${patient.name}`);
+          window.location.href = "patient.html";
+        } else {
+          // Check what's wrong
+          const emailExists = storedCredentials.some(p => p.email === email);
+          
+          if (!emailExists) {
+            alert("❌ Email not registered. Would you like to create an account?");
+          } else {
+            alert("❌ Incorrect password. Please try again.");
+          }
+        }
       });
 
-      // Google Login
-      document.getElementById("googleLogin").addEventListener("click", (e) => {
+      // Show demo credentials
+      document.getElementById("demoCredentials").addEventListener("click", (e) => {
         e.preventDefault();
-        
-        const btn = document.getElementById("googleLogin");
-        btn.disabled = true;
-        btn.textContent = "🔍 Logging in...";
-        
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ 'prompt': 'select_account' });
-        
-        signInWithPopup(auth, provider)
-          .then((result) => {
-            console.log("Google Login Success:", result.user.email);
-            alert("Welcome " + result.user.displayName + "!");
-            window.location.href = "patient.html";
-          })
-          .catch(error => {
-            console.error("Google Login Error Code:", error.code);
-            console.error("Google Login Error Message:", error.message);
-            
-            let message = "";
-            
-            if (error.code === "auth/unauthorized-domain") {
-              message = "⚠️ Unauthorized Domain\n\n";
-              message += "Please add this domain to Firebase Console:\n";
-              message += "1. Go to https://console.firebase.google.com/\n";
-              message += "2. Select 'care-without-borders-789dd' project\n";
-              message += "3. Go to Authentication > Settings\n";
-              message += "4. Add your domain to 'Authorized domains'\n\n";
-              message += "For local testing, add: localhost and 127.0.0.1";
-              alert(message);
-            } else if (error.code === "auth/popup-closed-by-user") {
-              // User cancelled - just reset button, don't show alert
-              console.log("User cancelled Google login popup");
-            } else if (error.code === "auth/cancelled-popup-request") {
-              console.log("Popup was cancelled");
-            } else {
-              message = "Google Login Error: " + error.message;
-              alert(message);
-            }
-            
-            // Reset button
-            btn.disabled = false;
-            btn.textContent = "🔍 Continue with Google";
-          });
+        const credentials = JSON.parse(localStorage.getItem('patientCredentials') || '[]');
+        let message = "📋 DEMO CREDENTIALS FOR TESTING:\n\n";
+        credentials.forEach((patient, idx) => {
+          message += `Patient ${idx + 1}:\n`;
+          message += `  Email: ${patient.email}\n`;
+          message += `  Password: ${patient.password}\n\n`;
+        });
+        alert(message);
+      });
+
+      // Quick fill with first demo account
+      document.getElementById("useDemoAccount").addEventListener("click", (e) => {
+        e.preventDefault();
+        const credentials = JSON.parse(localStorage.getItem('patientCredentials') || '[]');
+        if (credentials.length > 0) {
+          emailInput.value = credentials[0].email;
+          passwordInput.value = credentials[0].password;
+          alert("✅ Demo credentials filled! Click Login to proceed.");
+        }
       });
     });
   </script>
@@ -166,22 +148,26 @@
         <div class="floating-input password-field">
           <input type="password" id="password" required>
           <label>Password</label>
-          <span id="togglePassword">👁</span>
+          <span id="togglePassword" style="cursor: pointer;">👁</span>
         </div>
 
         <button type="submit" class="btn-solid large">Login</button>
 
-        <div class="divider">OR</div>
+        <div class="divider">TESTING</div>
 
-        <button type="button" id="googleLogin" class="google-btn">
-          🔍 Continue with Google
+        <button type="button" id="useDemoAccount" class="btn-outline" style="width: 100%; margin-bottom: 10px; padding: 12px; background: #e8f5e9; color: #2e7d32; border: 2px solid #2e7d32; border-radius: 8px; cursor: pointer; font-weight: 600;">
+          ✅ Fill Demo Credentials
+        </button>
+
+        <button type="button" id="demoCredentials" class="btn-outline" style="width: 100%; padding: 12px; background: #e3f2fd; color: #1876d2; border: 2px solid #1876d2; border-radius: 8px; cursor: pointer; font-weight: 600;">
+          📋 Show All Demo Accounts
         </button>
 
       </form>
 
-      <p class="bottom-text">
-        Don’t have an account? <a href="register.html">Register</a>
-      </p>
+      <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin-top: 15px; font-size: 13px; color: #856404;">
+        <strong>💡 Demo Mode:</strong> Use the button above to fill demo credentials for testing. For production, edit localStorage 'patientCredentials' with your own secure credentials.
+      </div>
     </div>
 
   </div>
