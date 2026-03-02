@@ -658,42 +658,78 @@
 
     <!-- Medicine Search Panel -->
     <div id="medicine" class="panel-content">
-      <div class="panel-title">Medicine Search</div>
+      <div class="panel-title">💊 Medicine Finder</div>
       
       <div class="dashboard-card">
+        <h2 style="margin-top: 0; color: #0f766e; display: flex; align-items: center; gap: 10px;">
+          🚀 Access Full Database
+          <span style="font-size: 12px; background: #e8f5f4; color: #0f766e; padding: 4px 10px; border-radius: 12px; font-weight: normal;">10,000+ Records</span>
+        </h2>
+        <p style="color: #666; font-size: 14px; margin: 10px 0;">Search from 2000+ diseases and 500+ medicines with detailed information.</p>
+        <a href="medicine-finder.html" target="_blank" class="btn-primary" style="display: inline-block; text-decoration: none; margin-right: 10px;">🔍 Open Medicine Finder</a>
+        <a href="medicine-finder.html" class="btn-secondary" style="display: inline-block; text-decoration: none;">📖 Full Documentation</a>
+      </div>
+
+      <div class="dashboard-card" style="margin-top: 25px;">
+        <h2>Quick Search</h2>
         <form onsubmit="return false;">
           <div class="form-group">
             <label>Search Medicine by Name</label>
-            <input type="text" id="medicineSearch" placeholder="e.g., Aspirin, Paracetamol..." onkeypress="if(event.key==='Enter') searchMedicine();">
+            <input type="text" id="medicineSearch" placeholder="e.g., Aspirin, Paracetamol, Ibuprofen..." onkeypress="if(event.key==='Enter') searchMedicine();">
           </div>
-          <button type="button" class="btn-primary" onclick="searchMedicine()" style="width: 100%;">Search Medicine</button>
+          <button type="button" class="btn-primary" onclick="searchMedicine()" style="width: 100%;">Search</button>
         </form>
         <div id="medicineResult"></div>
       </div>
 
       <div class="dashboard-card" style="margin-top: 25px;">
-        <h2>Common Medicines</h2>
-        <button class="btn-secondary" onclick="showMedicine('aspirin')" style="margin-right: 8px; margin-bottom: 8px;">Aspirin</button>
-        <button class="btn-secondary" onclick="showMedicine('paracetamol')" style="margin-right: 8px; margin-bottom: 8px;">Paracetamol</button>
-        <button class="btn-secondary" onclick="showMedicine('ibuprofen')" style="margin-right: 8px; margin-bottom: 8px;">Ibuprofen</button>
-        <button class="btn-secondary" onclick="showMedicine('amoxicillin')" style="margin-bottom: 8px;">Amoxicillin</button>
+        <h2>Popular Medicines</h2>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+          <button class="btn-secondary" onclick="searchMedicineQuick('Aspirin')" style="width: 100%;">Aspirin</button>
+          <button class="btn-secondary" onclick="searchMedicineQuick('Paracetamol')" style="width: 100%;">Paracetamol</button>
+          <button class="btn-secondary" onclick="searchMedicineQuick('Ibuprofen')" style="width: 100%;">Ibuprofen</button>
+          <button class="btn-secondary" onclick="searchMedicineQuick('Metformin')" style="width: 100%;">Metformin</button>
+          <button class="btn-secondary" onclick="searchMedicineQuick('Amoxicillin')" style="width: 100%;">Amoxicillin</button>
+          <button class="btn-secondary" onclick="searchMedicineQuick('Omeprazole')" style="width: 100%;">Omeprazole</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 25px; background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196F3;">
+        <p style="margin: 0; color: #1565c0; font-size: 13px; line-height: 1.6;">
+          <strong>💡 Tip:</strong> Use the full Medicine Finder for comprehensive database search including diseases, symptoms, drug interactions, and detailed medicine information with 10,000+ records.
+        </p>
       </div>
     </div>
 
     <!-- AI Chatbot Panel -->
     <div id="chatbot" class="panel-content">
-      <div class="panel-title">AI Health Assistant 🤖 <span style="font-size: 12px; color: #28a745; font-weight: normal;"> (Online API)</span></div>
+      <div class="panel-title">🤖 AI Health Assistant</div>
       
-      <div class="chat-container">
-        <div id="chatMessages"></div>
-        <div class="chat-input">
-          <input type="text" id="chatInput" placeholder="Ask your health question or describe symptoms...">
-          <button id="sendBtn">Send</button>
+      <div class="dashboard-card">
+        <h2 style="margin-top: 0; color: #0f766e; display: flex; align-items: center; gap: 10px;">
+          💬 Chat with AI
+          <span style="font-size: 12px; background: #c8e6c9; color: #2e7d32; padding: 4px 10px; border-radius: 12px; font-weight: normal;">Live</span>
+        </h2>
+        <p style="color: #666; font-size: 14px; margin: 10px 0;">Talk to our intelligent health assistant about symptoms, diseases, medicines, and get real medical conversations.</p>
+        <a href="chatbot.html" target="_blank" class="btn-primary" style="display: inline-block; text-decoration: none; margin-right: 10px;">💬 Start Chat Session</a>
+        <a href="CHATBOT_AND_MEDICINE_GUIDE.md" class="btn-secondary" style="display: inline-block; text-decoration: none;">📖 How to Use</a>
+      </div>
+
+      <div class="dashboard-card" style="margin-top: 25px;">
+        <h2>Quick Chat Demo</h2>
+        <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Try asking the AI about your symptoms:</p>
+        <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+          <button class="btn-secondary" onclick="quickChatDemo('I have a cough and fever')" style="width: 100%; text-align: left; padding: 12px;">🤒 "I have a cough and fever"</button>
+          <button class="btn-secondary" onclick="quickChatDemo('Tell me about fever')" style="width: 100%; text-align: left; padding: 12px;">🌡️ "Tell me about fever"</button>
+          <button class="btn-secondary" onclick="quickChatDemo('What medicines treat headache?')" style="width: 100%; text-align: left; padding: 12px;">💊 "What medicines treat headache?"</button>
+          <button class="btn-secondary" onclick="quickChatDemo('Emergency help chest pain')" style="width: 100%; text-align: left; padding: 12px;">🚨 "Emergency help - chest pain"</button>
         </div>
       </div>
 
-      <div style="margin-top: 20px; background: #d4edda; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">
-        <p style="margin: 0; color: #155724; font-size: 13px;">✅ <strong>AI is Online:</strong> Connected to intelligent health assistant API for advanced medical insights and guidance.</p>
+      <div style="margin-top: 25px; background: #e8f5f4; padding: 15px; border-radius: 8px; border-left: 4px solid #0f766e;">
+        <p style="margin: 0; color: #0f766e; font-size: 13px; line-height: 1.6;">
+          <strong>✨ Features:</strong> Natural conversations, symptom analysis, disease diagnosis, medicine information, emergency detection, and more. Click "Start Chat Session" for the full experience!
+        </p>
       </div>
     </div>
 
@@ -795,6 +831,30 @@
 
     // Clear form
     document.getElementById('paymentForm').reset();
+  }
+
+  // Quick Medicine Search
+  function searchMedicineQuick(medicineName) {
+    const input = document.getElementById('medicineSearch');
+    if (input) {
+      input.value = medicineName;
+      searchMedicine();
+    }
+  }
+
+  // Open Chatbot in new tab
+  function quickChatDemo(message) {
+    // localStorage is used to pass initial message to chatbot
+    localStorage.setItem('initialChatMessage', message);
+    window.open('chatbot.html', '_blank');
+  }
+
+  // Search medicine (placeholder)
+  function searchMedicine() {
+    const term = document.getElementById('medicineSearch')?.value || '';
+    if (term) {
+      alert(`🔍 Full medicine search available in Medicine Finder!\n\nRedirecting to advanced search for: "${term}"\n\nClick "Open Medicine Finder" above for complete database.`);
+    }
   }
 </script>
 <script type="module" src="js/patient.js"></script>
