@@ -7,6 +7,7 @@ function goRegister() {
 }
 
 function goadmin() {
+  console.log("Admin button clicked - navigating to admin.html");
   window.location.href = "admin.html";
 }
 
