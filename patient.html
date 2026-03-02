@@ -405,6 +405,36 @@
         transform: translateY(-10px);
       }
     }
+    
+    /* Payment Form Styles */
+    #paymentForm {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .payment-method {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
   </style>
 </head>
 <body>
@@ -518,7 +548,91 @@
     <div id="video" class="panel-content">
       <div class="panel-title">Video Consultation</div>
       
+      <!-- Payment Section -->
       <div class="dashboard-card">
+        <h2>💳 Consultation Fees</h2>
+        <div style="background: #f0f9f8; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+              <label style="color: #666; font-size: 12px; font-weight: 600;">Duration</label>
+              <p style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold;">15 Minutes</p>
+            </div>
+            <div>
+              <label style="color: #666; font-size: 12px; font-weight: 600;">Consultation Fee</label>
+              <p style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold; color: #0f766e;">₹100</p>
+            </div>
+          </div>
+          <div style="border-top: 1px solid #ddd; padding-top: 15px;">
+            <p style="margin: 0; color: #666; font-size: 13px;">✅ HD Video Call with Doctor</p>
+            <p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">✅ 15-minute consultation session</p>
+            <p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">✅ Prescription if required</p>
+          </div>
+        </div>
+
+        <!-- Payment Form -->
+        <form id="paymentForm" style="display: none;" onsubmit="processPayment(event)">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="patientName" placeholder="Enter your name" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="patientEmail" placeholder="Enter your email" required>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="patientPhone" placeholder="Enter your phone number" required>
+          </div>
+          <div class="form-group">
+            <label>Payment Method</label>
+            <select id="paymentMethod" required>
+              <option value="">-- Select Payment Method --</option>
+              <option value="card">Credit/Debit Card</option>
+              <option value="upi">UPI</option>
+              <option value="wallet">Digital Wallet</option>
+              <option value="net-banking">Net Banking</option>
+            </select>
+          </div>
+
+          <!-- Card Payment -->
+          <div id="cardPayment" class="payment-method" style="display: none;">
+            <div class="form-group">
+              <label>Card Number</label>
+              <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div class="form-group">
+                <label>Expiry Date</label>
+                <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+              </div>
+              <div class="form-group">
+                <label>CVV</label>
+                <input type="text" id="cardCvv" placeholder="123" maxlength="3">
+              </div>
+            </div>
+          </div>
+
+          <!-- UPI Payment -->
+          <div id="upiPayment" class="payment-method" style="display: none;">
+            <div class="form-group">
+              <label>UPI ID</label>
+              <input type="text" id="upiId" placeholder="yourname@upi">
+            </div>
+          </div>
+
+          <div style="background: #fff3cd; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; color: #856404;">
+            💡 Amount to be paid: <strong>₹100</strong>
+          </div>
+
+          <button type="submit" class="btn-primary" style="width: 100%;">Pay ₹100 & Join Consultation</button>
+          <button type="button" class="btn-secondary" onclick="cancelPayment()" style="width: 100%; margin-top: 10px; background: #ddd; color: #333;">Cancel</button>
+        </form>
+
+        <button id="startPaymentBtn" class="btn-primary" onclick="showPaymentForm()" style="width: 100%;">Proceed to Payment</button>
+      </div>
+
+      <!-- Video Call Section -->
+      <div class="dashboard-card" style="margin-top: 25px; display: none;" id="videoCallSection">
         <h2>📹 Start HD Video Call</h2>
         <p style="color: #666; font-size: 14px;">Connect with your doctor in real-time</p>
         <div class="form-group">
@@ -615,6 +729,74 @@
 </div>
 
 <script src="https://meet.jit.si/external_api.js"></script>
+<script>
+  // Payment System for Consultations
+  function showPaymentForm() {
+    document.getElementById('startPaymentBtn').style.display = 'none';
+    document.getElementById('paymentForm').style.display = 'block';
+  }
+
+  function cancelPayment() {
+    document.getElementById('paymentForm').style.display = 'none';
+    document.getElementById('startPaymentBtn').style.display = 'block';
+  }
+
+  // Show/Hide payment method fields
+  document.getElementById('paymentMethod')?.addEventListener('change', (e) => {
+    document.getElementById('cardPayment').style.display = e.target.value === 'card' ? 'block' : 'none';
+    document.getElementById('upiPayment').style.display = e.target.value === 'upi' ? 'block' : 'none';
+  });
+
+  function processPayment(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('patientName').value;
+    const email = document.getElementById('patientEmail').value;
+    const phone = document.getElementById('patientPhone').value;
+    const method = document.getElementById('paymentMethod').value;
+
+    // Validate payment details
+    if (!name || !email || !phone || !method) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    if (method === 'card') {
+      const cardNum = document.getElementById('cardNumber').value;
+      const expiry = document.getElementById('cardExpiry').value;
+      const cvv = document.getElementById('cardCvv').value;
+
+      if (!cardNum || !expiry || !cvv) {
+        alert('Please enter complete card details');
+        return;
+      }
+
+      if (cardNum.length < 16) {
+        alert('Please enter a valid card number');
+        return;
+      }
+    }
+
+    if (method === 'upi') {
+      const upiId = document.getElementById('upiId').value;
+      if (!upiId || !upiId.includes('@')) {
+        alert('Please enter a valid UPI ID');
+        return;
+      }
+    }
+
+    // Process payment (simulate)
+    alert(`✅ Payment of ₹100 successful!\n\nName: ${name}\nEmail: ${email}\nMethod: ${method.toUpperCase()}\n\nYour consultation session is now active.`);
+
+    // Hide payment form and show video call section
+    document.getElementById('paymentForm').style.display = 'none';
+    document.getElementById('startPaymentBtn').style.display = 'none';
+    document.getElementById('videoCallSection').style.display = 'block';
+
+    // Clear form
+    document.getElementById('paymentForm').reset();
+  }
+</script>
 <script type="module" src="js/patient.js"></script>
 </body>
 </html>
