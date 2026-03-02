@@ -162,83 +162,65 @@
   </script>
 </head>
 <body>
-  <div class="bg-blur bg1"></div>
-  <div class="bg-blur bg2"></div>
 
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="logo">❤️ Care Without Borders</div>
-    <div class="nav-buttons">
-      <button class="btn-outline" onclick="goHome()">Home</button>
-      <button class="btn-outline" onclick="goLogin()">Patient Login</button>
-      <button class="btn-outline" onclick="goadmin()">Admin</button>
+<div class="split-container">
+
+  <!-- LEFT SIDE IMAGE -->
+  <div class="left-panel">
+    <img src="images/premium.jpg" alt="Doctor">
+
+    <div class="overlay-text">
+      <h1>🏥 Doctor Portal</h1>
+      <p>Manage Your Patients. Efficiently.</p>
     </div>
-  </nav>
+  </div>
 
-  <!-- DOCTOR LOGIN SECTION -->
-  <section class="auth-container reveal">
-    <div class="auth-box">
-      <h1>🏥 Doctor Login</h1>
-      <p>Access your medical dashboard</p>
+  <!-- RIGHT SIDE FORM -->
+  <div class="right-panel">
 
-      <!-- Doctor Login Form -->
+    <div class="auth-card">
+      <h2>Doctor Login</h2>
+
       <form id="doctorLoginForm">
-        <div class="form-group">
-          <label for="email">Email Address *</label>
-          <input type="email" id="email" placeholder="Enter your email" required>
+
+        <!-- Floating Email -->
+        <div class="floating-input">
+          <input type="email" id="email" required>
+          <label>Email</label>
         </div>
 
-        <div class="form-group">
-          <label for="licenseNumber">Medical License Number *</label>
-          <input type="text" id="licenseNumber" placeholder="Enter your medical license number" required>
+        <!-- Floating License Number -->
+        <div class="floating-input">
+          <input type="text" id="licenseNumber" required>
+          <label>Medical License Number</label>
         </div>
 
-        <div class="form-group password-group">
-          <label for="password">Password *</label>
-          <div class="password-wrapper">
-            <input type="password" id="password" placeholder="Enter your password" required>
-            <button type="button" id="togglePassword" class="toggle-password">👁️</button>
-          </div>
+        <!-- Floating Password -->
+        <div class="floating-input password-field">
+          <input type="password" id="password" required>
+          <label>Password</label>
+          <span id="togglePassword">👁</span>
         </div>
 
-        <button type="submit" class="btn-solid full-width">Login</button>
+        <button type="submit" class="btn-solid large">Login</button>
+
+        <div class="divider">OR</div>
+
+        <button type="button" id="googleLogin" class="google-btn">
+          🔍 Continue with Google
+        </button>
+
       </form>
 
-      <!-- Google Login -->
-      <div class="divider">
-        <span>OR</span>
-      </div>
-
-      <button id="googleLogin" class="btn-google">
-        🔍 Login with Google
-      </button>
-
-      <!-- Links -->
-      <div class="auth-links">
-        <p>Not registered yet? <a href="doctor-register.html">Register as Doctor</a></p>
-        <p><a href="login.html">Patient Login</a></p>
-        <p><a href="index.html">Back to Home</a></p>
-      </div>
+      <p class="bottom-text">
+        Not registered yet? <a href="doctor-register.html">Register as Doctor</a> | <a href="login.html">Patient Login</a>
+      </p>
     </div>
-  </section>
 
-  <!-- FOOTER -->
-  <footer>
-    <p>© 2026 Care Without Borders. Healthcare for Everyone.</p>
-  </footer>
+  </div>
 
-  <script>
-    function goHome() {
-      window.location.href = "index.html";
-    }
+</div>
 
-    function goLogin() {
-      window.location.href = "login.html";
-    }
-
-    function goadmin() {
-      window.location.href = "admin.html";
-    }
-  </script>
+<script src="script.js"></script>
 </body>
 </html>
