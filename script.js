@@ -8,6 +8,8 @@ function goRegister() {
 
 function goadmin() {
   console.log("Admin button clicked - navigating to admin.html");
+  const targetUrl = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/admin.html';
+  console.log("Target URL:", targetUrl);
   window.location.href = "admin.html";
 }
 
