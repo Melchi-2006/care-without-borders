@@ -548,99 +548,39 @@
     <div id="video" class="panel-content">
       <div class="panel-title">Video Consultation</div>
       
-      <!-- Payment Section -->
+      <!-- Consultation Section -->
       <div class="dashboard-card">
-        <h2>💳 Consultation Fees</h2>
-        <div style="background: #f0f9f8; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+        <h2>📹 Free HD Video Consultation</h2>
+        <div style="background: #c8e6c9; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
             <div>
-              <label style="color: #666; font-size: 12px; font-weight: 600;">Duration</label>
-              <p style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold;">15 Minutes</p>
+              <label style="color: #2e7d32; font-size: 12px; font-weight: 600;">Duration</label>
+              <p style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold; color: #1b5e20;">Unlimited</p>
             </div>
             <div>
-              <label style="color: #666; font-size: 12px; font-weight: 600;">Consultation Fee</label>
-              <p style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold; color: #0f766e;">₹100</p>
+              <label style="color: #2e7d32; font-size: 12px; font-weight: 600;">Consultation Fee</label>
+              <p style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold; color: #1b5e20;">✅ FREE</p>
             </div>
           </div>
-          <div style="border-top: 1px solid #ddd; padding-top: 15px;">
-            <p style="margin: 0; color: #666; font-size: 13px;">✅ HD Video Call with Doctor</p>
-            <p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">✅ 15-minute consultation session</p>
-            <p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">✅ Prescription if required</p>
+          <div style="border-top: 1px solid rgba(46, 125, 50, 0.3); padding-top: 15px;">
+            <p style="margin: 0; color: #2e7d32; font-size: 13px;">✅ HD Video Call with Doctor</p>
+            <p style="margin: 5px 0 0 0; color: #2e7d32; font-size: 13px;">✅ Unlimited consultation duration</p>
+            <p style="margin: 5px 0 0 0; color: #2e7d32; font-size: 13px;">✅ Prescription if required</p>
+            <p style="margin: 5px 0 0 0; color: #2e7d32; font-size: 13px;">✅ No payment required - Completely FREE</p>
           </div>
         </div>
 
-        <!-- Payment Form -->
-        <form id="paymentForm" style="display: none;" onsubmit="processPayment(event)">
+        <!-- Video Call Section -->
+        <div id="videoCallSection" style="display: block;">
+          <h3 style="color: #0f766e; margin-top: 20px;">📹 Start HD Video Call</h3>
+          <p style="color: #666; font-size: 14px;">Connect with your doctor in real-time</p>
           <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="patientName" placeholder="Enter your name" required>
+            <label>Consultation Room Name</label>
+            <input type="text" id="roomName" placeholder="e.g., Patient-001-Consultation">
           </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" id="patientEmail" placeholder="Enter your email" required>
-          </div>
-          <div class="form-group">
-            <label>Phone Number</label>
-            <input type="tel" id="patientPhone" placeholder="Enter your phone number" required>
-          </div>
-          <div class="form-group">
-            <label>Payment Method</label>
-            <select id="paymentMethod" required>
-              <option value="">-- Select Payment Method --</option>
-              <option value="card">Credit/Debit Card</option>
-              <option value="upi">UPI</option>
-              <option value="wallet">Digital Wallet</option>
-              <option value="net-banking">Net Banking</option>
-            </select>
-          </div>
-
-          <!-- Card Payment -->
-          <div id="cardPayment" class="payment-method" style="display: none;">
-            <div class="form-group">
-              <label>Card Number</label>
-              <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-              <div class="form-group">
-                <label>Expiry Date</label>
-                <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
-              </div>
-              <div class="form-group">
-                <label>CVV</label>
-                <input type="text" id="cardCvv" placeholder="123" maxlength="3">
-              </div>
-            </div>
-          </div>
-
-          <!-- UPI Payment -->
-          <div id="upiPayment" class="payment-method" style="display: none;">
-            <div class="form-group">
-              <label>UPI ID</label>
-              <input type="text" id="upiId" placeholder="yourname@upi">
-            </div>
-          </div>
-
-          <div style="background: #fff3cd; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; color: #856404;">
-            💡 Amount to be paid: <strong>₹100</strong>
-          </div>
-
-          <button type="submit" class="btn-primary" style="width: 100%;">Pay ₹100 & Join Consultation</button>
-          <button type="button" class="btn-secondary" onclick="cancelPayment()" style="width: 100%; margin-top: 10px; background: #ddd; color: #333;">Cancel</button>
-        </form>
-
-        <button id="startPaymentBtn" class="btn-primary" onclick="showPaymentForm()" style="width: 100%;">Proceed to Payment</button>
-      </div>
-
-      <!-- Video Call Section -->
-      <div class="dashboard-card" style="margin-top: 25px; display: none;" id="videoCallSection">
-        <h2>📹 Start HD Video Call</h2>
-        <p style="color: #666; font-size: 14px;">Connect with your doctor in real-time</p>
-        <div class="form-group">
-          <label>Consultation Room Name</label>
-          <input type="text" id="roomName" placeholder="e.g., Patient-001-Consultation">
+          <button class="btn-primary" onclick="startCall()" style="width: 100%;">Start Free Video Call</button>
+          <div id="jitsiContainer" style="margin-top: 20px;"></div>
         </div>
-        <button class="btn-primary" onclick="startCall()" style="width: 100%;">Start Video Call</button>
-        <div id="jitsiContainer" style="margin-top: 20px;"></div>
       </div>
     </div>
 
@@ -766,73 +706,6 @@
 
 <script src="https://meet.jit.si/external_api.js"></script>
 <script>
-  // Payment System for Consultations
-  function showPaymentForm() {
-    document.getElementById('startPaymentBtn').style.display = 'none';
-    document.getElementById('paymentForm').style.display = 'block';
-  }
-
-  function cancelPayment() {
-    document.getElementById('paymentForm').style.display = 'none';
-    document.getElementById('startPaymentBtn').style.display = 'block';
-  }
-
-  // Show/Hide payment method fields
-  document.getElementById('paymentMethod')?.addEventListener('change', (e) => {
-    document.getElementById('cardPayment').style.display = e.target.value === 'card' ? 'block' : 'none';
-    document.getElementById('upiPayment').style.display = e.target.value === 'upi' ? 'block' : 'none';
-  });
-
-  function processPayment(event) {
-    event.preventDefault();
-
-    const name = document.getElementById('patientName').value;
-    const email = document.getElementById('patientEmail').value;
-    const phone = document.getElementById('patientPhone').value;
-    const method = document.getElementById('paymentMethod').value;
-
-    // Validate payment details
-    if (!name || !email || !phone || !method) {
-      alert('Please fill in all required fields');
-      return;
-    }
-
-    if (method === 'card') {
-      const cardNum = document.getElementById('cardNumber').value;
-      const expiry = document.getElementById('cardExpiry').value;
-      const cvv = document.getElementById('cardCvv').value;
-
-      if (!cardNum || !expiry || !cvv) {
-        alert('Please enter complete card details');
-        return;
-      }
-
-      if (cardNum.length < 16) {
-        alert('Please enter a valid card number');
-        return;
-      }
-    }
-
-    if (method === 'upi') {
-      const upiId = document.getElementById('upiId').value;
-      if (!upiId || !upiId.includes('@')) {
-        alert('Please enter a valid UPI ID');
-        return;
-      }
-    }
-
-    // Process payment (simulate)
-    alert(`✅ Payment of ₹100 successful!\n\nName: ${name}\nEmail: ${email}\nMethod: ${method.toUpperCase()}\n\nYour consultation session is now active.`);
-
-    // Hide payment form and show video call section
-    document.getElementById('paymentForm').style.display = 'none';
-    document.getElementById('startPaymentBtn').style.display = 'none';
-    document.getElementById('videoCallSection').style.display = 'block';
-
-    // Clear form
-    document.getElementById('paymentForm').reset();
-  }
-
   // Quick Medicine Search
   function searchMedicineQuick(medicineName) {
     const input = document.getElementById('medicineSearch');
@@ -855,6 +728,35 @@
     if (term) {
       alert(`🔍 Full medicine search available in Medicine Finder!\n\nRedirecting to advanced search for: "${term}"\n\nClick "Open Medicine Finder" above for complete database.`);
     }
+  }
+
+  // Start Video Call - FREE
+  function startCall() {
+    const roomName = document.getElementById('roomName')?.value || 'patient-consultation-' + Date.now();
+    
+    if (!roomName) {
+      alert('Please enter a room name');
+      return;
+    }
+
+    // Initialize Jitsi Meet
+    const domain = "meet.jit.si";
+    const options = {
+      roomName: roomName,
+      width: '100%',
+      height: 600,
+      parentNode: document.querySelector('#jitsiContainer'),
+      userInfo: {
+        displayName: 'Patient'
+      }
+    };
+
+    // Remove any existing instance
+    const container = document.getElementById('jitsiContainer');
+    container.innerHTML = '';
+
+    // Create new Jitsi instance
+    const api = new JitsiMeetExternalAPI(domain, options);
   }
 </script>
 <script type="module" src="js/patient.js"></script>

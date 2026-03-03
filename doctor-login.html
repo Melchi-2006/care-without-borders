@@ -2,102 +2,353 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Doctor Login | Care Without Borders</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    .login-container {
+      display: flex;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+    }
 
-  <script>
-    // ==================== DOCTOR LOGIN ====================
-    
-    window.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("doctorLoginForm");
-      const togglePass = document.getElementById("togglePassword");
-      const passwordInput = document.getElementById("password");
-      const emailInput = document.getElementById("email");
-      const licenseInput = document.getElementById("licenseNumber");
+    .login-card {
+      width: 100%;
+      max-width: 450px;
+      margin: auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+    }
 
-      // Password toggle
-      togglePass.addEventListener("click", () => {
-        passwordInput.type = passwordInput.type === "password" ? "text" : "password";
-      });
+    .login-card h1 {
+      color: #0f766e;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 28px;
+    }
 
-      // Login handler
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-        const licenseNumber = licenseInput.value.trim();
+    .login-card p {
+      color: #666;
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-        // Validation
-        if (!email) {
-          alert("❌ Please enter your email");
-          return;
-        }
-        if (!password) {
-          alert("❌ Please enter your password");
-          return;
-        }
-        if (password.length < 6) {
-          alert("❌ Password must be at least 6 characters");
-          return;
-        }
-        if (!licenseNumber) {
-          alert("❌ Please enter your medical license number");
-          return;
-        }
+    .form-group {
+      margin-bottom: 20px;
+    }
 
-        // Show loading state
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = "🔄 Logging in...";
-        submitBtn.disabled = true;
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
 
-        // Send login request to backend
-        fetch('/api/auth/login-doctor', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email, password, licenseNumber })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            // Save session data
-            localStorage.setItem('doctorLoggedIn', 'true');
-            localStorage.setItem('doctorToken', data.token.token);
-            localStorage.setItem('doctorData', JSON.stringify(data.doctor));
-            
-            alert(`✅ Welcome ${data.doctor.name}!`);
-            window.location.href = 'doctor.html';
-          } else {
-            alert(`❌ ${data.error}`);
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-          }
-        })
-        .catch(error => {
-          console.error('Login error:', error);
-          alert('❌ Login failed. Please try again.');
-          submitBtn.textContent = originalText;
-          submitBtn.disabled = false;
-        });
-      });
-    });
-  </script>
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #0f766e;
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+    }
+
+    .password-field {
+      position: relative;
+    }
+
+    .password-field .toggle-eye {
+      position: absolute;
+      right: 12px;
+      top: 38px;
+      cursor: pointer;
+      color: #999;
+      transition: all 0.3s;
+    }
+
+    .password-field .toggle-eye:hover {
+      color: #0f766e;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.3);
+    }
+
+    .btn-login:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .info-box {
+      background: #e8f5f4;
+      border-left: 4px solid #0f766e;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #0f766e;
+      line-height: 1.6;
+    }
+
+    .footer-text {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .footer-text a {
+      color: #0f766e;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .footer-text a:hover {
+      color: #14b8a6;
+      text-decoration: underline;
+    }
+
+    .alert {
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .alert.error {
+      background: #fee;
+      color: #c33;
+      border-left: 4px solid #c33;
+      display: block;
+    }
+
+    .alert.success {
+      background: #efe;
+      color: #3c3;
+      border-left: 4px solid #3c3;
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      .login-card {
+        padding: 25px;
+      }
+
+      .login-card h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div class="split-container">
+<div class="login-container">
+  <div class="login-card">
+    <h1>🏥 Doctor Login</h1>
+    <p>Care Without Borders</p>
 
-  <!-- LEFT SIDE IMAGE -->
-  <div class="left-panel">
-    <img src="images/premium.jpg" alt="Doctor">
-
-    <div class="overlay-text">
-      <h1>🏥 Doctor Portal</h1>
-      <p>Manage Your Patients. Efficiently.</p>
+    <!-- Info Box -->
+    <div class="info-box">
+      <strong>ℹ️ Important:</strong> Only registered doctors can login here. If you haven't been registered by the admin, please contact the administrator.
     </div>
+
+    <!-- Alert Messages -->
+    <div id="alertBox" class="alert"></div>
+
+    <!-- Email/Password Login -->
+    <form id="loginForm" onsubmit="handleDoctorLogin(event)">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="doctor@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="licenseNumber">Medical License Number</label>
+        <input type="text" id="licenseNumber" placeholder="License #" required>
+      </div>
+
+      <div class="form-group password-field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required>
+        <span class="toggle-eye" onclick="togglePasswordVisibility()">👁</span>
+      </div>
+
+      <button type="submit" class="btn-login" id="loginBtn">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </button>
+    </form>
+
+    <!-- Footer Links -->
+    <div class="footer-text">
+      Not a doctor? <a href="index.html">← Back to Home</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { auth, db } from './js/firebase.js';
+  import { 
+    signInWithEmailAndPassword,
+    setPersistence,
+    browserLocalPersistence
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { 
+    doc, 
+    getDoc 
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // Set Firebase persistence
+  setPersistence(auth, browserLocalPersistence);
+
+  window.togglePasswordVisibility = function() {
+    const passwordInput = document.getElementById('password');
+    const toggleEye = document.querySelector('.toggle-eye');
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleEye.textContent = '👁‍🗨';
+    } else {
+      passwordInput.type = 'password';
+      toggleEye.textContent = '👁';
+    }
+  };
+
+  function showAlert(message, type = 'error') {
+    const alertBox = document.getElementById('alertBox');
+    const icon = type === 'error' ? '❌' : '✅';
+    alertBox.className = `alert ${type}`;
+    alertBox.innerHTML = `<i class="fas fa-${type === 'error' ? 'times-circle' : 'check-circle'}"></i> ${message}`;
+    
+    if (type === 'success') {
+      setTimeout(() => {
+        alertBox.style.display = 'none';
+      }, 2000);
+    }
+  }
+
+  // Doctor Login Handler
+  window.handleDoctorLogin = async function(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('email').value.trim();
+    const licenseNumber = document.getElementById('licenseNumber').value.trim();
+    const password = document.getElementById('password').value;
+    const loginBtn = document.getElementById('loginBtn');
+    
+    // Validation
+    if (!email || !licenseNumber || !password) {
+      showAlert('Please fill in all fields', 'error');
+      return;
+    }
+
+    if (password.length < 6) {
+      showAlert('Password must be at least 6 characters', 'error');
+      return;
+    }
+
+    try {
+      loginBtn.disabled = true;
+      loginBtn.textContent = '🔄 Logging in...';
+
+      // Try Firebase authentication
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
+      // Check if user exists in Firestore and is a doctor
+      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+      
+      if (!userDoc.exists()) {
+        showAlert('Doctor account not found. Please contact admin.', 'error');
+        loginBtn.disabled = false;
+        loginBtn.textContent = '🔐 Login';
+        return;
+      }
+
+      const userData = userDoc.data();
+      
+      // Verify user is a doctor
+      if (userData.role !== 'doctor') {
+        showAlert('This account is not registered as a doctor.', 'error');
+        loginBtn.disabled = false;
+        loginBtn.textContent = '🔐 Login';
+        return;
+      }
+
+      // Verify license number matches
+      if (userData.licenseNumber !== licenseNumber) {
+        showAlert('Medical license number does not match. Please verify.', 'error');
+        loginBtn.disabled = false;
+        loginBtn.textContent = '🔐 Login';
+        return;
+      }
+
+      showAlert(`✅ Welcome Dr. ${userData.name || 'Doctor'}!`, 'success');
+      
+      // Store doctor session
+      localStorage.setItem('doctorLoggedIn', 'true');
+      localStorage.setItem('doctorUID', userCredential.user.uid);
+      localStorage.setItem('doctorData', JSON.stringify(userData));
+      
+      setTimeout(() => {
+        window.location.href = 'doctor.html';
+      }, 1500);
+
+    } catch (error) {
+      console.error('Login error:', error);
+      
+      if (error.code === 'auth/user-not-found') {
+        showAlert('Email not registered. Please contact admin.', 'error');
+      } else if (error.code === 'auth/wrong-password') {
+        showAlert('Incorrect password. Please try again.', 'error');
+      } else if (error.code === 'auth/invalid-email') {
+        showAlert('Invalid email format.', 'error');
+      } else {
+        showAlert(`Login failed: ${error.message}`, 'error');
+      }
+      
+      loginBtn.disabled = false;
+      loginBtn.textContent = '🔐 Login';
+    }
+  };
+
+  // Prevent form submission on Enter in password field
+  document.getElementById('password').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+    }
+  });
+</script>
+
+</body>
+</html>
   </div>
 
   <!-- RIGHT SIDE FORM -->
