@@ -279,7 +279,7 @@
       loginBtn.disabled = true;
       loginBtn.textContent = '🔄 Logging in...';
 
-      // Try Firebase authentication
+      // Try Firebase authentication using modular setup from firebase.js
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
       // Check if user exists in Firestore and is a doctor
@@ -347,54 +347,5 @@
   });
 </script>
 
-</body>
-</html>
-  </div>
-
-  <!-- RIGHT SIDE FORM -->
-  <div class="right-panel">
-
-    <div class="auth-card">
-      <h2>Doctor Login</h2>
-
-      <form id="doctorLoginForm">
-
-        <!-- Floating Email -->
-        <div class="floating-input">
-          <input type="email" id="email" required>
-          <label>Email</label>
-        </div>
-
-        <!-- Floating License Number -->
-        <div class="floating-input">
-          <input type="text" id="licenseNumber" required>
-          <label>Medical License Number</label>
-        </div>
-
-        <!-- Floating Password -->
-        <div class="floating-input password-field">
-          <input type="password" id="password" required>
-          <label>Password</label>
-          <span id="togglePassword" style="cursor: pointer;">👁</span>
-        </div>
-
-        <button type="submit" class="btn-solid large">Login</button>
-
-      </form>
-
-      <p class="bottom-text">
-        Don't have an account? <a href="doctor-register.html">Doctor Registration</a>
-      </p>
-
-      <p class="bottom-text">
-        <a href="index.html">Back to Home</a> | <a href="login.html">Patient Login</a>
-      </p>
-    </div>
-
-  </div>
-
-</div>
-
-<script src="script.js"></script>
 </body>
 </html>
