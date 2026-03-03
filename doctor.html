@@ -1113,6 +1113,11 @@
     if (activeLink) {
       activeLink.classList.add('active');
     }
+
+    // Load data for specific panels
+    if (panelId === 'appointments') {
+      loadAppointments();
+    }
   }
 
   // Load profile data from localStorage
