@@ -55,6 +55,20 @@
     window.auth = auth;
     window.db = db;
 
+    // Make Firebase functions available globally
+    window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+    window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+    window.query = query;
+    window.where = where;
+    window.getDocs = getDocs;
+    window.updateProfile = updateProfile;
+    window.setDoc = setDoc;
+    window.deleteDoc = deleteDoc;
+    window.doc = doc;
+    window.getDoc = getDoc;
+    window.collection = collection;
+    window.signOut = signOut;
+
     // Set up auth state listener IMMEDIATELY (outside DOMContentLoaded)
     // This runs continuously to check if user is logged in
     onAuthStateChanged(auth, (user) => {
