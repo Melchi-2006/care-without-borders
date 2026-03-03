@@ -16,11 +16,25 @@
     import { 
       getAuth, 
       signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
       GoogleAuthProvider, 
       signInWithPopup,
       onAuthStateChanged,
-      signOut
+      signOut,
+      updateProfile
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      deleteDoc,
+      collection,
+      getDocs,
+      query,
+      where,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     // Firebase config
     const firebaseConfig = {
@@ -35,9 +49,11 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    // Make auth available globally
+    // Make auth and db available globally
     window.auth = auth;
+    window.db = db;
 
     // Set up auth state listener IMMEDIATELY (outside DOMContentLoaded)
     // This runs continuously to check if user is logged in
@@ -60,6 +76,10 @@
           console.log("🔧 Showing admin panel");
           loginSection.style.display = "none";
           adminPanel.style.display = "flex";
+          // Load doctors list when admin panel is shown
+          setTimeout(() => {
+            loadDoctors();
+          }, 500);
         } else {
           // User is NOT logged in as admin - show admin login form
           console.log("🔧 Showing login section");
@@ -652,8 +672,8 @@
             <h3>10,234</h3>
             <p>Total Patients</p>
           </div>
-          <div class="stat-card">
-            <h3>489</h3>
+          <div class="stat-card" data-stat="doctors">
+            <h3>0</h3>
             <p>Total Doctors</p>
           </div>
           <div class="stat-card">
@@ -742,26 +762,19 @@
 
         <h2 style="color: #0f766e; margin-top: 40px;">Doctors List</h2>
         <div class="table-container">
-          <table>
+          <table id="doctorsTable">
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Specialization</th>
                 <th>Email</th>
-                <th>Status</th>
+                <th>License Number</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Dr. Smith</td>
-                <td>Cardiology</td>
-                <td>smith@hospital.com</td>
-                <td><span style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px;">Active</span></td>
-                <td>
-                  <button class="action-btn btn-edit">Edit</button>
-                  <button class="action-btn btn-delete">Delete</button>
-                </td>
+                <td colspan="5" style="text-align: center; color: #999;">Loading doctors...</td>
               </tr>
             </tbody>
           </table>
@@ -891,16 +904,138 @@
 
     function addDoctor(event) {
       event.preventDefault();
-      const name = document.getElementById('docName').value;
-      const email = document.getElementById('docEmail').value;
+      
+      const name = document.getElementById('docName').value.trim();
+      const email = document.getElementById('docEmail').value.trim();
       const specialization = document.getElementById('docSpecialization').value;
-      const licenseNumber = document.getElementById('docLicense').value;
+      const licenseNumber = document.getElementById('docLicense').value.trim();
       const password = document.getElementById('docPassword').value;
       
-      alert(`Doctor added: ${name} (${specialization})\nLicense: ${licenseNumber}\nEmail: ${email}`);
-      
-      // Reset form
-      event.target.reset();
+      // Validation
+      if (!name || !email || !specialization || !licenseNumber || !password) {
+        alert('❌ Please fill in all fields');
+        return;
+      }
+
+      if (password.length < 6) {
+        alert('❌ Password must be at least 6 characters');
+        return;
+      }
+
+      // Create doctor account asynchronously
+      createDoctorAccount(name, email, specialization, licenseNumber, password);
+    }
+
+    async function createDoctorAccount(name, email, specialization, licenseNumber, password) {
+      try {
+        // Create Firebase user
+        const userCredential = await createUserWithEmailAndPassword(window.auth, email, password);
+        const user = userCredential.user;
+
+        // Update user profile with display name
+        await updateProfile(user, { displayName: name });
+
+        // Create Firestore document for doctor
+        await setDoc(doc(window.db, "users", user.uid), {
+          name: name,
+          email: email,
+          role: "doctor",
+          specialization: specialization,
+          licenseNumber: licenseNumber,
+          phone: "",
+          createdAt: new Date(),
+          status: "active"
+        });
+
+        alert(`✅ Doctor added successfully!\n\nName: ${name}\nEmail: ${email}\nLicense: ${licenseNumber}\nSpecialization: ${specialization}`);
+        
+        // Reset form
+        document.querySelector('#doctors form').reset();
+        
+        // Reload doctors list
+        loadDoctors();
+
+      } catch (error) {
+        console.error('Error creating doctor:', error);
+        
+        if (error.code === 'auth/email-already-in-use') {
+          alert('❌ Email already registered. Please use a different email.');
+        } else if (error.code === 'auth/weak-password') {
+          alert('❌ Password is too weak. Please use a stronger password.');
+        } else if (error.code === 'auth/invalid-email') {
+          alert('❌ Invalid email format.');
+        } else {
+          alert(`❌ Error: ${error.message}`);
+        }
+      }
+    }
+
+    async function loadDoctors() {
+      try {
+        const q = query(collection(window.db, "users"), where("role", "==", "doctor"));
+        const querySnapshot = await getDocs(q);
+        
+        let doctorsList = '';
+        let count = 0;
+        
+        querySnapshot.forEach((doc) => {
+          count++;
+          const data = doc.data();
+          doctorsList += `
+            <tr>
+              <td>${data.name || 'N/A'}</td>
+              <td>${data.specialization || 'N/A'}</td>
+              <td>${data.email}</td>
+              <td>${data.licenseNumber || 'N/A'}</td>
+              <td>
+                <button class="btn-small" onclick="editDoctor('${doc.id}')">Edit</button>
+                <button class="btn-small btn-danger" onclick="deleteDoctor('${doc.id}')">Delete</button>
+              </td>
+            </tr>
+          `;
+        });
+
+        // Update doctors count in stat card
+        const statCard = document.querySelector('[data-stat="doctors"]');
+        if (statCard) {
+          statCard.querySelector('h3').textContent = count;
+        }
+        
+        // Update table body
+        const tableBody = document.querySelector('#doctorsTable tbody');
+        if (tableBody) {
+          tableBody.innerHTML = doctorsList || '<tr><td colspan="5" style="text-align: center; color: #999;">No doctors found</td></tr>';
+        }
+      } catch (error) {
+        console.error('Error loading doctors:', error);
+      }
+    }
+
+    function editDoctor(doctorId) {
+      alert('Edit functionality coming soon');
+    }
+
+    async function deleteDoctor(doctorId) {
+      if (!confirm('Are you sure you want to delete this doctor?')) {
+        return;
+      }
+
+      try {
+        // Get doctor data first
+        const docData = await getDoc(doc(window.db, "users", doctorId));
+        if (docData.exists()) {
+          const email = docData.data().email;
+          
+          // Delete from Firestore
+          await deleteDoc(doc(window.db, "users", doctorId));
+          
+          alert('✅ Doctor deleted successfully');
+          loadDoctors();
+        }
+      } catch (error) {
+        console.error('Error deleting doctor:', error);
+        alert('❌ Error deleting doctor');
+      }
     }
   </script>
 </body>
