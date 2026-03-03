@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Prescriptions - Care Without Borders</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .prescription-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .prescription-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .prescription-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+        .prescription-field {
+            font-size: 14px;
+        }
+        .prescription-field label {
+            font-weight: bold;
+            color: #666;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .prescription-field value {
+            font-size: 16px;
+            color: #333;
+        }
+        .medicines-list {
+            margin: 20px 0;
+        }
+        .medicine-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #4CAF50;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .medicine-item p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .instructions {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            border-left: 4px solid #4CAF50;
+        }
+        .no-prescriptions {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <h1>Care Without Borders</h1>
+            <div class="nav-links">
+                <a href="patient.html">Dashboard</a>
+                <a href="medicine-finder.html">Medicine Finder</a>
+                <a href="chatbot.html">AI Assistant</a>
+                <a href="prescription.html" class="active">Prescriptions</a>
+                <a href="medical-records.html">Medical Records</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="prescription-container">
+        <h2>My Prescriptions</h2>
+        <div id="prescriptionsList"></div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './js/firebase.js';
+        import { collection, getDocs, query, where } from "firebase/firestore";
+
+        async function loadPrescriptions() {
+            const prescriptionsList = document.getElementById('prescriptionsList');
+            
+            try {
+                const user = auth.currentUser;
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                prescriptionsList.innerHTML = '<div class="loading">Loading prescriptions...</div>';
+
+                const q = query(collection(db, 'prescriptions'), where('patientId', '==', user.uid));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    prescriptionsList.innerHTML = '<div class="no-prescriptions">No prescriptions yet. Once a doctor prescribes medicine, it will appear here.</div>';
+                    return;
+                }
+
+                prescriptionsList.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const prescriptionDate = data.date?.toDate ? data.date.toDate().toLocaleDateString() : new Date(data.date).toLocaleDateString();
+                    
+                    const medicinesHTML = Array.isArray(data.medicines) ? data.medicines.map(med => `
+                        <div class="medicine-item">
+                            <p><strong>${med.name}</strong></p>
+                            <p>Dosage: ${med.dosage}</p>
+                            <p>Frequency: ${med.frequency}</p>
+                            <p>Duration: ${med.duration}</p>
+                        </div>
+                    `).join('') : '<p>No medicines listed</p>';
+
+                    const prescriptionHTML = `
+                        <div class="prescription-card">
+                            <div class="prescription-header">
+                                <div class="prescription-field">
+                                    <label>Doctor Name:</label>
+                                    <value>${data.doctorName || 'N/A'}</value>
+                                </div>
+                                <div class="prescription-field">
+                                    <label>Date Prescribed:</label>
+                                    <value>${prescriptionDate}</value>
+                                </div>
+                            </div>
+                            <div class="medicines-list">
+                                <h4 style="margin-bottom: 10px;">Medicines</h4>
+                                ${medicinesHTML}
+                            </div>
+                            ${data.instructions ? `<div class="instructions"><strong>Instructions:</strong><p>${data.instructions}</p></div>` : ''}
+                        </div>
+                    `;
+                    
+                    prescriptionsList.innerHTML += prescriptionHTML;
+                });
+            } catch (error) {
+                console.error('Error loading prescriptions:', error);
+                prescriptionsList.innerHTML = '<div class="no-prescriptions">Error loading prescriptions. Please try again.</div>';
+            }
+        }
+
+        function logout() {
+            auth.signOut().then(() => {
+                window.location.href = 'login.html';
+            });
+        }
+
+        loadPrescriptions();
+        window.logout = logout;
+    </script>
+</body>
+</html>

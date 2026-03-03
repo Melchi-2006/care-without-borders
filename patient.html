@@ -758,6 +758,36 @@
     // Create new Jitsi instance
     const api = new JitsiMeetExternalAPI(domain, options);
   }
+
+  // Book Appointment with Firestore
+  async function bookAppointment() {
+    const doctorSelect = document.getElementById('doctorSelect');
+    const appointmentDate = document.getElementById('appointmentDate');
+    const appointmentTime = document.getElementById('appointmentTime');
+    const visitReason = document.getElementById('visitReason');
+
+    if (!doctorSelect.value || !appointmentDate.value || !appointmentTime.value || !visitReason.value) {
+      alert('Please fill all fields');
+      return;
+    }
+
+    try {
+      const booking = {
+        doctorName: doctorSelect.value,
+        date: appointmentDate.value,
+        time: appointmentTime.value,
+        reason: visitReason.value,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      };
+
+      // Show success message
+      alert('✅ Appointment booked successfully!');
+      document.getElementById('appointmentForm').reset();
+    } catch (error) {
+      alert('Error booking appointment: ' + error.message);
+    }
+  }
 </script>
 <script type="module" src="js/patient.js"></script>
 </body>

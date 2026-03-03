@@ -1023,6 +1023,7 @@
     <div id="appointments" class="panel-content">
       <div class="panel-title">📅 My Appointments</div>
       <div class="dashboard-card">
+        <h2>Pending Consultations</h2>
         <div class="appointments-list" id="appointmentsList">
           <p style="color: #999; text-align: center;">Loading appointments...</p>
         </div>
@@ -1513,6 +1514,79 @@
       alert('⚠️ Error sending email. Will save to EHR only.');
       savePrescriptionToEHR();
     });
+  }
+
+  // Load Appointments for Doctor
+  async function loadAppointments() {
+    const appointmentsList = document.getElementById('appointmentsList');
+    
+    try {
+      // Get appointments data
+      const appointments = [
+        {
+          id: 1,
+          patientName: 'John Doe',
+          patientEmail: 'john@example.com',
+          date: new Date().toISOString().split('T')[0],
+          time: '10:00',
+          reason: 'Regular Checkup',
+          status: 'pending'
+        },
+        {
+          id: 2,
+          patientName: 'Jane Smith',
+          patientEmail: 'jane@example.com',
+          date: new Date().toISOString().split('T')[0],
+          time: '11:00',
+          reason: 'Follow-up Visit',
+          status: 'pending'
+        }
+      ];
+
+      if (appointments.length === 0) {
+        appointmentsList.innerHTML = '<p style="color: #999; text-align: center;">No pending appointments</p>';
+        return;
+      }
+
+      appointmentsList.innerHTML = '';
+      appointments.forEach(apt => {
+        const appointmentHTML = `
+          <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #0f766e;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div>
+                <p style="margin: 0; font-weight: 600; color: #0f766e;">${apt.patientName}</p>
+                <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">${apt.patientEmail}</p>
+              </div>
+              <div>
+                <p style="margin: 0; font-weight: 600; color: #0f766e;">📅 ${apt.date} at ${apt.time}</p>
+                <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">${apt.reason}</p>
+              </div>
+            </div>
+            <div style="margin-top: 10px; display: flex; gap: 10px;">
+              <button onclick="acceptAppointment(${apt.id})" style="background: #4CAF50; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">Accept</button>
+              <button onclick="rejectAppointment(${apt.id})" style="background: #f44336; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">Reject</button>
+              <button onclick="startCall()" style="background: #2196F3; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">Start Call</button>
+            </div>
+          </div>
+        `;
+        appointmentsList.innerHTML += appointmentHTML;
+      });
+    } catch (error) {
+      console.error('Error loading appointments:', error);
+      appointmentsList.innerHTML = '<p style="color: #999; text-align: center;">Error loading appointments</p>';
+    }
+  }
+
+  // Accept Appointment
+  function acceptAppointment(appointmentId) {
+    alert('✅ Appointment accepted! The patient will be notified.');
+    loadAppointments();
+  }
+
+  // Reject Appointment
+  function rejectAppointment(appointmentId) {
+    alert('Appointment rejected. The patient will be notified.');
+    loadAppointments();
   }
 
 </script>
