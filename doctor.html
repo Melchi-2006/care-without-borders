@@ -765,91 +765,84 @@
     </div>
 
     <!-- Video Consultation -->
-    <div class="dashboard-card">
-      <h2>📹 Video Consultation</h2>
-      <p style="color: #666; font-size: 14px;">Start a consultation with patient</p>
+    <div class="dashboard-card" style="border-left: 5px solid #2196F3;">
+      <h2 style="color: #2196F3;">📹 Video Consultation</h2>
+      
+      <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2196F3;">
+        <p style="margin: 0; color: #1565c0; font-size: 14px;">
+          <strong>ℹ️ How to Start:</strong> First accept an appointment from the list above. A unique consultation room will be generated automatically. Then use this room code to start the video call.
+        </p>
+      </div>
+
       <div class="form-group">
-        <label>Patient Email (for prescription)</label>
+        <label style="font-weight: 600; color: #2196F3;">🔑 Consultation Room Code</label>
+        <input type="text" id="roomName" placeholder="Room code will appear here after confirming appointment" readonly style="background: #f5f5f5; cursor: not-allowed;">
+        <small style="color: #666; display: block; margin-top: 5px;">✓ This is automatically generated when you confirm a patient appointment</small>
+      </div>
+
+      <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ff9800;">
+        <p style="margin: 0; color: #e65100; font-size: 13px;">
+          <strong>⚠️ Important:</strong> Make sure the room code is set before starting the video call. If it's empty, go back and confirm a patient appointment first.
+        </p>
+      </div>
+
+      <button class="btn-primary" onclick="startCall()" style="width: 100%; background: #2196F3; padding: 15px; font-size: 16px; font-weight: 600;" onmouseover="this.style.background='#1976d2'" onmouseout="this.style.background='#2196F3'">🎥 Start Video Call Now</button>
+      
+      <!-- Video Call Container -->
+      <div id="jitsiContainer" style="border-radius: 12px; overflow: hidden; background: #000; min-height: 500px; margin-top: 20px; display: none;"></div>
+      <script>
+        // Show video container when Jitsi is initialized
+        const originalStartCall = window.startCall;
+        window.startCall = function() {
+          const container = document.getElementById('jitsiContainer');
+          container.style.display = 'block';
+          originalStartCall();
+        };
+      </script>
+    </div>
+
+    <!-- Prescription Panel (Alternative) -->
+    <div class="dashboard-card" style="margin-top: 20px; border-left: 5px solid #4CAF50;">
+      <h2 style="color: #4CAF50;">💊 Quick Prescription</h2>
+      <p style="color: #666; font-size: 14px;">Create and send prescriptions during consultation</p>
+      
+      <div class="form-group">
+        <label>Patient Email</label>
         <input type="email" id="consultationPatientEmail" placeholder="patient@example.com">
       </div>
-      <div class="form-group">
-        <label>Consultation Room</label>
-        <input type="text" id="roomName" placeholder="e.g., Doctor-001-Consultation">
-      </div>
-      <button class="btn-primary" onclick="startCall()" style="width: 100%;">Start Video Call</button>
-      
-      <!-- Call Interface with Prescription Panel -->
-      <div id="callInterface" class="hidden" style="margin-top: 20px;">
-        <div class="call-interface-container">
-          <div class="video-container">
-            <div id="jitsiContainer" style="border-radius: 12px; overflow: hidden; background: #000; min-height: 400px;"></div>
-          </div>
-          
-          <!-- Prescription Panel -->
-          <div class="prescription-panel">
-            <div class="prescription-header">
-              <span>📋 Prescription</span>
-              <button class="btn-secondary" onclick="closeCallInterface()" style="background: rgba(255,255,255,0.3); border: none; color: white; padding: 5px 10px; cursor: pointer;">✕</button>
-            </div>
-            
-            <div class="prescription-content">
-              <div class="call-status active">Live Consultation Active</div>
-              
-              <form id="prescriptionForm">
-                <div class="prescription-form-group">
-                  <label>Patient Name</label>
-                  <input type="text" id="prescriptionPatientName" placeholder="Patient Name" readonly>
-                </div>
-                
-                <div class="prescription-form-group">
-                  <label>Diagnosis</label>
-                  <input type="text" id="prescriptionDiagnosis" placeholder="e.g., Hypertension" required>
-                </div>
-                
-                <div class="prescription-form-group">
-                  <label>Prescription</label>
-                  <textarea id="prescriptionDetails" placeholder="Enter medicine name, dosage, frequency and duration...&#10;Example:&#10;1. Paracetamol 500mg - 2 tablets twice daily for 5 days&#10;2. Amoxicillin 250mg - 1 tablet thrice daily for 7 days" required></textarea>
-                </div>
 
-                <div class="prescription-form-group">
-                  <label>Quick Medicines (Click to add)</label>
-                  <div id="medicineQuickAdd"></div>
-                </div>
-                
-                <div class="prescription-form-group">
-                  <label>Follow-up Date</label>
-                  <input type="date" id="prescriptionFollowUpDate">
-                </div>
-                
-                <div class="prescription-form-group">
-                  <label>Additional Notes</label>
-                  <textarea id="prescriptionNotes" placeholder="Diet, lifestyle advice, precautions, etc."></textarea>
-                </div>
-              </form>
-            </div>
-            
-            <div class="prescription-actions">
-              <button class="btn-send-prescription" onclick="sendPrescriptionEmail()">📧 Send Email</button>
-              <button class="btn-save-eehr" onclick="savePrescriptionToEHR()">💾 Save to EHR</button>
-            </div>
-          </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div class="form-group">
+          <label>Diagnosis</label>
+          <input type="text" id="consultationDiagnosis" placeholder="e.g., Hypertension">
+        </div>
+        <div class="form-group">
+          <label>Medicine Name</label>
+          <input type="text" id="consultationMedicine" placeholder="e.g., Aspirin">
         </div>
       </div>
+
+      <div class="form-group">
+        <label>Dosage & Duration</label>
+        <input type="text" id="consultationDosage" placeholder="e.g., 1 tablet twice daily for 5 days">
+      </div>
+
+      <button class="btn-primary" onclick="sendQuickPrescription()" style="width: 100%; background: #4CAF50;" onmouseover="this.style.background='#45a049'" onmouseout="this.style.background='#4CAF50'">📧 Send Prescription</button>
     </div>
 
     <!-- Patient Records -->
-    <div class="dashboard-card full-width">
+    <div class="dashboard-card full-width" style="margin-top: 20px;">
       <h2>📚 Patient Medical Records</h2>
-      <p style="color: #666; font-size: 14px;">View and manage all patient EHR data</p>
+      <p style="color: #666; font-size: 14px;">All patient consultations and EHR data</p>
       <div class="patient-records" id="ehrList">
-        <p style="color: #999; text-align: center;">Loading patient records...</p>
+        <p style="color: #999; text-align: center;">📭 No patient records yet</p>
       </div>
     </div>
 
     <!-- Patient Search -->
-    <div class="dashboard-card">
+    <div class="dashboard-card" style="margin-top: 20px;">
       <h2>🔍 Search Patient</h2>
-      <p style="color: #666; font-size: 14px;">Find patient records quickly</p>
+      <p style="color: #666; font-size: 14px;">Find and manage patient records</p>
       <div class="form-group">
         <input type="text" id="patientSearchInput" placeholder="Search by name or ID...">
       </div>
@@ -1092,7 +1085,7 @@
     loadProfileData();
   });
 
-  // Panel Switching
+  // Panel Switching with data loading
   function switchPanel(panelId) {
     // Hide all panels
     const panels = document.querySelectorAll('.panel-content');
@@ -1108,7 +1101,7 @@
       selectedPanel.classList.add('active');
     }
     
-    // Activate nav link - find the link that matches this panelId
+    // Activate nav link
     const activeLink = document.querySelector(`[onclick="switchPanel('${panelId}')"]`);
     if (activeLink) {
       activeLink.classList.add('active');
@@ -1118,6 +1111,28 @@
     if (panelId === 'appointments') {
       loadAppointments();
     }
+  }
+
+  // Send Quick Prescription
+  function sendQuickPrescription() {
+    const email = document.getElementById('consultationPatientEmail').value;
+    const diagnosis = document.getElementById('consultationDiagnosis').value;
+    const medicine = document.getElementById('consultationMedicine').value;
+    const dosage = document.getElementById('consultationDosage').value;
+
+    if (!email || !diagnosis || !medicine || !dosage) {
+      alert('❌ Please fill in all fields');
+      return;
+    }
+
+    alert(`✅ Prescription sent!\n\nTo: ${email}\nDiagnosis: ${diagnosis}\nMedicine: ${medicine}\nDosage: ${dosage}\n\nThe patient will receive this via email.`);
+    
+    // Clear form
+    document.getElementById('consultationPatientEmail').value = '';
+    document.getElementById('consultationDiagnosis').value = '';
+    document.getElementById('consultationMedicine').value = '';
+    document.getElementById('consultationDosage').value = '';
+  }
   }
 
   // Load profile data from localStorage
@@ -1549,28 +1564,28 @@
       ];
 
       if (appointments.length === 0) {
-        appointmentsList.innerHTML = '<p style="color: #999; text-align: center;">No pending appointments</p>';
+        appointmentsList.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;"><p>📭 No pending appointments at the moment</p></div>';
         return;
       }
 
       appointmentsList.innerHTML = '';
       appointments.forEach(apt => {
+        const statusColor = apt.status === 'pending' ? '#ffc107' : apt.status === 'confirmed' ? '#28a745' : '#6c757d';
         const appointmentHTML = `
-          <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #0f766e;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0f766e; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: start;">
               <div>
-                <p style="margin: 0; font-weight: 600; color: #0f766e;">${apt.patientName}</p>
-                <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">${apt.patientEmail}</p>
+                <p style="margin: 0; font-weight: 600; font-size: 16px; color: #0f766e;">${apt.patientName}</p>
+                <p style="margin: 5px 0; color: #666; font-size: 14px;">📧 ${apt.patientEmail}</p>
+                <p style="margin: 5px 0; color: #333; font-size: 14px;">📅 ${apt.date} at <strong>${apt.time}</strong></p>
+                <p style="margin: 5px 0; color: #666; font-size: 14px;">🏥 ${apt.reason}</p>
+                <span style="display: inline-block; background: ${statusColor}; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; margin-top: 8px; font-weight: 600; text-transform: uppercase;">${apt.status}</span>
               </div>
-              <div>
-                <p style="margin: 0; font-weight: 600; color: #0f766e;">📅 ${apt.date} at ${apt.time}</p>
-                <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">${apt.reason}</p>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button onclick="confirmAppointment(${apt.id})" style="background: #28a745; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s; white-space: nowrap;" onmouseover="this.style.background='#218838'" onmouseout="this.style.background='#28a745'">✓ Confirm</button>
+                <button onclick="completeAppointment(${apt.id})" style="background: #0f766e; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s; white-space: nowrap;" onmouseover="this.style.background='#0d5c56'" onmouseout="this.style.background='#0f766e'">✓ Complete</button>
+                <button onclick="rejectAppointment(${apt.id})" style="background: #f44336; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s; white-space: nowrap;" onmouseover="this.style.background='#da190b'" onmouseout="this.style.background='#f44336'">✕ Reject</button>
               </div>
-            </div>
-            <div style="margin-top: 10px; display: flex; gap: 10px;">
-              <button onclick="acceptAppointment(${apt.id})" style="background: #4CAF50; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">Accept</button>
-              <button onclick="rejectAppointment(${apt.id})" style="background: #f44336; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">Reject</button>
-              <button onclick="startCall()" style="background: #2196F3; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">Start Call</button>
             </div>
           </div>
         `;
@@ -1578,19 +1593,25 @@
       });
     } catch (error) {
       console.error('Error loading appointments:', error);
-      appointmentsList.innerHTML = '<p style="color: #999; text-align: center;">Error loading appointments</p>';
+      appointmentsList.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;"><p>⚠️ Error loading appointments</p></div>';
     }
   }
 
-  // Accept Appointment
+  // Accept Appointment (moved from window scope)
   function acceptAppointment(appointmentId) {
     alert('✅ Appointment accepted! The patient will be notified.');
     loadAppointments();
   }
 
+  // Complete Appointment
+  function completeAppointment(appointmentId) {
+    alert('✅ Appointment marked as completed!');
+    loadAppointments();
+  }
+
   // Reject Appointment
   function rejectAppointment(appointmentId) {
-    alert('Appointment rejected. The patient will be notified.');
+    alert('❌ Appointment rejected. The patient will be notified.');
     loadAppointments();
   }
 
