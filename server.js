@@ -6,6 +6,7 @@ const path = require('path');
 const razorpayRoutes = require('./api/razorpay');
 const emailService = require('./api/email-service');
 const authService = require('./api/auth-service');
+const chatbotRoutes = require('./api/openai-chatbot');
 
 const app = express();
 
@@ -161,6 +162,14 @@ app.get('/api/auth/user/:userType/:id', (req, res) => {
 
 // ============ RAZORPAY ROUTES ============
 app.use('/api', razorpayRoutes);
+
+// ============ CHATBOT ROUTES ============
+app.use('/api/openai-chatbot', chatbotRoutes);
+
+// Serve chatbot UI
+app.get('/chatbot', (req, res) => {
+  res.sendFile(path.join(__dirname, 'ai-chatbot.html'));
+});
 
 // ============ EMAIL ROUTES ============
 
@@ -327,6 +336,7 @@ app.listen(PORT, HOST, () => {
 ║                                                ║
 ║  Environment: ${process.env.NODE_ENV || 'development'}              ║
 ║  Razorpay: ${process.env.RAZORPAY_KEY_ID ? '✅ Configured' : '❌ Not Configured'}        ║
+║  OpenAI Chatbot: ${process.env.OPENAI_API_KEY ? '✅ Configured' : '❌ Not Configured'}   ║
 ║                                                ║
 ╚════════════════════════════════════════════════╝
   `);
