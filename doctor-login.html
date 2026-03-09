@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Doctor Login | Care Without Borders</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="config.js"></script>
   
   <style>
     * {
@@ -473,21 +474,7 @@
   </div>
 </div>
 
-<script type="module">
-  import { auth, db } from './js/firebase.js';
-  import { 
-    signInWithEmailAndPassword,
-    setPersistence,
-    browserLocalPersistence
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { 
-    doc, 
-    getDoc 
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-  // Set Firebase persistence
-  setPersistence(auth, browserLocalPersistence);
-
+<script>
   window.togglePasswordVisibility = function() {
     const passwordInput = document.getElementById('password');
     const toggleEye = document.querySelector('.toggle-eye');
@@ -537,61 +524,36 @@
       loginBtn.disabled = true;
       loginBtn.textContent = '🔄 Logging in...';
 
-      // Try Firebase authentication using modular setup from firebase.js
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
-      // Check if user exists in Firestore and is a doctor
-      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
-      
-      if (!userDoc.exists()) {
-        showAlert('Doctor account not found. Please contact admin.', 'error');
+      // Call backend API for doctor login
+      const response = await fetch(CONFIG.getApiUrl(CONFIG.ENDPOINTS.LOGIN_DOCTOR), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password, licenseNumber })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showAlert(`✅ Welcome Dr. ${data.doctor.name}!`, 'success');
+        
+        // Store doctor session
+        localStorage.setItem('doctorLoggedIn', 'true');
+        localStorage.setItem('doctorToken', data.token.token);
+        localStorage.setItem('doctorData', JSON.stringify(data.doctor));
+        
+        setTimeout(() => {
+          window.location.href = 'doctor.html';
+        }, 1500);
+      } else {
+        showAlert(`Login failed: ${data.error}`, 'error');
         loginBtn.disabled = false;
         loginBtn.textContent = '🔐 Login';
-        return;
       }
-
-      const userData = userDoc.data();
-      
-      // Verify user is a doctor
-      if (userData.role !== 'doctor') {
-        showAlert('This account is not registered as a doctor.', 'error');
-        loginBtn.disabled = false;
-        loginBtn.textContent = '🔐 Login';
-        return;
-      }
-
-      // Verify license number matches
-      if (userData.licenseNumber !== licenseNumber) {
-        showAlert('Medical license number does not match. Please verify.', 'error');
-        loginBtn.disabled = false;
-        loginBtn.textContent = '🔐 Login';
-        return;
-      }
-
-      showAlert(`✅ Welcome Dr. ${userData.name || 'Doctor'}!`, 'success');
-      
-      // Store doctor session
-      localStorage.setItem('doctorLoggedIn', 'true');
-      localStorage.setItem('doctorUID', userCredential.user.uid);
-      localStorage.setItem('doctorData', JSON.stringify(userData));
-      
-      setTimeout(() => {
-        window.location.href = 'doctor.html';
-      }, 1500);
-
     } catch (error) {
       console.error('Login error:', error);
-      
-      if (error.code === 'auth/user-not-found') {
-        showAlert('Email not registered. Please contact admin.', 'error');
-      } else if (error.code === 'auth/wrong-password') {
-        showAlert('Incorrect password. Please try again.', 'error');
-      } else if (error.code === 'auth/invalid-email') {
-        showAlert('Invalid email format.', 'error');
-      } else {
-        showAlert(`Login failed: ${error.message}`, 'error');
-      }
-      
+      showAlert(`Login failed: ${error.message}`, 'error');
       loginBtn.disabled = false;
       loginBtn.textContent = '🔐 Login';
     }

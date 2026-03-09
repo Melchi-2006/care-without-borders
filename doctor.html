@@ -6,6 +6,7 @@
   <title>Doctor Dashboard | Care Without Borders</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="css/style.css">
+  <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .doctor-header {
@@ -1506,7 +1507,7 @@
   // Backend function to send email
   function sendEmailViaBackend(to, subject, htmlContent) {
     // Using backend API endpoint
-    fetch('/api/send-prescription-email', {
+    fetch(CONFIG.getApiUrl(CONFIG.ENDPOINTS.SEND_PRESCRIPTION), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

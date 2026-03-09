@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Health Assistant | Care Without Borders</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="config.js"></script>
   <style>
     * {
       margin: 0;
@@ -468,7 +469,7 @@
 
     try {
       // Call backend API
-      const response = await fetch('/api/openai-chatbot/chat', {
+      const response = await fetch(CONFIG.getApiUrl(CONFIG.ENDPOINTS.CHATBOT_CHAT), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -590,7 +591,7 @@
     if (!confirm('Clear all messages? This cannot be undone.')) return;
 
     try {
-      await fetch(`/api/openai-chatbot/clear/${userId}`, { method: 'POST' });
+      await fetch(CONFIG.getApiUrl(CONFIG.ENDPOINTS.CHATBOT_CLEAR + '/' + userId), { method: 'POST' });
       messagesArea.innerHTML = `
         <div class="empty-state">
           <div class="empty-icon"><i class="fas fa-comments"></i></div>
@@ -614,7 +615,7 @@
   // ==================== LOAD CONVERSATION HISTORY ====================
   async function loadConversationHistory() {
     try {
-      const response = await fetch(`/api/openai-chatbot/history/${userId}`);
+      const response = await fetch(CONFIG.getApiUrl(CONFIG.ENDPOINTS.CHATBOT_HISTORY + '/' + userId));
       if (response.ok) {
         const data = await response.json();
         if (data.history.length > 0) {

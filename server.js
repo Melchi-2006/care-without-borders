@@ -11,9 +11,18 @@ const chatbotRoutes = require('./api/openai-chatbot');
 const app = express();
 
 // ============ MIDDLEWARE ============
+const corsOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'http://127.0.0.1:3000',
+  'https://care-without-borders-fypi.vercel.app'
+];
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5000', 'http://127.0.0.1:3000'],
-  credentials: true
+  origin: corsOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({ limit: '10mb' }));

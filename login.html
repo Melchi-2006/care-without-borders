@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Patient Login | Care Without Borders</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="config.js"></script>
   
   <style>
     * {
@@ -637,41 +638,36 @@
       loginBtn.disabled = true;
       loginBtn.textContent = '🔄 Logging in...';
 
-      // Try Firebase authentication first
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
-      // Check if user exists in Firestore
-      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
-      
-      if (!userDoc.exists()) {
-        // User exists in Firebase but not in Firestore - create Firestore entry
-        await setDoc(doc(db, "users", userCredential.user.uid), {
-          email: email,
-          role: "patient",
-          name: userCredential.user.displayName || email.split('@')[0],
-          createdAt: new Date()
-        });
+      // Call backend API for patient login
+      const response = await fetch(CONFIG.getApiUrl(CONFIG.ENDPOINTS.LOGIN_PATIENT), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Save session data
+        localStorage.setItem('patientLoggedIn', 'true');
+        localStorage.setItem('patientToken', data.token.token);
+        localStorage.setItem('patientData', JSON.stringify(data.patient));
+        
+        showAlert(`✅ Welcome ${data.patient.name}!`, 'success');
+        
+        setTimeout(() => {
+          window.location.href = 'patient.html';
+        }, 1500);
+      } else {
+        showAlert(`Login failed: ${data.error}`, 'error');
+        loginBtn.disabled = false;
+        loginBtn.textContent = '🔐 Login';
       }
-
-      showAlert(`✅ Welcome ${userCredential.user.displayName || 'Patient'}!`, 'success');
-      
-      setTimeout(() => {
-        window.location.href = 'patient.html';
-      }, 1500);
-
     } catch (error) {
       console.error('Login error:', error);
-      
-      if (error.code === 'auth/user-not-found') {
-        showAlert('Email not registered. Please sign up first.', 'error');
-      } else if (error.code === 'auth/wrong-password') {
-        showAlert('Incorrect password. Please try again.', 'error');
-      } else if (error.code === 'auth/invalid-email') {
-        showAlert('Invalid email format.', 'error');
-      } else {
-        showAlert(`Login failed: ${error.message}`, 'error');
-      }
-      
+      showAlert(`Login failed: ${error.message}`, 'error');
       loginBtn.disabled = false;
       loginBtn.textContent = '🔐 Login';
     }

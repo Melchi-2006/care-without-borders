@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register | Care Without Borders - Healthcare for Everyone</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="config.js"></script>
   <style>
     * {
       margin: 0;
@@ -856,6 +857,11 @@
       return;
     }
 
+    if (!(email.includes('@') && email.includes('.'))) {
+      showAlert('❌ Please enter a valid email', 'error');
+      return;
+    }
+
     if (password.length < 6) {
       showAlert('❌ Password must be at least 6 characters', 'error');
       return;
@@ -870,25 +876,33 @@
     signupBtn.disabled = true;
     signupBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
 
-    // Simulate API call
-    setTimeout(() => {
-      try {
-        // Store user info in localStorage (demo only)
-        localStorage.setItem('userName', name);
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('isLoggedIn', 'true');
-        
+    // Call backend API
+    fetch(CONFIG.getApiUrl(CONFIG.ENDPOINTS.REGISTER_PATIENT), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password, name })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
         showAlert('✅ Account created successfully! Redirecting...', 'success');
-        
         setTimeout(() => {
-          window.location.href = 'patient.html';
+          window.location.href = 'login.html';
         }, 1500);
-      } catch (error) {
-        showAlert('❌ Sign up failed. Please try again.', 'error');
+      } else {
+        showAlert(`❌ ${data.error}`, 'error');
         signupBtn.disabled = false;
         signupBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
       }
-    }, 1500);
+    })
+    .catch(error => {
+      console.error('Registration error:', error);
+      showAlert('❌ Registration failed. Please try again.', 'error');
+      signupBtn.disabled = false;
+      signupBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+    });
   }
 
   // ==================== LOGIN HANDLER ==================== 
@@ -910,24 +924,38 @@
     loginBtn.disabled = true;
     loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
 
-    // Simulate API call
-    setTimeout(() => {
-      try {
-        // Store login info in localStorage (demo only)
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('isLoggedIn', 'true');
+    // Call backend API
+    fetch(CONFIG.getApiUrl(CONFIG.ENDPOINTS.LOGIN_PATIENT), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Save session data
+        localStorage.setItem('patientLoggedIn', 'true');
+        localStorage.setItem('patientToken', data.token.token);
+        localStorage.setItem('patientData', JSON.stringify(data.patient));
         
         showAlert('✅ Login successful! Redirecting...', 'success');
-        
         setTimeout(() => {
           window.location.href = 'patient.html';
         }, 1500);
-      } catch (error) {
-        showAlert('❌ Login failed. Please try again.', 'error');
+      } else {
+        showAlert(`❌ ${data.error}`, 'error');
         loginBtn.disabled = false;
         loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
       }
-    }, 1500);
+    })
+    .catch(error => {
+      console.error('Login error:', error);
+      showAlert('❌ Login failed. Please try again.', 'error');
+      loginBtn.disabled = false;
+      loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+    });
   }
 
   // ==================== SOCIAL AUTH HANDLERS ==================== 
