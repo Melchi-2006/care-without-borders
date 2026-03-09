@@ -451,22 +451,30 @@
   </div>
 
   <script type="module">
-    import { ChatbotEngine, processUserMessage, initializeChatbot } from './js/chatbot-utils.js';
-    import { DISEASE_MEDICINE_DATABASE } from './js/disease-medicine-database.js';
-
-    // Initialize chatbot
-    let chatbot = initializeChatbot();
+    // ==================== CONFIGURATION ====================
+    const API_BASE_URL = 'http://localhost:5000';
+    const userId = localStorage.getItem('patientData') 
+      ? JSON.parse(localStorage.getItem('patientData')).id 
+      : (localStorage.getItem('userEmail') || 'anonymous_' + Date.now());
+    
     let isTyping = false;
+    const messagesDiv = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.querySelector('.send-btn');
 
-    // Display initial greeting
-    function initializeChat() {
-      const greeting = chatbot.startSession();
-      addMessage('assistant', greeting, 'normal');
+    console.log('🔧 AI Chatbot Configuration:');
+    console.log('- API Base URL:', API_BASE_URL);
+    console.log('- User ID:', userId);
+    console.log('- Endpoint: /api/openai-chatbot/chat');
+
+    // ==================== DISPLAY INITIAL GREETING ====================
+    function displayGreeting() {
+      const greeting = `Hi! 👋 Welcome to Care Without Borders AI Health Assistant.\n\nI'm powered by advanced AI and can help you with:\n✅ Symptom analysis and condition identification\n✅ Detailed disease information\n✅ Medicine information and recommendations\n✅ Health advice and guidance\n✅ Emergency detection\n\nWhat health concern can I help you with today?`;
+      addMessage('assistant', greeting);
     }
 
-    // Add message to UI
-    function addMessage(sender, content, type = 'normal') {
-      const messagesDiv = document.getElementById('chatMessages');
+    // ==================== ADD MESSAGE TO UI ====================
+    function addMessage(sender, content) {
       const messageEl = document.createElement('div');
       messageEl.className = `message ${sender}`;
 
@@ -475,8 +483,8 @@
       avatar.textContent = sender === 'user' ? '👤' : '🤖';
 
       const contentEl = document.createElement('div');
-      contentEl.className = `message-content ${type === 'emergency' ? 'emergency' : ''} ${type === 'info' ? 'info-message' : ''} ${type === 'warning' ? 'warning-message' : ''}`;
-      contentEl.innerHTML = content.replace(/\n/g, '<br>');
+      contentEl.className = 'message-content';
+      contentEl.textContent = content;
 
       if (sender === 'assistant') {
         messageEl.appendChild(avatar);
@@ -488,147 +496,170 @@
 
       messagesDiv.appendChild(messageEl);
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-      return contentEl;
     }
 
-    // Show typing indicator
+    // ==================== SHOW TYPING INDICATOR ====================
     function showTyping() {
-      const messagesDiv = document.getElementById('chatMessages');
-      const typingEl = document.createElement('div');
-      typingEl.className = 'message assistant';
-      typingEl.id = 'typingIndicator';
+      const messageEl = document.createElement('div');
+      messageEl.className = 'message assistant';
+      messageEl.id = 'typingIndicator';
 
       const avatar = document.createElement('div');
       avatar.className = 'message-avatar';
       avatar.textContent = '🤖';
 
-      const content = document.createElement('div');
-      content.className = 'message-content';
-      content.innerHTML = `<div class="typing-indicator">
+      const contentEl = document.createElement('div');
+      contentEl.className = 'message-content';
+      contentEl.innerHTML = `<div class="typing-indicator">
         <div class="typing-dot"></div>
         <div class="typing-dot"></div>
         <div class="typing-dot"></div>
       </div>`;
 
-      typingEl.appendChild(avatar);
-      typingEl.appendChild(content);
-      messagesDiv.appendChild(typingEl);
+      messageEl.appendChild(avatar);
+      messageEl.appendChild(contentEl);
+      messagesDiv.appendChild(messageEl);
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-    // Remove typing indicator
+    // ==================== REMOVE TYPING INDICATOR ====================
     function removeTyping() {
       const typingEl = document.getElementById('typingIndicator');
       if (typingEl) typingEl.remove();
     }
 
-    // Send message
+    // ==================== SEND MESSAGE ====================
     window.sendMessage = async function() {
-      const input = document.getElementById('userInput');
-      const message = input.value.trim();
-
+      const message = userInput.value.trim();
+      
       if (!message || isTyping) return;
 
       isTyping = true;
-      input.value = '';
+      userInput.value = '';
+      sendBtn.disabled = true;
 
       // Add user message
       addMessage('user', message);
 
-      // Show typing
+      // Show typing indicator
       showTyping();
 
-      // Simulate delay
-      setTimeout(() => {
-        removeTyping();
+      try {
+        console.log('📤 Sending message to:', `${API_BASE_URL}/api/openai-chatbot/chat`);
+        
+        const response = await fetch(`${API_BASE_URL}/api/openai-chatbot/chat`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: message,
+            userId: userId,
+            conversationId: 'main'
+          })
+        });
 
-        // Process message
-        const response = processUserMessage(chatbot, message);
-        addMessage('assistant', response.message, response.type);
+        console.log('📥 Response Status:', response.status);
 
-        // Add suggestions if available
-        if (response.suggestions && response.suggestions.length > 0) {
-          const suggestionsHtml = '<div class="suggestions">' +
-            response.suggestions.map(s => 
-              `<button class="suggestion-btn" onclick="useSuggestion('${s}')">${s}</button>`
-            ).join('') +
-            '</div>';
-          document.querySelectorAll('.message.assistant:last-child .message-content')[0].innerHTML += suggestionsHtml;
+        if (!response.ok) {
+          let errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
 
-        isTyping = false;
-      }, 1000 + Math.random() * 500);
+        const data = await response.json();
+        console.log('✅ Response:', data);
 
-      input.focus();
+        removeTyping();
+
+        if (data.success) {
+          // Show emergency alert if needed
+          if (data.emergency || data.escalationRequired) {
+            addMessage('assistant', '🚨 EMERGENCY ALERT: If this is a medical emergency, please call 911 or visit the nearest emergency room immediately!');
+          }
+          
+          addMessage('assistant', data.message);
+        } else {
+          addMessage('assistant', '❌ Error: ' + (data.error || 'Failed to get response'));
+        }
+
+      } catch (error) {
+        console.error('❌ Error:', error.message);
+        removeTyping();
+        
+        let errorMsg = '❌ Failed to send message.\n\n';
+        if (error.message.includes('Failed to fetch')) {
+          errorMsg += '⚠️ Cannot connect to server.\n\nMake sure:\n✅ Server is running on localhost:5000\n✅ Run: npm start\n✅ OpenAI API key is set in .env';
+        } else {
+          errorMsg += 'Error: ' + error.message;
+        }
+        
+        addMessage('assistant', errorMsg);
+      } finally {
+        isTyping = false;
+        sendBtn.disabled = false;
+        userInput.focus();
+      }
     };
 
-    // Handle Enter key
+    // ==================== KEYBOARD HANDLING ====================
     window.handleKeyPress = function(event) {
       if (event.key === 'Enter' && !isTyping) {
         sendMessage();
       }
     };
 
-    // Use suggestion
-    window.useSuggestion = function(suggestion) {
-      document.getElementById('userInput').value = suggestion;
-      document.getElementById('userInput').focus();
-      setTimeout(() => sendMessage(), 100);
-    };
-
-    // Quick actions
+    // ==================== QUICK ACTIONS ====================
     window.useQuickAction = function(action) {
       let message = '';
       switch(action) {
         case 'symptoms':
-          message = 'I have some symptoms. Can you help me?';
+          message = 'I have been experiencing some symptoms. Can you help me understand what might be causing them?';
           break;
         case 'medicine':
-          message = 'Can you help me find medicines?';
+          message = 'Can you provide information about medicines and treatments?';
           break;
         case 'disease':
-          message = 'Tell me about a specific disease';
+          message = 'Tell me about a common disease and how to manage it.';
           break;
         case 'interaction':
-          message = 'Check if these medicines interact';
+          message = 'Are there any drug interactions I should be aware of?';
           break;
         case 'emergency':
-          message = 'I have severe chest pain and can\'t breathe';
+          message = 'I am experiencing severe chest pain and difficulty breathing. This is an emergency!';
           break;
       }
-      document.getElementById('userInput').value = message;
+      userInput.value = message;
       setTimeout(() => sendMessage(), 100);
     };
 
-    // Clear chat
+    // ==================== CLEAR CHAT ====================
     window.clearChat = function() {
       if (confirm('Are you sure you want to clear the chat?')) {
-        document.getElementById('chatMessages').innerHTML = '';
-        chatbot.clearHistory();
-        initializeChat();
+        messagesDiv.innerHTML = '';
+        displayGreeting();
       }
     };
 
-    // End chat
+    // ==================== END CHAT ====================
     window.endChat = function() {
       if (confirm('Thank you for using our service. Goodbye!')) {
-        addMessage('assistant', chatbot.endSession());
+        addMessage('assistant', 'Thank you for using Care Without Borders. Take care of your health! 👋');
         setTimeout(() => {
           window.location.href = 'patient.html';
         }, 2000);
       }
     };
 
-    // Start chat
-    initializeChat();
-    document.getElementById('userInput').focus();
+    // ==================== INITIALIZATION ====================
+    displayGreeting();
+    userInput.focus();
 
-    // Check if there's an initial message from patient dashboard
+    // Check if there's an initial message
     const initialMessage = localStorage.getItem('initialChatMessage');
     if (initialMessage) {
       setTimeout(() => {
-        document.getElementById('userInput').value = initialMessage;
+        userInput.value = initialMessage;
         sendMessage();
         localStorage.removeItem('initialChatMessage');
       }, 500);
