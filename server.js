@@ -6,6 +6,7 @@ const path = require('path');
 const razorpayRoutes = require('./api/razorpay');
 const emailService = require('./api/email-service');
 const authService = require('./api/auth-service');
+const firebaseService = require('./api/firebase-service');
 const chatbotRoutes = require('./api/openai-chatbot');
 
 const app = express();

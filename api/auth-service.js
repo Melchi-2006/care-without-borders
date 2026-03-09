@@ -2,6 +2,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const firebaseService = require('./firebase-service');
 
 // File storage for users (in production, use a real database like MongoDB)
 const USERS_FILE = path.join(__dirname, '../data/users.json');
@@ -105,6 +106,16 @@ function registerDoctor(doctorData) {
     users.doctors.push(newDoctor);
     saveUsers(users);
     
+    // Also save to Firebase Firestore (async, non-blocking)
+    firebaseService.saveDoctorToFirebase({
+      id: newDoctor.id,
+      email: newDoctor.email,
+      name: newDoctor.name,
+      phone: newDoctor.phone,
+      specialization: newDoctor.specialization,
+      licenseNumber: newDoctor.licenseNumber
+    }).catch(err => console.error('Firebase sync error:', err));
+    
     return { 
       success: true, 
       message: 'Doctor registered successfully',
@@ -157,6 +168,16 @@ function registerPatient(patientData) {
     
     users.patients.push(newPatient);
     saveUsers(users);
+    
+    // Also save to Firebase Firestore (async, non-blocking)
+    firebaseService.savePatientToFirebase({
+      id: newPatient.id,
+      email: newPatient.email,
+      name: newPatient.name,
+      phone: newPatient.phone,
+      age: newPatient.age,
+      gender: newPatient.gender
+    }).catch(err => console.error('Firebase sync error:', err));
     
     return { 
       success: true, 
