@@ -642,36 +642,321 @@
     </div>
 
     <!-- AI Chatbot Panel -->
-    <div id="chatbot" class="panel-content">
-      <div class="panel-title">🤖 AI Health Assistant</div>
-      
-      <div class="dashboard-card">
-        <h2 style="margin-top: 0; color: #0f766e; display: flex; align-items: center; gap: 10px;">
-          💬 Chat with AI
-          <span style="font-size: 12px; background: #c8e6c9; color: #2e7d32; padding: 4px 10px; border-radius: 12px; font-weight: normal;">Live</span>
-        </h2>
-        <p style="color: #666; font-size: 14px; margin: 10px 0;">Talk to our intelligent health assistant about symptoms, diseases, medicines, and get real medical conversations.</p>
-        <a href="chatbot.html" target="_blank" class="btn-primary" style="display: inline-block; text-decoration: none; margin-right: 10px;">💬 Start Chat Session</a>
-        <a href="CHATBOT_AND_MEDICINE_GUIDE.md" class="btn-secondary" style="display: inline-block; text-decoration: none;">📖 How to Use</a>
-      </div>
-
-      <div class="dashboard-card" style="margin-top: 25px;">
-        <h2>Quick Chat Demo</h2>
-        <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Try asking the AI about your symptoms:</p>
-        <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
-          <button class="btn-secondary" onclick="quickChatDemo('I have a cough and fever')" style="width: 100%; text-align: left; padding: 12px;">🤒 "I have a cough and fever"</button>
-          <button class="btn-secondary" onclick="quickChatDemo('Tell me about fever')" style="width: 100%; text-align: left; padding: 12px;">🌡️ "Tell me about fever"</button>
-          <button class="btn-secondary" onclick="quickChatDemo('What medicines treat headache?')" style="width: 100%; text-align: left; padding: 12px;">💊 "What medicines treat headache?"</button>
-          <button class="btn-secondary" onclick="quickChatDemo('Emergency help chest pain')" style="width: 100%; text-align: left; padding: 12px;">🚨 "Emergency help - chest pain"</button>
+    <div id="chatbot" class="panel-content" style="display: block; padding: 0 !important;">
+      <div style="height: 100%; display: flex; flex-direction: column; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+        
+        <!-- Chatbot Header -->
+        <div style="background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #0d6a63;">
+          <div>
+            <h2 style="margin: 0 0 5px 0; font-size: 20px;">🤖 AI Health Assistant</h2>
+            <p style="margin: 0; font-size: 12px; opacity: 0.9;">Chat about your health concerns</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button onclick="patientClearChat()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.5); padding: 8px 12px; border-radius: 15px; cursor: pointer; font-size: 12px;">🗑️ Clear</button>
+          </div>
         </div>
-      </div>
 
-      <div style="margin-top: 25px; background: #e8f5f4; padding: 15px; border-radius: 8px; border-left: 4px solid #0f766e;">
-        <p style="margin: 0; color: #0f766e; font-size: 13px; line-height: 1.6;">
-          <strong>✨ Features:</strong> Natural conversations, symptom analysis, disease diagnosis, medicine information, emergency detection, and more. Click "Start Chat Session" for the full experience!
-        </p>
+        <!-- Quick Actions -->
+        <div style="background: #f0f0f0; padding: 12px 15px; border-bottom: 1px solid #ddd; display: flex; gap: 8px; flex-wrap: wrap; overflow-x: auto;">
+          <button class="action-btn" onclick="patientQuickAction('symptoms')" style="background: white; border: 1px solid #ddd; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 12px; transition: all 0.3s ease;">🩺 Symptoms</button>
+          <button class="action-btn" onclick="patientQuickAction('medicine')" style="background: white; border: 1px solid #ddd; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 12px; transition: all 0.3s ease;">💊 Medicine</button>
+          <button class="action-btn" onclick="patientQuickAction('disease')" style="background: white; border: 1px solid #ddd; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 12px; transition: all 0.3s ease;">🏥 Disease</button>
+          <button class="action-btn" onclick="patientQuickAction('interaction')" style="background: white; border: 1px solid #ddd; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 12px; transition: all 0.3s ease;">⚠️ Interaction</button>
+          <button class="action-btn" onclick="patientQuickAction('emergency')" style="background: white; border: 1px solid #ddd; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 12px; transition: all 0.3s ease;">🚨 Emergency</button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div id="patientChatMessages" style="flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; background: #f8f9fa;">
+          <!-- Messages will be added here -->
+        </div>
+
+        <!-- Chat Input -->
+        <div style="padding: 15px; background: white; border-top: 1px solid #e0e0e0; display: flex; gap: 8px;">
+          <input 
+            type="text" 
+            id="patientChatInput" 
+            placeholder="Type your message..." 
+            onkeypress="patientHandleKeyPress(event)"
+            style="flex: 1; padding: 10px 12px; border: 1px solid #ddd; border-radius: 20px; font-size: 13px; outline: none; transition: all 0.3s ease;"
+          />
+          <button onclick="patientSendMessage()" style="background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.3s ease;">➤</button>
+        </div>
+
       </div>
     </div>
+
+    <!-- Chatbot Styles -->
+    <style>
+      #patientChatInput:focus {
+        border-color: #0f766e;
+        box-shadow: 0 0 8px rgba(15, 118, 110, 0.2);
+      }
+
+      .action-btn:hover {
+        background: #0f766e !important;
+        color: white !important;
+        border-color: #0f766e !important;
+      }
+
+      .patient-message {
+        display: flex;
+        gap: 8px;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .patient-message.user {
+        justify-content: flex-end;
+      }
+
+      .patient-message.assistant {
+        justify-content: flex-start;
+      }
+
+      .patient-message-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+
+      .patient-message.user .patient-message-avatar {
+        background: #667eea;
+        color: white;
+      }
+
+      .patient-message.assistant .patient-message-avatar {
+        background: #14b8a6;
+        color: white;
+      }
+
+      .patient-message-content {
+        max-width: 65%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        word-wrap: break-word;
+        line-height: 1.4;
+        font-size: 13px;
+      }
+
+      .patient-message.user .patient-message-content {
+        background: #667eea;
+        color: white;
+        border-bottom-right-radius: 3px;
+      }
+
+      .patient-message.assistant .patient-message-content {
+        background: white;
+        color: #333;
+        border: 1px solid #e0e0e0;
+        border-bottom-left-radius: 3px;
+      }
+
+      .typing-indicator {
+        display: flex;
+        gap: 3px;
+        align-items: center;
+        padding: 8px;
+      }
+
+      .typing-dot {
+        width: 6px;
+        height: 6px;
+        background: #999;
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+      }
+
+      .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typing {
+        0%, 60%, 100% {
+          opacity: 0.5;
+          transform: translateY(0);
+        }
+        30% {
+          opacity: 1;
+          transform: translateY(-5px);
+        }
+      }
+    </style>
+
+    <!-- Chatbot Script -->
+    <script>
+      const PATIENT_API_BASE_URL = 'http://localhost:5000';
+      const patientUserId = localStorage.getItem('patientData') 
+        ? JSON.parse(localStorage.getItem('patientData')).id 
+        : (localStorage.getItem('userEmail') || 'anonymous_' + Date.now());
+      
+      let patientIsTyping = false;
+      const patientMessagesDiv = document.getElementById('patientChatMessages');
+      const patientInput = document.getElementById('patientChatInput');
+
+      function patientDisplayGreeting() {
+        const greeting = `Hi! 👋 Welcome to Care Without Borders AI Health Assistant.\n\nI'm powered by advanced AI and can help you with:\n✅ Symptom analysis\n✅ Disease information\n✅ Medicine information\n✅ Health advice\n✅ Emergency detection\n\nWhat health concern can I help you with today?`;
+        patientAddMessage('assistant', greeting);
+      }
+
+      function patientAddMessage(sender, content) {
+        const messageEl = document.createElement('div');
+        messageEl.className = `patient-message ${sender}`;
+
+        const avatar = document.createElement('div');
+        avatar.className = 'patient-message-avatar';
+        avatar.textContent = sender === 'user' ? '👤' : '🤖';
+
+        const contentEl = document.createElement('div');
+        contentEl.className = 'patient-message-content';
+        contentEl.textContent = content;
+
+        if (sender === 'assistant') {
+          messageEl.appendChild(avatar);
+          messageEl.appendChild(contentEl);
+        } else {
+          messageEl.appendChild(contentEl);
+          messageEl.appendChild(avatar);
+        }
+
+        patientMessagesDiv.appendChild(messageEl);
+        patientMessagesDiv.scrollTop = patientMessagesDiv.scrollHeight;
+      }
+
+      function patientShowTyping() {
+        const messageEl = document.createElement('div');
+        messageEl.className = 'patient-message assistant';
+        messageEl.id = 'patientTypingIndicator';
+
+        const avatar = document.createElement('div');
+        avatar.className = 'patient-message-avatar';
+        avatar.textContent = '🤖';
+
+        const contentEl = document.createElement('div');
+        contentEl.className = 'patient-message-content';
+        contentEl.innerHTML = `<div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>`;
+
+        messageEl.appendChild(avatar);
+        messageEl.appendChild(contentEl);
+        patientMessagesDiv.appendChild(messageEl);
+        patientMessagesDiv.scrollTop = patientMessagesDiv.scrollHeight;
+      }
+
+      function patientRemoveTyping() {
+        const typingEl = document.getElementById('patientTypingIndicator');
+        if (typingEl) typingEl.remove();
+      }
+
+      window.patientSendMessage = async function() {
+        const message = patientInput.value.trim();
+        
+        if (!message || patientIsTyping) return;
+
+        patientIsTyping = true;
+        patientInput.value = '';
+
+        patientAddMessage('user', message);
+        patientShowTyping();
+
+        try {
+          const response = await fetch(`${PATIENT_API_BASE_URL}/api/openai-chatbot/chat`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              message: message,
+              userId: patientUserId,
+              conversationId: 'main'
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const data = await response.json();
+          patientRemoveTyping();
+
+          if (data.success) {
+            if (data.emergency || data.escalationRequired) {
+              patientAddMessage('assistant', '🚨 EMERGENCY: Call 911 or visit the nearest emergency room immediately!');
+            }
+            patientAddMessage('assistant', data.message);
+          } else {
+            patientAddMessage('assistant', '❌ Error: ' + (data.error || 'Failed to get response'));
+          }
+
+        } catch (error) {
+          patientRemoveTyping();
+          patientAddMessage('assistant', '❌ Cannot connect to server.\n\nMake sure: npm start is running');
+        } finally {
+          patientIsTyping = false;
+          patientInput.focus();
+        }
+      };
+
+      window.patientHandleKeyPress = function(event) {
+        if (event.key === 'Enter' && !patientIsTyping) {
+          patientSendMessage();
+        }
+      };
+
+      window.patientQuickAction = function(action) {
+        let message = '';
+        switch(action) {
+          case 'symptoms':
+            message = 'I have some symptoms. Can you help me understand what might be causing them?';
+            break;
+          case 'medicine':
+            message = 'Tell me about common medicines and their uses.';
+            break;
+          case 'disease':
+            message = 'Tell me about a common disease and how to manage it.';
+            break;
+          case 'interaction':
+            message = 'Are there any drug interactions I should know about?';
+            break;
+          case 'emergency':
+            message = 'I have severe chest pain and difficulty breathing!';
+            break;
+        }
+        patientInput.value = message;
+        setTimeout(() => patientSendMessage(), 100);
+      };
+
+      window.patientClearChat = function() {
+        if (confirm('Clear chat history?')) {
+          patientMessagesDiv.innerHTML = '';
+          patientDisplayGreeting();
+        }
+      };
+
+      patientDisplayGreeting();
+      patientInput.focus();
+    </script>
 
     <!-- Hospitals Panel -->
     <div id="hospitals" class="panel-content">
