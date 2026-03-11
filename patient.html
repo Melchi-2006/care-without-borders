@@ -844,6 +844,692 @@
         padding: 20px;
       }
     }
+
+    /* ================= MEDICAL RECORDS SECTION ================= */
+    .records-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .upload-section {
+      background: white;
+      border: 2px dashed var(--primary-mint);
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .upload-section h3 {
+      color: var(--primary-blue);
+      margin-bottom: 10px;
+    }
+
+    .upload-section p {
+      color: var(--text-light);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .upload-section input[type="file"] {
+      display: none;
+    }
+
+    .upload-btn {
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-mint) 100%);
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 10px 5px;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-md);
+    }
+
+    .upload-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .record-card {
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+
+    .record-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-mint);
+    }
+
+    .record-info {
+      flex: 1;
+    }
+
+    .record-info h4 {
+      margin: 0 0 10px 0;
+      color: var(--primary-blue);
+      font-weight: 700;
+    }
+
+    .record-info p {
+      margin: 5px 0;
+      color: var(--text-light);
+      font-size: 13px;
+    }
+
+    .record-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .record-actions a,
+    .record-actions button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .download-btn {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .delete-btn {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+    }
+
+    .delete-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .no-records {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-light);
+      background: white;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-light);
+    }
+
+    .file-type {
+      display: inline-block;
+      background: var(--light-mint);
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      margin-left: 10px;
+      color: var(--primary-blue);
+    }
+
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      border-left: 4px solid #28a745;
+    }
+
+    /* ================= MEDICINE FINDER SECTION ================= */
+    .search-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .search-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .search-card h2 {
+      color: var(--primary-blue);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      margin-bottom: 10px;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-mint);
+      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+    }
+
+    .search-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-mint) 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-md);
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .result-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 20px;
+      border-left: 5px solid var(--primary-mint);
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .result-title h3 {
+      color: var(--primary-blue);
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    .result-title p {
+      color: var(--text-light);
+      font-size: 13px;
+    }
+
+    .severity-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .severity-mild {
+      background: #c8e6c9;
+      color: #2e7d32;
+    }
+
+    .severity-moderate {
+      background: #ffe082;
+      color: #f57f17;
+    }
+
+    .severity-severe {
+      background: #ffccbc;
+      color: #d84315;
+    }
+
+    .severity-critical {
+      background: #ef9a9a;
+      color: #c62828;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .info-item {
+      background: var(--light-blue);
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-mint);
+    }
+
+    .info-label {
+      color: var(--primary-blue);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .info-value {
+      color: var(--text-dark);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .medicines-section h4 {
+      color: var(--primary-blue);
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .medicine-item {
+      background: #f9fafb;
+      padding: 15px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-mint);
+      transition: all 0.3s ease;
+    }
+
+    .medicine-item:hover {
+      background: var(--light-blue);
+      transform: translateX(5px);
+    }
+
+    .medicine-name {
+      font-weight: 700;
+      color: var(--primary-blue);
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    .medicine-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .summary-box {
+      background: var(--light-blue);
+      border-left: 4px solid var(--primary-mint);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      color: var(--primary-blue);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .warning-box {
+      background: #fff3e0;
+      border-left: 4px solid #f57c00;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      color: #e65100;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-light);
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      color: var(--text-dark);
+      margin-bottom: 10px;
+    }
+
+    /* ================= VIDEO CONSULTATION SECTION ================= */
+    .video-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .video-header {
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-mint) 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .video-info h2 {
+      margin: 0 0 10px 0;
+      font-size: 22px;
+    }
+
+    .session-timer {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 16px;
+      backdrop-filter: blur(10px);
+    }
+
+    .video-content {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .video-frame {
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .video-placeholder {
+      color: #666;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .video-stream {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .controls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 15px 25px;
+      border-radius: 50px;
+      z-index: 10;
+    }
+
+    .control-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+      background: var(--primary-blue);
+      color: white;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .control-btn:hover {
+      background: var(--primary-mint);
+      transform: scale(1.1);
+    }
+
+    .control-btn.end-call {
+      background: #dc2626;
+    }
+
+    .control-btn.end-call:hover {
+      background: #b91c1c;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .pricing-card {
+      background: white;
+      border: 2px solid var(--primary-mint);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .pricing-card h3 {
+      margin: 0 0 15px 0;
+      color: var(--primary-blue);
+      font-size: 17px;
+    }
+
+    .price-display {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary-mint);
+      margin-bottom: 10px;
+    }
+
+    .duration {
+      color: var(--text-light);
+      font-size: 13px;
+      margin-bottom: 15px;
+    }
+
+    .pay-btn {
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-mint) 100%);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-md);
+    }
+
+    .pay-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .pay-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .doctor-info {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .doctor-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-mint) 100%);
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 28px;
+    }
+
+    .doctor-name {
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .doctor-specialty {
+      color: var(--text-light);
+      font-size: 12px;
+    }
+
+    .chat-section {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      height: 300px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .chat-section h4 {
+      margin: 0 0 10px 0;
+      color: var(--primary-blue);
+      font-size: 14px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chat-message {
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .chat-message.patient {
+      background: var(--light-blue);
+      align-self: flex-end;
+      max-width: 80%;
+      color: var(--primary-blue);
+    }
+
+    .chat-message.doctor {
+      background: #f0f0f0;
+      align-self: flex-start;
+      max-width: 80%;
+      color: var(--text-dark);
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 5px;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .chat-input input:focus {
+      border-color: var(--primary-mint);
+      box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.1);
+    }
+
+    .chat-input button {
+      background: var(--primary-blue);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input button:hover {
+      background: var(--primary-mint);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      background: #4caf50;
+      color: white;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .message-alert {
+      padding: 15px;
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      color: #856404;
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .search-section {
+        grid-template-columns: 1fr;
+      }
+
+      .video-content {
+        grid-template-columns: 1fr;
+      }
+
+      .result-header {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -855,7 +1541,9 @@
     <ul class="navbar-menu">
       <li><a href="#features">Features</a></li>
       <li><a href="#appointment">Book Appointment</a></li>
-      <li><a href="#services">Services</a></li>
+      <li><a href="#video-section">Video Consultation</a></li>
+      <li><a href="#medicine-section">Medicine Finder</a></li>
+      <li><a href="#records-section">Medical Records</a></li>
     </ul>
     <button class="btn-logout" onclick="logout()">Logout</button>
   </div>
@@ -990,6 +1678,126 @@
       </div>
       <button type="submit" class="btn-primary">Book Appointment</button>
     </form>
+  </div>
+</section>
+
+<!-- Video Consultation Section -->
+<section class="section" id="video-section">
+  <h2 class="section-title">📞 Video Consultation</h2>
+  <div class="video-container">
+    <div class="video-header">
+      <div class="video-info">
+        <h2>Start Your Video Consultation</h2>
+        <div class="status-badge" id="callStatus">Ready to book</div>
+      </div>
+      <div class="session-timer">
+        Duration: <span id="sessionTimer">15:00</span>
+      </div>
+    </div>
+
+    <div class="message-alert" id="messageAlert" style="display: none;"></div>
+
+    <div class="video-content">
+      <div class="video-frame">
+        <video id="localVideo" class="video-stream" autoplay muted playsinline></video>
+        <video id="remoteVideo" class="video-stream" autoplay playsinline style="display: none;"></video>
+        <div class="video-placeholder" id="videoPlaceholder">
+          Click "Start Consultation" to begin
+        </div>
+        <div class="controls" id="controls" style="display: none;">
+          <button class="control-btn" id="toggleAudio" title="Toggle Audio">🎤</button>
+          <button class="control-btn" id="toggleVideo" title="Toggle Video">📹</button>
+          <button class="control-btn end-call" id="endCall" title="End Call">📞</button>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="pricing-card">
+          <h3>💰 Consultation Fee</h3>
+          <div class="price-display" id="priceDisplay">₹5</div>
+          <div class="duration">for 15 minutes</div>
+          <button class="pay-btn" id="paymentBtn" onclick="initiateVideoPayment()">Start Consultation</button>
+          <div id="paymentStatus" style="margin-top: 10px; font-size: 12px; color: var(--text-light);"></div>
+        </div>
+
+        <div class="doctor-info">
+          <div class="doctor-avatar" id="doctorAvatar">👨‍⚕️</div>
+          <div class="doctor-name" id="doctorName">Dr. Healthcare Professional</div>
+          <div class="doctor-specialty" id="doctorSpecialty">Medical Specialist</div>
+        </div>
+
+        <div class="chat-section">
+          <h4>💬 Chat</h4>
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-input">
+            <input type="text" id="videoChatInput" placeholder="Type message..." />
+            <button onclick="sendVideoMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Medicine Finder Section -->
+<section class="section" id="medicine-section">
+  <h2 class="section-title">💊 Medicine Finder</h2>
+  
+  <div class="search-section">
+    <!-- Disease Search -->
+    <div class="search-card">
+      <h2>🏥 Search Disease</h2>
+      <input 
+        type="text" 
+        class="search-input" 
+        id="diseaseSearch" 
+        placeholder="e.g., pneumonia, diabetes, asthma..."
+        onkeypress="if(event.key==='Enter') searchDisease()"
+      />
+      <button class="search-btn" onclick="searchDisease()">Search Disease</button>
+      <div id="diseaseError" style="margin-top: 10px; display: none;"></div>
+    </div>
+
+    <!-- Medicine Search -->
+    <div class="search-card">
+      <h2>💊 Search Medicine</h2>
+      <input 
+        type="text" 
+        class="search-input" 
+        id="medicineSearch" 
+        placeholder="e.g., aspirin, paracetamol, insulin..."
+        onkeypress="if(event.key==='Enter') searchMedicine()"
+      />
+      <button class="search-btn" onclick="searchMedicine()">Search Medicine</button>
+      <div id="medicineError" style="margin-top: 10px; display: none;"></div>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div class="results-section">
+    <!-- Disease Results -->
+    <div id="diseaseResults"></div>
+
+    <!-- Medicine Results -->
+    <div id="medicineResults"></div>
+  </div>
+</section>
+
+<!-- Medical Records Section -->
+<section class="section" id="records-section">
+  <h2 class="section-title">📋 Medical Records</h2>
+  <div class="records-container">
+    <div class="success-message" id="successMessage">✅ File uploaded successfully!</div>
+    
+    <div class="upload-section">
+      <h3>📁 Upload Medical Record</h3>
+      <p>Supported formats: PDF, JPG, PNG (Max 10MB)</p>
+      <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" />
+      <button class="upload-btn" onclick="triggerFileUpload()">Choose File</button>
+      <button class="upload-btn" onclick="uploadFile()">Upload</button>
+    </div>
+
+    <div id="recordsList"></div>
   </div>
 </section>
 
@@ -1246,6 +2054,469 @@
       }
     }, 1000);
   });
+
+  /* ================= VIDEO CONSULTATION FUNCTIONS ================= */
+  let paymentCompleted = false;
+  let sessionStartTime = null;
+  let timerInterval = null;
+  let audioEnabled = true;
+  let videoEnabled = true;
+  let localStream = null;
+
+  function getUrlParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
+
+  function loadDoctorInfo() {
+    const doctorId = getUrlParam('doctorId');
+    const doctorName = getUrlParam('doctorName') || 'Dr. Healthcare Professional';
+    const specialty = getUrlParam('specialty') || 'Medical Specialist';
+
+    document.getElementById('doctorName').textContent = doctorName;
+    document.getElementById('doctorSpecialty').textContent = specialty;
+  }
+
+  window.initiateVideoPayment = async function() {
+    const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+    const userName = localStorage.getItem('userName') || 'Patient';
+
+    try {
+      document.getElementById('paymentBtn').disabled = true;
+      document.getElementById('paymentStatus').textContent = 'Processing payment...';
+      
+      // Simulate payment completion
+      setTimeout(() => {
+        onVideoPaymentSuccess();
+      }, 1500);
+    } catch (error) {
+      console.error('Payment error:', error);
+      document.getElementById('paymentBtn').disabled = false;
+      document.getElementById('paymentStatus').textContent = 'Payment failed. Try again.';
+    }
+  };
+
+  function onVideoPaymentSuccess() {
+    paymentCompleted = true;
+    document.getElementById('paymentBtn').textContent = '✅ Consultation Started';
+    document.getElementById('paymentBtn').disabled = true;
+    document.getElementById('callStatus').textContent = 'Active Call';
+    document.getElementById('callStatus').style.background = '#4caf50';
+    document.getElementById('controls').style.display = 'flex';
+    document.getElementById('videoPlaceholder').style.display = 'none';
+    
+    startVideoCall();
+    startSessionTimer();
+    showVideoMessage('📹 Camera and microphone enabled', 'info');
+  }
+
+  async function startVideoCall() {
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: { width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+
+      document.getElementById('localVideo').srcObject = localStream;
+    } catch (error) {
+      console.error('Error accessing media:', error);
+      showVideoMessage('❌ Camera/Microphone access denied', 'error');
+    }
+  }
+
+  function startSessionTimer() {
+    sessionStartTime = Date.now();
+    const sessionDuration = 15 * 60 * 1000; // 15 minutes in ms
+
+    timerInterval = setInterval(() => {
+      const elapsed = Date.now() - sessionStartTime;
+      const remaining = Math.max(0, sessionDuration - elapsed);
+      
+      const minutes = Math.floor(remaining / 60000);
+      const seconds = Math.floor((remaining % 60000) / 1000);
+      
+      document.getElementById('sessionTimer').textContent = 
+        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        endVideoCall();
+      }
+    }, 1000);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('toggleAudio')) {
+      document.getElementById('toggleAudio').addEventListener('click', function() {
+        audioEnabled = !audioEnabled;
+        if (localStream) {
+          localStream.getAudioTracks().forEach(track => {
+            track.enabled = audioEnabled;
+          });
+          this.style.opacity = audioEnabled ? '1' : '0.5';
+          this.textContent = audioEnabled ? '🎤' : '🔇';
+        }
+      });
+
+      document.getElementById('toggleVideo').addEventListener('click', function() {
+        videoEnabled = !videoEnabled;
+        if (localStream) {
+          localStream.getVideoTracks().forEach(track => {
+            track.enabled = videoEnabled;
+          });
+          this.style.opacity = videoEnabled ? '1' : '0.5';
+          this.textContent = videoEnabled ? '📹' : '📹❌';
+        }
+      });
+
+      document.getElementById('endCall').addEventListener('click', endVideoCall);
+    }
+  });
+
+  function endVideoCall() {
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+    }
+    clearInterval(timerInterval);
+    document.getElementById('callStatus').textContent = 'Call Ended';
+    document.getElementById('callStatus').style.background = '#dc2626';
+    document.getElementById('controls').style.display = 'none';
+    showVideoMessage('Call ended. Thank you for using our service!', 'success');
+  }
+
+  window.sendVideoMessage = function() {
+    const input = document.getElementById('videoChatInput');
+    const message = input.value.trim();
+    
+    if (message) {
+      const messagesDiv = document.getElementById('chatMessages');
+      const msgEl = document.createElement('div');
+      msgEl.className = 'chat-message patient';
+      msgEl.textContent = message;
+      messagesDiv.appendChild(msgEl);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      input.value = '';
+    }
+  };
+
+  function showVideoMessage(msg, type) {
+    const alert = document.getElementById('messageAlert');
+    alert.textContent = msg;
+    alert.style.display = 'block';
+    alert.style.background = type === 'error' ? '#f8d7da' : type === 'info' ? '#d1ecf1' : '#d4edda';
+    alert.style.borderLeftColor = type === 'error' ? '#dc3545' : type === 'info' ? '#17a2b8' : '#28a745';
+    alert.style.color = type === 'error' ? '#721c24' : type === 'info' ? '#0c5460' : '#155724';
+    setTimeout(() => {
+      alert.style.display = 'none';
+    }, 4000);
+  }
+
+  /* ================= MEDICINE FINDER FUNCTIONS ================= */
+  // Placeholder database object (will load from js/disease-medicine-database.js)
+  let DISEASE_MEDICINE_DATABASE = {};
+  let SYMPTOMS_TO_DISEASES = {};
+
+  // Load database on page load
+  window.addEventListener('load', async () => {
+    try {
+      const { DISEASE_MEDICINE_DATABASE: db, SYMPTOMS_TO_DISEASES: std } = await import('./js/disease-medicine-database.js');
+      DISEASE_MEDICINE_DATABASE = db;
+      SYMPTOMS_TO_DISEASES = std;
+    } catch (error) {
+      console.log('Database will load on first search');
+    }
+  });
+
+  window.searchDisease = function() {
+    const searchTerm = document.getElementById('diseaseSearch').value.toLowerCase().trim();
+    const resultsDiv = document.getElementById('diseaseResults');
+
+    if (!searchTerm) {
+      resultsDiv.innerHTML = `
+        <div class="empty-state">
+          <h3>Enter a disease name</h3>
+          <p>Try searching for: pneumonia, diabetes, asthma, etc.</p>
+        </div>
+      `;
+      return;
+    }
+
+    let matchedDiseases = [];
+    Object.keys(DISEASE_MEDICINE_DATABASE).forEach(disease => {
+      if (disease.toLowerCase().includes(searchTerm) || searchTerm.includes(disease.toLowerCase())) {
+        matchedDiseases.push(disease);
+      }
+    });
+
+    if (matchedDiseases.length === 0) {
+      resultsDiv.innerHTML = `
+        <div class="empty-state">
+          <h3>No diseases found</h3>
+          <p>Try a different search term or browse common conditions</p>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    matchedDiseases.forEach(disease => {
+      const info = DISEASE_MEDICINE_DATABASE[disease];
+      html += generateDiseaseCard(disease, info);
+    });
+
+    resultsDiv.innerHTML = html;
+  };
+
+  window.searchMedicine = function() {
+    const searchTerm = document.getElementById('medicineSearch').value.toLowerCase().trim();
+    const resultsDiv = document.getElementById('medicineResults');
+
+    if (!searchTerm) {
+      resultsDiv.innerHTML = `
+        <div class="empty-state">
+          <h3>Enter a medicine name</h3>
+          <p>Try searching for: aspirin, paracetamol, metformin, etc.</p>
+        </div>
+      `;
+      return;
+    }
+
+    let matchedMedicines = {};
+    Object.entries(DISEASE_MEDICINE_DATABASE).forEach(([disease, info]) => {
+      if (info.medicines) {
+        info.medicines.forEach(med => {
+          if (med.name.toLowerCase().includes(searchTerm)) {
+            if (!matchedMedicines[med.name]) {
+              matchedMedicines[med.name] = [];
+            }
+            matchedMedicines[med.name].push({ disease, dosage: med.dosage, frequency: med.frequency });
+          }
+        });
+      }
+    });
+
+    if (Object.keys(matchedMedicines).length === 0) {
+      resultsDiv.innerHTML = `
+        <div class="empty-state">
+          <h3>No medicines found</h3>
+          <p>Try a different search term</p>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    Object.entries(matchedMedicines).forEach(([medicineName, uses]) => {
+      html += generateMedicineCard(medicineName, uses);
+    });
+
+    resultsDiv.innerHTML = html;
+  };
+
+  function generateDiseaseCard(disease, info) {
+    const severityClass = `severity-${info.severity.toLowerCase().replace('-', '')}`;
+    
+    let html = `
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-title">
+            <h3>${disease.toUpperCase()}</h3>
+            <p>${info.category} • ${info.duration}</p>
+          </div>
+          <span class="severity-badge ${severityClass}">${info.severity}</span>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">📋 Symptoms</div>
+            <div class="info-value">${info.symptoms}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">⏱️ Expected Duration</div>
+            <div class="info-value">${info.duration}</div>
+          </div>
+        </div>
+
+        <div class="medicines-section">
+          <h4>💊 Recommended Medicines</h4>
+    `;
+
+    if (info.medicines) {
+      info.medicines.forEach(med => {
+        html += `
+          <div class="medicine-item">
+            <div class="medicine-name">${med.name}</div>
+            <div class="medicine-details">
+              <span><strong>Dosage:</strong> ${med.dosage}</span>
+              <span><strong>Frequency:</strong> ${med.frequency}</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    html += `</div>`;
+
+    if (info.consultDoctor) {
+      html += `
+        <div class="warning-box">
+          ⚠️ <strong>IMPORTANT:</strong> This condition requires professional medical consultation. Please see a healthcare provider.
+        </div>
+      `;
+    }
+
+    html += `
+      <div class="summary-box">
+        📌 <strong>Summary:</strong> ${disease} is a ${info.severity.toLowerCase()} condition. Follow your doctor's prescriptions.
+      </div>
+    </div>`;
+    return html;
+  }
+
+  function generateMedicineCard(medicineName, uses) {
+    let html = `
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-title">
+            <h3>${medicineName.toUpperCase()}</h3>
+            <p>Used in ${uses.length} condition(s)</p>
+          </div>
+        </div>
+
+        <div class="medicines-section">
+          <h4>🏥 Used For</h4>
+    `;
+
+    uses.forEach((use) => {
+      html += `
+        <div class="medicine-item">
+          <div class="medicine-name">${use.disease.toUpperCase()}</div>
+          <div class="medicine-details">
+            <span><strong>Dosage:</strong> ${use.dosage}</span>
+            <span><strong>Frequency:</strong> ${use.frequency}</span>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `
+        </div>
+        <div class="summary-box">
+          📌 <strong>Info:</strong> ${medicineName} is used to treat multiple conditions. Always follow your doctor's recommendations.
+        </div>
+      </div>
+    `;
+
+    return html;
+  }
+
+  /* ================= MEDICAL RECORDS FUNCTIONS ================= */
+  async function loadRecords() {
+    const recordsList = document.getElementById('recordsList');
+    
+    try {
+      recordsList.innerHTML = '<div class="loading">Loading records...</div>';
+
+      // Placeholder - would normally load from Firebase
+      const records = JSON.parse(localStorage.getItem('medicalRecords') || '[]');
+
+      if (records.length === 0) {
+        recordsList.innerHTML = '<div class="no-records">No medical records uploaded yet. Start uploading your documents!</div>';
+        return;
+      }
+
+      recordsList.innerHTML = '';
+      records.forEach((data, index) => {
+        const recordHTML = `
+          <div class="record-card">
+            <div class="record-info">
+              <h4>${data.fileName}</h4>
+              <p>Uploaded: ${new Date(data.uploadDate).toLocaleDateString()}</p>
+              <p>Type: ${data.fileType || 'N/A'}<span class="file-type">${data.fileType === 'application/pdf' ? 'PDF' : 'Image'}</span></p>
+            </div>
+            <div class="record-actions">
+              <a href="${data.downloadUrl}" class="download-btn" download>Download</a>
+              <button class="delete-btn" onclick="deleteRecord(${index})">Delete</button>
+            </div>
+          </div>
+        `;
+        
+        recordsList.innerHTML += recordHTML;
+      });
+    } catch (error) {
+      console.error('Error loading records:', error);
+      recordsList.innerHTML = '<div class="no-records">Error loading records. Please try again.</div>';
+    }
+  }
+
+  window.uploadFile = function() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+
+    if (!file) {
+      alert('Please select a file first');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size must be less than 10MB');
+      return;
+    }
+
+    try {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const records = JSON.parse(localStorage.getItem('medicalRecords') || '[]');
+        records.push({
+          fileName: file.name,
+          fileType: file.type,
+          fileSize: file.size,
+          downloadUrl: e.target.result,
+          uploadDate: new Date().toISOString()
+        });
+        
+        localStorage.setItem('medicalRecords', JSON.stringify(records));
+
+        document.getElementById('successMessage').style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('successMessage').style.display = 'none';
+        }, 3000);
+
+        fileInput.value = '';
+        loadRecords();
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      alert('Error uploading file: ' + error.message);
+    }
+  };
+
+  window.deleteRecord = function(index) {
+    if (!confirm('Are you sure you want to delete this record?')) return;
+
+    try {
+      const records = JSON.parse(localStorage.getItem('medicalRecords') || '[]');
+      records.splice(index, 1);
+      localStorage.setItem('medicalRecords', JSON.stringify(records));
+      loadRecords();
+    } catch (error) {
+      console.error('Error deleting record:', error);
+      alert('Error deleting record');
+    }
+  };
+
+  window.triggerFileUpload = function() {
+    document.getElementById('fileInput').click();
+  };
+
+  // Load records on page load
+  window.addEventListener('load', () => {
+    if (document.getElementById('recordsList')) {
+      loadRecords();
+    }
+  });
+
 </script>
 
 </body>
