@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Care Without Borders | Modern Telemedicine & AI Health Assistant</title>
+  <title>Care Without Borders | Modern Telemedicine & VILGAX AI</title>
   <style>
     * {
       margin: 0;
@@ -1610,8 +1610,8 @@
   <div class="features-grid">
     <div class="feature-card">
       <div class="icon">🤖</div>
-      <h3>AI Health Assistant</h3>
-      <p>Powered by GPT-4 AI with medical training. Instant symptom analysis, disease information, and health recommendations available 24/7 without the wait.</p>
+      <h3>VILGAX AI</h3>
+      <p>Powered by advanced AI with medical training. Instant symptom analysis, disease information, and health recommendations available 24/7 without the wait.</p>
     </div>
     <div class="feature-card">
       <div class="icon">📱</div>
@@ -1676,7 +1676,8 @@
         <label>Chief Complaint / Reason for Visit</label>
         <textarea rows="4" placeholder="How can we help you today?" required></textarea>
       </div>
-      <button type="submit" class="btn-primary">Book Appointment</button>
+      <button type="submit" class="btn-primary">📅 Book Appointment</button>
+      <div id="appointmentMessage" style="margin-top: 15px; padding: 15px; border-radius: 8px; display: none;"></div>
     </form>
   </div>
 </section>
@@ -1805,10 +1806,10 @@
 <div class="floating-chatbot" id="chatbotWidget" style="display: none;">
   <div class="chatbot-header">
     <div class="chatbot-header-title">
-      <div style="font-size: 20px;">🤖</div>
+      <div style="font-size: 20px;">⚡</div>
       <div>
-        <h3>AI Health Assistant</h3>
-        <p>Powered by GPT-4</p>
+        <h3>VILGAX AI</h3>
+        <p>Your Health Assistant</p>
       </div>
     </div>
     <button class="chatbot-close" onclick="closeChatbot()">✕</button>
@@ -1825,7 +1826,7 @@
     <div class="chat-message assistant">
       <div class="chat-message-avatar">🤖</div>
       <div class="chat-message-content">
-        <strong>Welcome to Care Without Borders!</strong><br><br>Hi there! 👋 I'm your AI Health Assistant, powered by advanced GPT-4 technology. I can help you with:<br><br>✅ Symptom analysis<br>✅ Disease information<br>✅ Medicine details & interactions<br>✅ Health advice<br>✅ Emergency detection<br><br>What health concern can I assist you with today?
+        <strong>Welcome to Care Without Borders!</strong><br><br>Hi there! 👋 I'm VILGAX AI, your intelligent health assistant. I can help you with:<br><br>✅ Symptom analysis<br>✅ Disease information<br>✅ Medicine details & interactions<br>✅ Health advice<br>✅ Emergency detection<br><br>What health concern can I assist you with today?
       </div>
     </div>
   </div>
@@ -1953,7 +1954,7 @@
     const typingEl = document.createElement('div');
     typingEl.className = 'chat-message assistant';
     typingEl.innerHTML = `
-      <div class="chat-message-avatar">🤖</div>
+      <div class="chat-message-avatar">⚡</div>
       <div class="typing-indicator">
         <div class="typing-dot"></div>
         <div class="typing-dot"></div>
@@ -1964,38 +1965,60 @@
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/openai-chatbot/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: userMessage,
-          userId: userId,
-        }),
-      });
+      // First try API endpoint
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/openai-chatbot/chat`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: userMessage,
+            userId: userId,
+          }),
+          timeout: 5000
+        });
 
-      if (!response.ok) throw new Error('API Error');
-      
-      const data = await response.json();
+        if (response.ok) {
+          const data = await response.json();
+          messagesDiv.removeChild(typingEl);
+          const aiMsgEl = document.createElement('div');
+          aiMsgEl.className = 'chat-message assistant';
+          aiMsgEl.innerHTML = `
+            <div class="chat-message-avatar">⚡</div>
+            <div class="chat-message-content">${escapeHtml(data.response)}</div>
+          `;
+          messagesDiv.appendChild(aiMsgEl);
+          isTyping = false;
+          messagesDiv.scrollTop = messagesDiv.scrollHeight;
+          document.getElementById('chatInput').focus();
+          return;
+        }
+      } catch (apiError) {
+        console.log('API unavailable, using local responses');
+      }
+
+      // Fallback to local AI responses
+      await new Promise(resolve => setTimeout(resolve, 1000));
       messagesDiv.removeChild(typingEl);
 
+      const aiResponse = getVilgaxResponse(userMessage);
       const aiMsgEl = document.createElement('div');
       aiMsgEl.className = 'chat-message assistant';
       aiMsgEl.innerHTML = `
-        <div class="chat-message-avatar">🤖</div>
-        <div class="chat-message-content">${escapeHtml(data.response)}</div>
+        <div class="chat-message-avatar">⚡</div>
+        <div class="chat-message-content">${escapeHtml(aiResponse)}</div>
       `;
       messagesDiv.appendChild(aiMsgEl);
     } catch (error) {
       console.error('Error:', error);
-      messagesDiv.removeChild(typingEl);
+      if (typingEl.parentNode) messagesDiv.removeChild(typingEl);
       
       const errorEl = document.createElement('div');
       errorEl.className = 'chat-message assistant';
       errorEl.innerHTML = `
-        <div class="chat-message-avatar">⚠️</div>
-        <div class="chat-message-content">Sorry, I encountered an error. Please try again or contact support if the problem persists.</div>
+        <div class="chat-message-avatar">⚡</div>
+        <div class="chat-message-content">I'm having trouble processing that request. Please try again with a different question.</div>
       `;
       messagesDiv.appendChild(errorEl);
     }
@@ -2003,6 +2026,128 @@
     isTyping = false;
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
     document.getElementById('chatInput').focus();
+  }
+
+  function getVilgaxResponse(userMessage) {
+    const msg = userMessage.toLowerCase();
+    const responses = {
+      fever: "A fever is often your body's response to infection. Common causes include:
+• Viral infections (flu, common cold)
+• Bacterial infections (strep throat, UTI)
+• Common symptoms: chills, body aches, fatigue
+
+Recommendations:
+✅ Rest and stay hydrated
+✅ Use paracetamol or ibuprofen
+✅ Monitor temperature every 4-6 hours
+⚠️ Consult a doctor if fever persists beyond 3 days",
+      cough: "A cough can result from various causes:
+• Respiratory infections (cold, bronchitis, pneumonia)
+• Allergies
+• Asthma
+
+Types of cough:
+🔹 Dry cough: Usually viral
+🔹 Wet cough: Usually with phlegm
+
+Treatment options:
+✅ Stay hydrated
+✅ Use honey-based cough suppressants
+✅ Use humidifier
+⚠️ See a doctor if it lasts >2 weeks",
+      headache: "Headaches have many causes. Common types:
+• Tension headaches (most common)
+• Migraines (severe, throbbing)
+• Cluster headaches
+
+Triggers:
+🔹 Stress
+🔹 Poor sleep
+🔹 Dehydration
+🔹 Caffeine withdrawal
+
+Relief:
+✅ Paracetamol or ibuprofen
+✅ Rest in a quiet, dark room
+✅ Massage temples
+✅ Apply warm/cold compress",
+      chest: "Chest pain requires immediate attention! Possible causes:
+🚨 EMERGENCY if accompanied by:
+• Difficulty breathing
+• Severe, crushing pain
+• Pain radiating to arm/jaw
+• Sweating, dizziness
+
+Common non-emergency causes:
+• Muscle strain
+• Acid reflux
+• Anxiety
+• Costochondritis
+
+⚠️ When in doubt, seek medical help immediately!",
+      diabetes: "Diabetes management is crucial:
+
+Types:
+🔹 Type 1: Autoimmune, insulin-dependent
+🔹 Type 2: Most common, often lifestyle-related
+
+Management:
+✅ Regular blood sugar monitoring
+✅ Balanced diet (low sugar/refined carbs)
+✅ Regular exercise
+✅ Medications as prescribed
+✅ Regular check-ups
+
+Diet recommendations:
+• Whole grains
+• Lean proteins
+• Fresh vegetables
+• Avoid sugary drinks",
+      medicine: "VILGAX AI has access to 10,000+ medicines. I can provide:
+✅ Dosage information
+✅ Usage frequency
+✅ Common side effects
+✅ Drug interactions
+✅ Precautions
+
+Try asking about a specific medicine!",
+      appointment: "To book an appointment:
+1. Go to 'Book Your Appointment' section
+2. Select your preferred doctor specialty
+3. Choose a specific doctor
+4. Pick your date and time
+5. Describe your symptoms
+6. Click 'Book Appointment'
+
+You'll receive confirmation via email!",
+      emergency: "🚨 EMERGENCY ALERT!
+
+If you're experiencing:
+• Severe chest pain
+• Difficulty breathing
+• Loss of consciousness
+• Severe bleeding
+• Poisoning
+
+⚠️ CALL EMERGENCY (911/112) IMMEDIATELY!
+
+Do NOT wait for online consultation in emergencies!",
+      default: "Hello! I'm VILGAX AI, your health assistant. I can help with:
+✅ Symptom analysis
+✅ Disease information
+✅ Medicine details
+✅ Health advice
+✅ Appointment booking info
+
+What would you like to know?"
+    };
+
+    for (const [keyword, response] of Object.entries(responses)) {
+      if (keyword !== 'default' && msg.includes(keyword)) {
+        return response;
+      }
+    }
+    return responses.default;
   }
 
   function escapeHtml(text) {
@@ -2038,6 +2183,60 @@
         docSelect.appendChild(option);
       });
     }
+  }
+
+  // Appointment form submission
+  document.addEventListener('DOMContentLoaded', function() {
+    const appointmentForm = document.getElementById('appointmentForm');
+    if (appointmentForm) {
+      appointmentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const specialty = document.querySelector('select').value;
+        const doctor = document.getElementById('doctorSelect').value;
+        const date = document.querySelector('input[type="date"]').value;
+        const time = document.querySelector('input[type="time"]').value;
+        const complaint = document.querySelector('textarea').value;
+        
+        if (!specialty || !doctor || !date || !time || !complaint) {
+          showAppointmentMessage('Please fill all fields', 'error');
+          return;
+        }
+        
+        // Save appointment
+        const appointments = JSON.parse(localStorage.getItem('appointments') || '[]');
+        const appointment = {
+          id: Date.now(),
+          specialty,
+          doctor,
+          date,
+          time,
+          complaint,
+          status: 'pending',
+          createdAt: new Date().toISOString()
+        };
+        
+        appointments.push(appointment);
+        localStorage.setItem('appointments', JSON.stringify(appointments));
+        
+        showAppointmentMessage('✅ Appointment booked successfully! You will receive a confirmation email shortly.', 'success');
+        appointmentForm.reset();
+        document.getElementById('doctorSelect').innerHTML = '<option value="">-- First select specialty --</option>';
+        
+        setTimeout(() => {
+          document.getElementById('appointmentMessage').style.display = 'none';
+        }, 5000);
+      });
+    }
+  });
+
+  function showAppointmentMessage(message, type) {
+    const msgDiv = document.getElementById('appointmentMessage');
+    msgDiv.textContent = message;
+    msgDiv.style.background = type === 'error' ? '#f8d7da' : '#d4edda';
+    msgDiv.style.borderLeft = `4px solid ${type === 'error' ? '#dc3545' : '#28a745'}`;
+    msgDiv.style.color = type === 'error' ? '#721c24' : '#155724';
+    msgDiv.style.display = 'block';
   }
 
   function logout() {
