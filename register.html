@@ -585,8 +585,8 @@
     </div>
 
     <div class="overlay-text">
-      <h1>❤️ Care Without Borders</h1>
-      <p>Access Comprehensive Healthcare Services</p>
+      <h1 data-i18n="brand.name">❤️ Care Without Borders</h1>
+      <p data-i18n="sections.dashboard.accessComprehensivePlatform">Access Comprehensive Healthcare Services</p>
     </div>
   </div>
 
@@ -595,8 +595,8 @@
     <div class="auth-card">
       <!-- Header -->
       <div class="auth-header">
-        <h1>Create Account</h1>
-        <p>Join our healthcare community today</p>
+        <h1 data-i18n="pages.register.createAccount">Create Account</h1>
+        <p data-i18n="pages.register.joinCommunity">Join our healthcare community today</p>
       </div>
 
       <!-- Alert Box -->
@@ -604,8 +604,8 @@
 
       <!-- Tab Navigation -->
       <div class="tab-navigation">
-        <button class="tab-btn active" onclick="switchTab('signup')">Sign Up</button>
-        <button class="tab-btn" onclick="switchTab('login')">Login</button>
+        <button class="tab-btn active" onclick="switchTab('signup')" data-i18n="buttons.signUp">Sign Up</button>
+        <button class="tab-btn" onclick="switchTab('login')" data-i18n="buttons.signIn">Login</button>
       </div>
 
       <!-- ==================== SIGNUP TAB ==================== -->
@@ -613,12 +613,13 @@
         <form id="signupForm" onsubmit="handleSignUp(event)">
           <!-- Full Name Input -->
           <div class="form-group">
-            <label class="form-label">Full Name</label>
+            <label class="form-label" data-i18n="pages.register.fullName">Full Name</label>
             <div class="form-input-wrapper">
               <input 
                 type="text" 
                 id="signupName" 
                 class="form-input"
+                data-i18n-attr="placeholder:pages.register.fullNamePlaceholder"
                 placeholder="Enter your full name"
                 required
               >
@@ -627,12 +628,13 @@
 
           <!-- Email Input -->
           <div class="form-group">
-            <label class="form-label">Email Address</label>
+            <label class="form-label" data-i18n="pages.login.emailAddress">Email Address</label>
             <div class="form-input-wrapper">
               <input 
                 type="email" 
                 id="signupEmail" 
                 class="form-input"
+                data-i18n-attr="placeholder:pages.register.emailPlaceholder"
                 placeholder="Enter your email"
                 required
               >
@@ -641,12 +643,13 @@
 
           <!-- Password Input -->
           <div class="form-group">
-            <label class="form-label">Password</label>
+            <label class="form-label" data-i18n="pages.login.password">Password</label>
             <div class="form-input-wrapper">
               <input 
                 type="password" 
                 id="signupPassword" 
                 class="form-input"
+                data-i18n-attr="placeholder:pages.register.passwordPlaceholder"
                 placeholder="Min. 6 characters"
                 required
               >
