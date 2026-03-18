@@ -1531,6 +1531,8 @@
       }
     }
   </style>
+  <!-- Multilingual Support - Load First! -->
+  <script src="js/i18n.js"></script>
 </head>
 <body>
 
@@ -2031,7 +2033,7 @@
   function getVilgaxResponse(userMessage) {
     const msg = userMessage.toLowerCase();
     const responses = {
-      fever: "A fever is often your body's response to infection. Common causes include:
+      fever: `A fever is often your body's response to infection. Common causes include:
 • Viral infections (flu, common cold)
 • Bacterial infections (strep throat, UTI)
 • Common symptoms: chills, body aches, fatigue
@@ -2040,8 +2042,8 @@ Recommendations:
 ✅ Rest and stay hydrated
 ✅ Use paracetamol or ibuprofen
 ✅ Monitor temperature every 4-6 hours
-⚠️ Consult a doctor if fever persists beyond 3 days",
-      cough: "A cough can result from various causes:
+⚠️ Consult a doctor if fever persists beyond 3 days`,
+      cough: `A cough can result from various causes:
 • Respiratory infections (cold, bronchitis, pneumonia)
 • Allergies
 • Asthma
@@ -2054,8 +2056,8 @@ Treatment options:
 ✅ Stay hydrated
 ✅ Use honey-based cough suppressants
 ✅ Use humidifier
-⚠️ See a doctor if it lasts >2 weeks",
-      headache: "Headaches have many causes. Common types:
+⚠️ See a doctor if it lasts >2 weeks`,
+      headache: `Headaches have many causes. Common types:
 • Tension headaches (most common)
 • Migraines (severe, throbbing)
 • Cluster headaches
@@ -2070,8 +2072,8 @@ Relief:
 ✅ Paracetamol or ibuprofen
 ✅ Rest in a quiet, dark room
 ✅ Massage temples
-✅ Apply warm/cold compress",
-      chest: "Chest pain requires immediate attention! Possible causes:
+✅ Apply warm/cold compress`,
+      chest: `Chest pain requires immediate attention! Possible causes:
 🚨 EMERGENCY if accompanied by:
 • Difficulty breathing
 • Severe, crushing pain
@@ -2084,8 +2086,8 @@ Common non-emergency causes:
 • Anxiety
 • Costochondritis
 
-⚠️ When in doubt, seek medical help immediately!",
-      diabetes: "Diabetes management is crucial:
+⚠️ When in doubt, seek medical help immediately!`,
+      diabetes: `Diabetes management is crucial:
 
 Types:
 🔹 Type 1: Autoimmune, insulin-dependent
@@ -2102,16 +2104,16 @@ Diet recommendations:
 • Whole grains
 • Lean proteins
 • Fresh vegetables
-• Avoid sugary drinks",
-      medicine: "VILGAX AI has access to 10,000+ medicines. I can provide:
+• Avoid sugary drinks`,
+      medicine: `VILGAX AI has access to 10,000+ medicines. I can provide:
 ✅ Dosage information
 ✅ Usage frequency
 ✅ Common side effects
 ✅ Drug interactions
 ✅ Precautions
 
-Try asking about a specific medicine!",
-      appointment: "To book an appointment:
+Try asking about a specific medicine!`,
+      appointment: `To book an appointment:
 1. Go to 'Book Your Appointment' section
 2. Select your preferred doctor specialty
 3. Choose a specific doctor
@@ -2119,8 +2121,8 @@ Try asking about a specific medicine!",
 5. Describe your symptoms
 6. Click 'Book Appointment'
 
-You'll receive confirmation via email!",
-      emergency: "🚨 EMERGENCY ALERT!
+You'll receive confirmation via email!`,
+      emergency: `🚨 EMERGENCY ALERT!
 
 If you're experiencing:
 • Severe chest pain
@@ -2131,15 +2133,15 @@ If you're experiencing:
 
 ⚠️ CALL EMERGENCY (911/112) IMMEDIATELY!
 
-Do NOT wait for online consultation in emergencies!",
-      default: "Hello! I'm VILGAX AI, your health assistant. I can help with:
+Do NOT wait for online consultation in emergencies!`,
+      default: `Hello! I'm VILGAX AI, your health assistant. I can help with:
 ✅ Symptom analysis
 ✅ Disease information
 ✅ Medicine details
 ✅ Health advice
 ✅ Appointment booking info
 
-What would you like to know?"
+What would you like to know?`
     };
 
     for (const [keyword, response] of Object.entries(responses)) {

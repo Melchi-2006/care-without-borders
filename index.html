@@ -4,29 +4,31 @@
   <meta charset="UTF-8">
   <title>Care Without Borders</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Multilingual Support - Load First! -->
+  <script src="js/i18n.js"></script>
 </head>
 <body><div class="bg-blur bg1"></div>
 <div class="bg-blur bg2"></div>
 
 <!-- NAVBAR -->
 <nav class="navbar">
-  <div class="logo">❤️ Care Without Borders</div>
+  <div class="logo">❤️ <span data-i18n="brand.name">Care Without Borders</span></div>
   <div class="nav-buttons">
-    <button class="btn-outline" onclick="window.location.href='admin.html'">Admin</button>
-    <button class="btn-outline" onclick="window.location.href='doctor-login.html'">Doctor</button>
-    <button class="btn-outline" onclick="window.location.href='login.html'">Login</button>
-    <button class="btn-solid" onclick="window.location.href='register.html'">Register</button>
+    <button class="btn-outline" data-i18n="navigation.admin" onclick="window.location.href='admin.html'">Admin</button>
+    <button class="btn-outline" data-i18n="navigation.doctor" onclick="window.location.href='doctor-login.html'">Doctor</button>
+    <button class="btn-outline" data-i18n="navigation.login" onclick="window.location.href='login.html'">Login</button>
+    <button class="btn-solid" data-i18n="navigation.register" onclick="window.location.href='register.html'">Register</button>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero reveal">
   <div class="hero-left">
-    <h1>Welcome to Care Without Borders</h1>
-    <p>Accessible Healthcare for Everyone, Everywhere</p>
+    <h1 data-i18n="sections.hero.title">Welcome to Care Without Borders</h1>
+    <p data-i18n="sections.hero.subtitle">Accessible Healthcare for Everyone, Everywhere</p>
     <div class="hero-buttons">
-      <button class="btn-solid large" onclick="goRegister()">Get Started →</button>
-      <button class="btn-outline large" onclick="goLogin()">Login</button>
+      <button class="btn-solid large" data-i18n="buttons.getStarted" onclick="goRegister()">Get Started →</button>
+      <button class="btn-outline large" data-i18n="buttons.login" onclick="goLogin()">Login</button>
     </div>
   </div>
 <div class="hero-right">
@@ -38,15 +40,15 @@
 <section class="stats reveal">
   <div>
     <h2 class="counter" data-target="10000">0</h2>
-    <p>Patients</p>
+    <p data-i18n="sections.stats.patients">Patients</p>
   </div>
   <div>
     <h2 class="counter" data-target="500">0</h2>
-    <p>Doctors</p>
+    <p data-i18n="sections.stats.doctors">Doctors</p>
   </div>
   <div>
     <h2 class="counter" data-target="50">0</h2>
-    <p>Clinics</p>
+    <p data-i18n="sections.stats.clinics">Clinics</p>
   </div>
   <div>
     <h2>24/7</h2>

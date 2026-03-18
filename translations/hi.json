@@ -1,0 +1,145 @@
+{
+  "brand": {
+    "name": "Care Without Borders",
+    "tagline": "सभी के लिए, हर जगह सुलभ स्वास्थ्यसेवा",
+    "icon": "❤️"
+  },
+  "navigation": {
+    "admin": "व्यवस्थापक",
+    "doctor": "डॉक्टर",
+    "login": "लॉगिन",
+    "register": "पंजीकरण",
+    "logout": "लॉगआउट",
+    "home": "होम",
+    "profile": "प्रोफाइल",
+    "appointments": "नियुक्तियां",
+    "prescriptions": "प्रिस्क्रिप्शन",
+    "medicalRecords": "चिकित्सा रिकॉर्ड",
+    "chat": "चैट",
+    "medicines": "दवाएं"
+  },
+  "buttons": {
+    "getStarted": "शुरू करें →",
+    "login": "लॉगिन",
+    "register": "पंजीकरण",
+    "submit": "सबमिट",
+    "cancel": "रद्द करें",
+    "save": "सहेजें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "search": "खोज",
+    "apply": "लागू करें",
+    "bookAppointment": "नियुक्ति बुक करें",
+    "scheduleConsultation": "परामर्श शेड्यूल करें",
+    "uploadDocument": "दस्तावेज़ अपलोड करें"
+  },
+  "sections": {
+    "stats": {
+      "patients": "मरीज़",
+      "doctors": "डॉक्टर",
+      "clinics": "क्लीनिक"
+    },
+    "hero": {
+      "title": "Care Without Borders में आपका स्वागत है",
+      "subtitle": "सभी के लिए, हर जगह सुलभ स्वास्थ्यसेवा"
+    },
+    "features": {
+      "telemedicine": "टेलीमेडिसिन",
+      "aiChatbot": "AI चैटबॉट",
+      "medicineFinder": "दवा खोजक",
+      "prescriptions": "डिजिटल प्रिस्क्रिप्शन",
+      "medicalRecords": "चिकित्सा रिकॉर्ड"
+    }
+  },
+  "auth": {
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "confirmPassword": "पासवर्ड की पुष्टि करें",
+    "fullName": "पूरा नाम",
+    "phoneNumber": "फोन नंबर",
+    "date": "तिथि",
+    "gender": "लिंग",
+    "male": "पुरुष",
+    "female": "महिला",
+    "other": "अन्य",
+    "forgotPassword": "पासवर्ड भूल गए?",
+    "signUpNow": "अभी साइन अप करें",
+    "alreadyHaveAccount": "पहले से खाता है?",
+    "dontHaveAccount": "खाता नहीं है?",
+    "signIn": "साइन इन करें",
+    "signUp": "साइन अप करें"
+  },
+  "patient": {
+    "dashboard": "रोगी डैशबोर्ड",
+    "upcomingAppointments": "आने वाली नियुक्तियां",
+    "appointmentHistory": "नियुक्ति इतिहास",
+    "bookNewAppointment": "नई नियुक्ति बुक करें",
+    "selectDoctor": "डॉक्टर चुनें",
+    "selectDate": "तिथि चुनें",
+    "selectTime": "समय चुनें",
+    "reason": "आने का कारण",
+    "symptoms": "लक्षण",
+    "medicalHistory": "चिकित्सा इतिहास",
+    "noAppointments": "कोई नियुक्तियां निर्धारित नहीं हैं"
+  },
+  "doctor": {
+    "dashboard": "डॉक्टर डैशबोर्ड",
+    "myPatients": "मेरे मरीज़",
+    "upcomingConsultations": "आने वाले परामर्श",
+    "prescriptionPanel": "प्रिस्क्रिप्शन पैनल",
+    "createPrescription": "प्रिस्क्रिप्शन बनाएं",
+    "viewPatientHistory": "रोगी का इतिहास देखें",
+    "specialization": "विशेषज्ञता",
+    "availability": "उपलब्धता",
+    "consultationFee": "परामर्श शुल्क"
+  },
+  "chatbot": {
+    "title": "VILGAX AI सहायक",
+    "messageInput": "अपना संदेश टाइप करें...",
+    "send": "भेजें",
+    "startChat": "चैट शुरू करें",
+    "askMeAnything": "स्वास्थ्य और दवाओं के बारे में कुछ भी पूछें",
+    "symptoms": "लक्षण",
+    "medicines": "दवाएं",
+    "diseases": "रोग"
+  },
+  "medicine": {
+    "searchMedicines": "दवाएं खोजें",
+    "medicineName": "दवा का नाम",
+    "composition": "संरचना",
+    "manufacturer": "निर्माता",
+    "price": "कीमत",
+    "dosage": "खुराक",
+    "sideEffects": "दुष्प्रभाव",
+    "useFor": "किसके लिए प्रयोग करें",
+    "precautions": "सावधानियां"
+  },
+  "messages": {
+    "success": "ऑपरेशन सफल",
+    "error": "एक त्रुटि हुई",
+    "loading": "लोड हो रहा है...",
+    "confirm": "क्या आप सुनिश्चित हैं?",
+    "deleteConfirm": "क्या आप इसे हटाना सुनिश्चित हैं?",
+    "loginRequired": "पहले लॉगिन करें",
+    "sessionExpired": "आपका सत्र समाप्त हो गया है",
+    "invalidCredentials": "अमान्य ईमेल या पासवर्ड",
+    "userNotFound": "उपयोगकर्ता नहीं मिला",
+    "emailAlreadyUsed": "ईमेल पहले से पंजीकृत है",
+    "passwordMismatch": "पासवर्ड मेल नहीं खाते"
+  },
+  "validation": {
+    "required": "यह क्षेत्र आवश्यक है",
+    "invalidEmail": "कृपया सही ईमेल दर्ज करें",
+    "passwordTooShort": "पासवर्ड कम से कम 6 वर्ण होना चाहिए",
+    "invalidPhone": "कृपया सही फोन नंबर दर्ज करें"
+  },
+  "settings": {
+    "language": "भाषा",
+    "theme": "थीम",
+    "notifications": "सूचनाएं",
+    "privacy": "गोपनीयता सेटिंग्स",
+    "aboutUs": "हमारे बारे में",
+    "contactUs": "हमसे संपर्क करें",
+    "helpSupport": "सहायता और समर्थन"
+  }
+}

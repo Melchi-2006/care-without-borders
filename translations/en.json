@@ -1,0 +1,145 @@
+{
+  "brand": {
+    "name": "Care Without Borders",
+    "tagline": "Accessible Healthcare for Everyone, Everywhere",
+    "icon": "❤️"
+  },
+  "navigation": {
+    "admin": "Admin",
+    "doctor": "Doctor",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "home": "Home",
+    "profile": "Profile",
+    "appointments": "Appointments",
+    "prescriptions": "Prescriptions",
+    "medicalRecords": "Medical Records",
+    "chat": "Chat",
+    "medicines": "Medicines"
+  },
+  "buttons": {
+    "getStarted": "Get Started →",
+    "login": "Login",
+    "register": "Register",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "apply": "Apply",
+    "bookAppointment": "Book Appointment",
+    "scheduleConsultation": "Schedule Consultation",
+    "uploadDocument": "Upload Document"
+  },
+  "sections": {
+    "stats": {
+      "patients": "Patients",
+      "doctors": "Doctors",
+      "clinics": "Clinics"
+    },
+    "hero": {
+      "title": "Welcome to Care Without Borders",
+      "subtitle": "Accessible Healthcare for Everyone, Everywhere"
+    },
+    "features": {
+      "telemedicine": "Telemedicine",
+      "aiChatbot": "AI Chatbot",
+      "medicineFinder": "Medicine Finder",
+      "prescriptions": "Digital Prescriptions",
+      "medicalRecords": "Medical Records"
+    }
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "fullName": "Full Name",
+    "phoneNumber": "Phone Number",
+    "date": "Date",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "forgotPassword": "Forgot Password?",
+    "signUpNow": "Sign Up Now",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "signIn": "Sign In",
+    "signUp": "Sign Up"
+  },
+  "patient": {
+    "dashboard": "Patient Dashboard",
+    "upcomingAppointments": "Upcoming Appointments",
+    "appointmentHistory": "Appointment History",
+    "bookNewAppointment": "Book New Appointment",
+    "selectDoctor": "Select Doctor",
+    "selectDate": "Select Date",
+    "selectTime": "Select Time",
+    "reason": "Reason for Visit",
+    "symptoms": "Symptoms",
+    "medicalHistory": "Medical History",
+    "noAppointments": "No appointments scheduled"
+  },
+  "doctor": {
+    "dashboard": "Doctor Dashboard",
+    "myPatients": "My Patients",
+    "upcomingConsultations": "Upcoming Consultations",
+    "prescriptionPanel": "Prescription Panel",
+    "createPrescription": "Create Prescription",
+    "viewPatientHistory": "View Patient History",
+    "specialization": "Specialization",
+    "availability": "Availability",
+    "consultationFee": "Consultation Fee"
+  },
+  "chatbot": {
+    "title": "VILGAX AI Assistant",
+    "messageInput": "Type your message...",
+    "send": "Send",
+    "startChat": "Start Chat",
+    "askMeAnything": "Ask me anything about health and medicine",
+    "symptoms": "Symptoms",
+    "medicines": "Medicines",
+    "diseases": "Diseases"
+  },
+  "medicine": {
+    "searchMedicines": "Search Medicines",
+    "medicineName": "Medicine Name",
+    "composition": "Composition",
+    "manufacturer": "Manufacturer",
+    "price": "Price",
+    "dosage": "Dosage",
+    "sideEffects": "Side Effects",
+    "useFor": "Use For",
+    "precautions": "Precautions"
+  },
+  "messages": {
+    "success": "Operation successful",
+    "error": "An error occurred",
+    "loading": "Loading...",
+    "confirm": "Are you sure?",
+    "deleteConfirm": "Are you sure you want to delete this?",
+    "loginRequired": "Please log in first",
+    "sessionExpired": "Your session has expired",
+    "invalidCredentials": "Invalid email or password",
+    "userNotFound": "User not found",
+    "emailAlreadyUsed": "Email already registered",
+    "passwordMismatch": "Passwords do not match"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "invalidPhone": "Please enter a valid phone number"
+  },
+  "settings": {
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "privacy": "Privacy Settings",
+    "aboutUs": "About Us",
+    "contactUs": "Contact Us",
+    "helpSupport": "Help & Support"
+  }
+}
