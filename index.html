@@ -10,6 +10,8 @@
   <script src="js/i18n.js"></script>
   <!-- Audio System for VILGAX -->
   <script src="js/audio.js"></script>
+  <!-- VILGAX Multilingual Assistant with voice commands -->
+  <script src="js/vilgax-multilingual.js"></script>
 </head>
 <body>
 <div class="bg-blur bg1"></div>
@@ -38,7 +40,7 @@
     <div class="hero-buttons">
       <button class="btn btn-primary btn-lg" data-i18n="buttons.getStarted" onclick="goRegister()">Get Started →</button>
       <button class="btn btn-outline btn-lg" data-i18n="buttons.login" onclick="goLogin()">Login</button>
-      <button class="btn btn-secondary btn-lg" id="vilgax-btn" onclick="activateVilgax()" title="🎤 Click to talk to VILGAX AI">🤖 Talk to VILGAX</button>
+      <button class="btn btn-secondary btn-lg" id="vilgax-btn" onclick="activateVilgaxListener()" title="🎤 Click to speak commands to VILGAX">🎤 Speak to VILGAX</button>
     </div>
   </div>
 </section>
@@ -173,24 +175,16 @@
   <p>© 2026 Care Without Borders. Healthcare for Everyone.</p>
 </footer>
 
-<!-- VILGAX AI Greeting and Controls -->
+<!-- VILGAX AI Multilingual Assistant -->
 <script>
-  function activateVilgax() {
-    const welcomeMsg = "Welcome to Care Without Borders! I'm VILGAX AI, your intelligent health assistant. I can help you with symptom analysis, disease information, and health advice. Say hello or ask me anything!";
-    
-    if (audio && typeof audio.speak === 'function') {
-      audio.speak(welcomeMsg);
-      console.log('✓ VILGAX activated with welcome message');
-    } else {
-      console.error('Audio system not available');
-      alert('Audio system not ready. Please refresh the page.');
-    }
-  }
-
-  // Optional: Auto-greet after page loads (can be commented out)
-  window.addEventListener('load', () => {
-    console.log('✓ Page loaded - VILGAX AI ready. Click "Talk to VILGAX" button to begin.');
-  });
+  // VILGAX is auto-initialized by vilgax-multilingual.js
+  // Auto-greeting in user's selected language happens 1 second after page load
+  // Click "Speak to VILGAX" button to give voice commands
+  
+  console.log('✓ VILGAX Multilingual voice assistant ready');
+  console.log('  - Auto-greeting plays in your language');
+  console.log('  - Click "Speak to VILGAX" button to give commands');
+  console.log('  - Say: doctor, medicines, appointments, chatbot, records, prescriptions, or help');
 </script>
 
 <script src="script.js"></script>
