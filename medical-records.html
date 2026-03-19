@@ -6,6 +6,8 @@
     <title>Medical Records - Care Without Borders</title>
     <!-- Multilingual Support - Load First! -->
     <script src="js/i18n.js"></script>
+    <!-- Audio System -->
+    <script src="js/audio.js"></script>
     <link rel="stylesheet" href="style.css">
     <style>
         .records-container {
@@ -118,28 +120,28 @@
 <body>
     <nav class="navbar">
         <div class="navbar-content">
-            <h1>Care Without Borders</h1>
+            <h1 data-i18n="brand.name">Care Without Borders</h1>
             <div class="nav-links">
-                <a href="patient.html">Dashboard</a>
-                <a href="medicine-finder.html">Medicine Finder</a>
-                <a href="chatbot.html">AI Assistant</a>
-                <a href="prescription.html">Prescriptions</a>
-                <a href="medical-records.html" class="active">Medical Records</a>
-                <a href="#" onclick="logout()">Logout</a>
+                <a href="patient.html" data-i18n="navigation.dashboard">Dashboard</a>
+                <a href="medicine-finder.html" data-i18n="navigation.medicineFinder">Medicine Finder</a>
+                <a href="chatbot.html" data-i18n="navigation.aiAssistant">AI Assistant</a>
+                <a href="prescription.html" data-i18n="navigation.prescriptions">Prescriptions</a>
+                <a href="medical-records.html" class="active" data-i18n="navigation.medicalRecords">Medical Records</a>
+                <a href="#" onclick="logout()" data-i18n="navigation.logout">Logout</a>
             </div>
         </div>
     </nav>
 
     <div class="records-container">
-        <h2>My Medical Records</h2>
-        <div class="success-message" id="successMessage">File uploaded successfully!</div>
+        <h2 data-i18n="pages.medicalRecords.myMedicalRecords">My Medical Records</h2>
+        <div class="success-message" id="successMessage" data-i18n="pages.medicalRecords.uploadedSuccessfully">File uploaded successfully!</div>
         
         <div class="upload-section">
-            <h3>Upload Medical Record</h3>
-            <p>Supported formats: PDF, JPG, PNG (Max 10MB)</p>
+            <h3 data-i18n="pages.medicalRecords.uploadFile">Upload Medical Record</h3>
+            <p data-i18n="pages.medicalRecords.supportedFormats">Supported formats: PDF, JPG, PNG (Max 10MB)</p>
             <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" />
-            <button class="upload-btn" onclick="triggerFileUpload()">Choose File</button>
-            <button class="upload-btn" onclick="uploadFile()" style="background: #4CAF50;">Upload</button>
+            <button class="upload-btn" onclick="triggerFileUpload()" data-i18n="buttons.chooseFile">Choose File</button>
+            <button class="upload-btn" onclick="uploadFile()" style="background: #4CAF50;" data-i18n="buttons.upload">Upload</button>
         </div>
 
         <div id="recordsList"></div>

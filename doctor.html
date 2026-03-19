@@ -664,10 +664,10 @@
 
 <div class="doctor-header">
   <div>
-    <h1>👨⚕️ Doctor Dashboard</h1>
-    <p>Welcome Dr. Smith! Manage your appointments and patient care</p>
+    <h1 data-i18n="pages.doctor.doctorDashboard">👨⚕️ Doctor Dashboard</h1>
+    <p data-i18n="pages.doctor.appointmentTime">Welcome Dr. Smith! Manage your appointments and patient care</p>
   </div>
-  <button class="btn-primary" onclick="logout()" style="background: rgba(255,255,255,0.2);">Logout</button>
+  <button class="btn-primary" onclick="logout()" style="background: rgba(255,255,255,0.2);" data-i18n="navigation.logout">Logout</button>
 </div>
 
 <div class="doctor-wrapper">
@@ -675,12 +675,12 @@
   <!-- Sidebar Navigation -->
   <div class="doctor-sidebar">
     <ul class="sidebar-menu">
-      <li><a class="nav-link active" onclick="switchPanel('dashboard')">📊 Dashboard</a></li>
-      <li><a class="nav-link" onclick="switchPanel('profile')">👤 My Profile</a></li>
-      <li><a class="nav-link" onclick="switchPanel('appointments')">📅 Appointments</a></li>
-      <li><a class="nav-link" onclick="switchPanel('patients')">👥 Patients</a></li>
-      <li><a class="nav-link" onclick="switchPanel('earnings')">💰 Earnings</a></li>
-      <li><a class="nav-link" onclick="switchPanel('settings')">⚙️ Settings</a></li>
+      <li><a class="nav-link active" onclick="switchPanel('dashboard')" data-i18n="sections.hero.title">📊 Dashboard</a></li>
+      <li><a class="nav-link" onclick="switchPanel('profile')" data-i18n="navigation.profile">👤 My Profile</a></li>
+      <li><a class="nav-link" onclick="switchPanel('appointments')" data-i18n="navigation.appointments">📅 Appointments</a></li>
+      <li><a class="nav-link" onclick="switchPanel('patients')" data-i18n="pages.doctor.myPatients">👥 Patients</a></li>
+      <li><a class="nav-link" onclick="switchPanel('earnings')" data-i18n="pages.doctor.consultationFee">💰 Earnings</a></li>
+      <li><a class="nav-link" onclick="switchPanel('settings')" data-i18n="settings.language">⚙️ Settings</a></li>
     </ul>
   </div>
 
@@ -694,19 +694,19 @@
   <!-- Quick Stats -->
   <div class="stats-row">
     <div class="stat-box">
-      <h3>Today's Appointments</h3>
+      <h3 data-i18n="pages.patient.upcomingAppointments">Today's Appointments</h3>
       <div class="number" id="todayAppointments">0</div>
     </div>
     <div class="stat-box">
-      <h3>Pending Appointments</h3>
+      <h3 data-i18n="pages.doctor.upcomingConsultations">Pending Appointments</h3>
       <div class="number" id="pendingAppointments">0</div>
     </div>
     <div class="stat-box">
-      <h3>Total Patients</h3>
+      <h3 data-i18n="pages.doctor.myPatients">Total Patients</h3>
       <div class="number" id="totalPatients">0</div>
     </div>
     <div class="stat-box">
-      <h3>EHR Records</h3>
+      <h3 data-i18n="navigation.medicalRecords">EHR Records</h3>
       <div class="number" id="totalRecords">0</div>
     </div>
   </div>
@@ -716,8 +716,8 @@
 
     <!-- Manage Schedule -->
     <div class="dashboard-card">
-      <h2>📅 My Schedule</h2>
-      <p style="color: #666; font-size: 14px;">Available time slots for today</p>
+      <h2 data-i18n="pages.doctor.availability">📅 My Schedule</h2>
+      <p style="color: #666; font-size: 14px;" data-i18n="appointment.preferredTime">Available time slots for today</p>
       <div class="schedule-grid">
         <div class="schedule-slot">09:00</div>
         <div class="schedule-slot">10:00</div>
@@ -731,21 +731,21 @@
 
     <!-- Appointments List -->
     <div class="dashboard-card full-width">
-      <h2>📋 Patient Appointments</h2>
-      <p style="color: #666; font-size: 14px;">Manage and view all your appointments</p>
+      <h2 data-i18n="pages.doctor.upcomingConsultations">📋 Patient Appointments</h2>
+      <p style="color: #666; font-size: 14px;" data-i18n="pages.doctor.patientName">Manage and view all your appointments</p>
       <div class="appointments-list" id="appointmentsList">
-        <p style="color: #999; text-align: center;">Loading appointments...</p>
+        <p style="color: #999; text-align: center;" data-i18n="messages.loading">Loading appointments...</p>
       </div>
     </div>
 
     <!-- Add/Update EHR -->
     <div class="dashboard-card">
-      <h2>📝 Add Patient Record</h2>
-      <p style="color: #666; font-size: 14px;">Create or update patient EHR</p>
+      <h2 data-i18n="navigation.medicalRecords">📝 Add Patient Record</h2>
+      <p style="color: #666; font-size: 14px;" data-i18n="pages.doctor.viewPatientHistory">Create or update patient EHR</p>
       <form id="ehrForm">
         <div class="form-group">
-          <label>Patient ID / Email</label>
-          <input type="text" id="patientId" placeholder="patient@email.com" required>
+          <label data-i18n="auth.email">Patient ID / Email</label>
+          <input type="text" id="patientId" data-i18n-attr="placeholder:auth.email" placeholder="patient@email.com" required>
         </div>
         <div class="form-group">
           <label>Diagnosis</label>

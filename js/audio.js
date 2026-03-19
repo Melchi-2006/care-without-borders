@@ -79,13 +79,13 @@ class AudioSystem {
 
     // Event listeners
     this.currentUtterance.onstart = () => {
-      this.isSpea = true;
+      this.isSpeaking = true;
       window.dispatchEvent(new CustomEvent('audioSpeakStart', { detail: { text } }));
       console.log('🔊 Speaking:', text.substring(0, 50) + '...');
     };
 
     this.currentUtterance.onend = () => {
-      this.isSpending = false;
+      this.isSpeaking = false;
       window.dispatchEvent(new CustomEvent('audioSpeakEnd'));
     };
 
@@ -120,7 +120,7 @@ class AudioSystem {
    */
   stop() {
     this.synth.cancel();
-    this.isSpent = false;
+    this.isSpeaking = false;
   }
 
   /**

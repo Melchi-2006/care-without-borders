@@ -6,6 +6,8 @@
   <title>Medicine Finder | Care Without Borders</title>
   <!-- Multilingual Support - Load First! -->
   <script src="js/i18n.js"></script>
+  <!-- Audio System -->
+  <script src="js/audio.js"></script>
   <style>
     * {
       margin: 0;
@@ -468,38 +470,40 @@
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <h1>💊 Medicine Finder</h1>
-      <p>Search for diseases, medicines, and get detailed information about treatments and medications</p>
-      <p style="font-size: 13px; color: #999;">Database includes 10,000+ diseases and medicines</p>
+      <h1 data-i18n="pages.medicineFinder.medicineFinder">💊 Medicine Finder</h1>
+      <p data-i18n="pages.medicineFinder.searchMedicinesByComposition">Search for diseases, medicines, and get detailed information about treatments and medications</p>
+      <p style="font-size: 13px; color: #999;" data-i18n="pages.medicineFinder.medicineDatabase">Database includes 10,000+ diseases and medicines</p>
     </div>
 
     <!-- Search Cards -->
     <div class="search-section">
       <!-- Disease Search -->
       <div class="search-card">
-        <h2>🏥 Search Disease</h2>
+        <h2 data-i18n="pages.medicineFinder.searchMedicinesByName">🏥 Search Disease</h2>
         <input 
           type="text" 
           class="search-input" 
           id="diseaseSearch" 
+          data-i18n-attr="placeholder:pages.medicineFinder.searchInputPlaceholder"
           placeholder="e.g., pneumonia, diabetes, asthma..."
           onkeypress="if(event.key==='Enter') searchDisease()"
         />
-        <button class="search-btn" onclick="searchDisease()">Search Disease</button>
+        <button class="search-btn" onclick="searchDisease()" data-i18n="buttons.search">Search Disease</button>
         <div id="diseaseError" style="margin-top: 10px; display: none;"></div>
       </div>
 
       <!-- Medicine Search -->
       <div class="search-card">
-        <h2>💊 Search Medicine</h2>
+        <h2 data-i18n="pages.medicineFinder.searchMedicine">💊 Search Medicine</h2>
         <input 
           type="text" 
           class="search-input" 
           id="medicineSearch" 
+          data-i18n-attr="placeholder:pages.medicineFinder.searchInputPlaceholder"
           placeholder="e.g., aspirin, metformin, insulin..."
           onkeypress="if(event.key==='Enter') searchMedicine()"
         />
-        <button class="search-btn" onclick="searchMedicine()">Search Medicine</button>
+        <button class="search-btn" onclick="searchMedicine()" data-i18n="buttons.search">Search Medicine</button>
         <div id="medicineError" style="margin-top: 10px; display: none;"></div>
       </div>
     </div>
@@ -531,8 +535,8 @@
       if (!searchTerm) {
         resultsDiv.innerHTML = `
           <div class="empty-state">
-            <h3>Enter a disease name</h3>
-            <p>Try searching for: pneumonia, diabetes, asthma, etc.</p>
+            <h3 data-i18n="auth.email">Enter a disease name</h3>
+            <p data-i18n="pages.medicineFinder.searchInputPlaceholder">Try searching for: pneumonia, diabetes, asthma, etc.</p>
           </div>
         `;
         return;

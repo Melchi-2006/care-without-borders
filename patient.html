@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Care Without Borders | Modern Telemedicine & VILGAX AI</title>
+  <title data-i18n="pages.patient.talkToDoctor">Care Without Borders | Modern Telemedicine & VILGAX AI</title>
+  <!-- Multilingual Support - Load First! -->
+  <script src="js/i18n.js"></script>
+  <!-- Audio System -->
+  <script src="js/audio.js"></script>
   <style>
     * {
       margin: 0;
@@ -1539,146 +1543,146 @@
 <!-- Navigation Bar -->
 <nav class="navbar">
   <div class="navbar-content">
-    <a href="#" class="navbar-brand">❤️ Care Without Borders</a>
+    <a href="#" class="navbar-brand">❤️ <span data-i18n="brand.name">Care Without Borders</span></a>
     <ul class="navbar-menu">
-      <li><a href="#features">Features</a></li>
-      <li><a href="#appointment">Book Appointment</a></li>
-      <li><a href="#video-section">Video Consultation</a></li>
-      <li><a href="#medicine-section">Medicine Finder</a></li>
-      <li><a href="#records-section">Medical Records</a></li>
+      <li><a href="#features" data-i18n="navigation.features">Features</a></li>
+      <li><a href="#appointment" data-i18n="navigation.bookAppointment">Book Appointment</a></li>
+      <li><a href="#video-section" data-i18n="navigation.videoConsultation">Video Consultation</a></li>
+      <li><a href="#medicine-section" data-i18n="navigation.medicineFinder">Medicine Finder</a></li>
+      <li><a href="#records-section" data-i18n="navigation.medicalRecords">Medical Records</a></li>
     </ul>
-    <button class="btn-logout" onclick="logout()">Logout</button>
+    <button class="btn-logout" onclick="logout()" data-i18n="navigation.logout">Logout</button>
   </div>
 </nav>
 
 <!-- Hero Section -->
 <section class="hero">
   <div class="hero-content">
-    <h1>🏥 Talk to a Doctor Instantly</h1>
-    <p>AI-powered health consultations at your fingertips. Get instant symptom analysis, medical advice, and prescription delivery—24/7</p>
+    <h1 data-i18n="pages.patient.talkToDoctor">🏥 Talk to a Doctor Instantly</h1>
+    <p data-i18n="pages.patient.aiPoweredConsultations">AI-powered health consultations at your fingertips. Get instant symptom analysis, medical advice, and prescription delivery—24/7</p>
     <div class="cta-group">
-      <button class="btn-primary" onclick="openChatbot()">💬 Start AI Consultation</button>
-      <button class="btn-secondary" onclick="scrollTo('appointment')">📅 Book Doctor Visit</button>
+      <button class="btn-primary" onclick="openChatbot()" data-i18n="buttons.startAiConsultation">💬 Start AI Consultation</button>
+      <button class="btn-secondary" onclick="scrollTo('appointment')" data-i18n="buttons.bookDoctorVisit">📅 Book Doctor Visit</button>
     </div>
     <div class="trust-badges">
-      <div class="badge">🔒 HIPAA Compliant</div>
-      <div class="badge">✅ FDA Approved Protocols</div>
-      <div class="badge">🔐 256-bit Encrypted</div>
-      <div class="badge">⭐ 98% User Satisfaction</div>
+      <div class="badge" data-i18n="sections.trust.hipaaCompliant">🔒 HIPAA Compliant</div>
+      <div class="badge" data-i18n="sections.trust.fdaApproved">✅ FDA Approved Protocols</div>
+      <div class="badge" data-i18n="sections.trust.encrypted">🔐 256-bit Encrypted</div>
+      <div class="badge" data-i18n="sections.trust.satisfaction">⭐ 98% User Satisfaction</div>
     </div>
   </div>
 </section>
 
 <!-- Quick Symptom Checker Section -->
 <section class="section" id="features">
-  <h2 class="section-title">Quick Symptom Checker</h2>
+  <h2 class="section-title" data-i18n="pages.patient.quickSymptomChecker">Quick Symptom Checker</h2>
   <div class="symptom-carousel">
-    <div class="symptom-card" onclick="openChatbotWithQuery('I have a fever and cough')">
+    <div class="symptom-card" onclick="openChatbotWithQuery(i18n.t('pages.symptoms.feverCough'))">
       <div class="icon">🤒</div>
-      <h3>Fever & Cough</h3>
-      <p>Get instant analysis of respiratory symptoms</p>
+      <h3 data-i18n="pages.symptoms.feverCough">Fever & Cough</h3>
+      <p data-i18n="pages.symptoms.feverCoughDesc">Get instant analysis of respiratory symptoms</p>
     </div>
-    <div class="symptom-card" onclick="openChatbotWithQuery('I have severe headache')">
+    <div class="symptom-card" onclick="openChatbotWithQuery(i18n.t('pages.symptoms.headache'))">
       <div class="icon">🤕</div>
-      <h3>Headache</h3>
-      <p>Understand causes and relief options</p>
+      <h3 data-i18n="pages.symptoms.headache">Headache</h3>
+      <p data-i18n="pages.symptoms.headacheDesc">Understand causes and relief options</p>
     </div>
-    <div class="symptom-card" onclick="openChatbotWithQuery('I have stomach pain')">
+    <div class="symptom-card" onclick="openChatbotWithQuery(i18n.t('pages.symptoms.stomachPain'))">
       <div class="icon">🫀</div>
-      <h3>Stomach Pain</h3>
-      <p>Analyze digestive symptoms</p>
+      <h3 data-i18n="pages.symptoms.stomachPain">Stomach Pain</h3>
+      <p data-i18n="pages.symptoms.stomachPainDesc">Analyze digestive symptoms</p>
     </div>
-    <div class="symptom-card" onclick="openChatbotWithQuery('I have skin rash')">
+    <div class="symptom-card" onclick="openChatbotWithQuery(i18n.t('pages.symptoms.skinIssues'))">
       <div class="icon">🩹</div>
-      <h3>Skin Issues</h3>
-      <p>Dermatology guidance and advice</p>
+      <h3 data-i18n="pages.symptoms.skinIssues">Skin Issues</h3>
+      <p data-i18n="pages.symptoms.skinIssuesDesc">Dermatology guidance and advice</p>
     </div>
-    <div class="symptom-card" onclick="openChatbotWithQuery('I have chest pain')">
+    <div class="symptom-card" onclick="openChatbotWithQuery(i18n.t('pages.symptoms.chestPain'))">
       <div class="icon">🚨</div>
-      <h3>Chest Pain</h3>
-      <p>Urgent cardiology assessment</p>
+      <h3 data-i18n="pages.symptoms.chestPain">Chest Pain</h3>
+      <p data-i18n="pages.symptoms.chestPainDesc">Urgent cardiology assessment</p>
     </div>
-    <div class="symptom-card" onclick="openChatbotWithQuery('I am diabetic, what should I eat')">
+    <div class="symptom-card" onclick="openChatbotWithQuery(i18n.t('pages.symptoms.diabetesCare'))">
       <div class="icon">🩺</div>
-      <h3>Diabetes Care</h3>
-      <p>Personalized diabetes management</p>
+      <h3 data-i18n="pages.symptoms.diabetesCare">Diabetes Care</h3>
+      <p data-i18n="pages.symptoms.diabetesCareDesc">Personalized diabetes management</p>
     </div>
   </div>
 </section>
 
 <!-- Features Section -->
 <section class="section bg-light">
-  <h2 class="section-title">Why Choose Us?</h2>
+  <h2 class="section-title" data-i18n="pages.patient.whyChooseUs">Why Choose Us?</h2>
   <div class="features-grid">
     <div class="feature-card">
       <div class="icon">🤖</div>
-      <h3>VILGAX AI</h3>
-      <p>Powered by advanced AI with medical training. Instant symptom analysis, disease information, and health recommendations available 24/7 without the wait.</p>
+      <h3 data-i18n="pages.features.vilgaxAi">VILGAX AI</h3>
+      <p data-i18n="pages.features.vilgaxAiDesc">Powered by advanced AI with medical training. Instant symptom analysis, disease information, and health recommendations available 24/7 without the wait.</p>
     </div>
     <div class="feature-card">
       <div class="icon">📱</div>
-      <h3>Seamless Integration</h3>
-      <p>Persistent floating chatbot widget stays accessible as you browse. Quick-reply buttons guide you through medical workflows effortlessly.</p>
+      <h3 data-i18n="pages.features.seamlessIntegration">Seamless Integration</h3>
+      <p data-i18n="pages.features.seamlessIntegrationDesc">Persistent floating chatbot widget stays accessible as you browse. Quick-reply buttons guide you through medical workflows effortlessly.</p>
     </div>
     <div class="feature-card">
       <div class="icon">💊</div>
-      <h3>Medicine Database</h3>
-      <p>Access 10,000+ medicines and treatments. Drug interaction checker, side effects guide, and dosage information at your fingertips.</p>
+      <h3 data-i18n="pages.features.medicineDatabase">Medicine Database</h3>
+      <p data-i18n="pages.features.medicineDatabaseDesc">Access 10,000+ medicines and treatments. Drug interaction checker, side effects guide, and dosage information at your fingertips.</p>
     </div>
     <div class="feature-card">
       <div class="icon">🏥</div>
-      <h3>Doctor Consultations</h3>
-      <p>Connect with certified doctors via HD video in minutes. Unlimited consultation duration. No waiting room, no travel.</p>
+      <h3 data-i18n="pages.features.doctorConsultations">Doctor Consultations</h3>
+      <p data-i18n="pages.features.doctorConsultationsDesc">Connect with certified doctors via HD video in minutes. Unlimited consultation duration. No waiting room, no travel.</p>
     </div>
     <div class="feature-card">
       <div class="icon">📋</div>
-      <h3>E-Prescriptions</h3>
-      <p>Receive digital prescriptions sent directly to your email and EHR. Share with pharmacies instantly. Auto-delivery tracking.</p>
+      <h3 data-i18n="pages.features.ePrescriptions">E-Prescriptions</h3>
+      <p data-i18n="pages.features.ePrescriptionsDesc">Receive digital prescriptions sent directly to your email and EHR. Share with pharmacies instantly. Auto-delivery tracking.</p>
     </div>
     <div class="feature-card">
       <div class="icon">🔐</div>
-      <h3>Medical Record Security</h3>
-      <p>256-bit encryption. HIPAA compliant. Secure cloud storage. Complete privacy control over your health data.</p>
+      <h3 data-i18n="pages.features.medicalRecordSecurity">Medical Record Security</h3>
+      <p data-i18n="pages.features.medicalRecordSecurityDesc">256-bit encryption. HIPAA compliant. Secure cloud storage. Complete privacy control over your health data.</p>
     </div>
   </div>
 </section>
 
 <!-- Appointment Booking Section -->
 <section class="section" id="appointment">
-  <h2 class="section-title">Book Your Appointment</h2>
+  <h2 class="section-title" data-i18n="appointment.bookYourAppointment">Book Your Appointment</h2>
   <div class="appointment-section">
     <form id="appointmentForm">
       <div class="form-group">
-        <label>Select Doctor Specialty</label>
+        <label data-i18n="appointment.selectDoctorSpecialty">Select Doctor Specialty</label>
         <select required onchange="updateDoctorList()">
-          <option value="">-- Choose Specialty --</option>
-          <option value="cardiology">💗 Cardiology</option>
-          <option value="neurology">🧠 Neurology</option>
-          <option value="orthopedics">🦴 Orthopedics</option>
-          <option value="dermatology">🩹 Dermatology</option>
-          <option value="general">🏥 General Practice</option>
-          <option value="pediatrics">👶 Pediatrics</option>
+          <option data-i18n="appointment.chooseSpecialty" value="">-- Choose Specialty --</option>
+          <option data-i18n="appointment.cardiology" value="cardiology">💗 Cardiology</option>
+          <option data-i18n="appointment.neurology" value="neurology">🧠 Neurology</option>
+          <option data-i18n="appointment.orthopedics" value="orthopedics">🦴 Orthopedics</option>
+          <option data-i18n="appointment.dermatology" value="dermatology">🩹 Dermatology</option>
+          <option data-i18n="appointment.generalPractice" value="general">🏥 General Practice</option>
+          <option data-i18n="appointment.pediatrics" value="pediatrics">👶 Pediatrics</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Select Doctor</label>
+        <label data-i18n="appointment.selectDoctor">Select Doctor</label>
         <select id="doctorSelect" required>
-          <option value="">-- First select specialty --</option>
+          <option data-i18n="appointment.firstSelectSpecialty" value="">-- First select specialty --</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Preferred Date</label>
+        <label data-i18n="appointment.preferredDate">Preferred Date</label>
         <input type="date" required min="">
       </div>
       <div class="form-group">
-        <label>Preferred Time</label>
+        <label data-i18n="appointment.preferredTime">Preferred Time</label>
         <input type="time" required>
       </div>
       <div class="form-group">
-        <label>Chief Complaint / Reason for Visit</label>
-        <textarea rows="4" placeholder="How can we help you today?" required></textarea>
+        <label data-i18n="appointment.chiefComplaint">Chief Complaint / Reason for Visit</label>
+        <textarea rows="4" data-i18n-attr="placeholder:appointment.bookAppointmentPlaceholder" placeholder="How can we help you today?" required></textarea>
       </div>
-      <button type="submit" class="btn-primary">📅 Book Appointment</button>
+      <button type="submit" class="btn-primary" data-i18n="appointment.bookBtn">📅 Book Appointment</button>
       <div id="appointmentMessage" style="margin-top: 15px; padding: 15px; border-radius: 8px; display: none;"></div>
     </form>
   </div>
@@ -1686,7 +1690,7 @@
 
 <!-- Video Consultation Section -->
 <section class="section" id="video-section">
-  <h2 class="section-title">📞 Video Consultation</h2>
+  <h2 class="section-title" data-i18n="pages.videoConsultation.videoConsultation">📞 Video Consultation</h2>
   <div class="video-container">
     <div class="video-header">
       <div class="video-info">
@@ -1716,10 +1720,10 @@
 
       <div class="sidebar">
         <div class="pricing-card">
-          <h3>💰 Consultation Fee</h3>
+          <h3 data-i18n="pages.videoConsultation.consultationFee">💰 Consultation Fee</h3>
           <div class="price-display" id="priceDisplay">₹5</div>
-          <div class="duration">for 15 minutes</div>
-          <button class="pay-btn" id="paymentBtn" onclick="initiateVideoPayment()">Start Consultation</button>
+          <div class="duration" data-i18n="pages.videoConsultation.fifteenMinutes">for 15 minutes</div>
+          <button class="pay-btn" id="paymentBtn" onclick="initiateVideoPayment()" data-i18n="buttons.startConsultation">Start Consultation</button>
           <div id="paymentStatus" style="margin-top: 10px; font-size: 12px; color: var(--text-light);"></div>
         </div>
 
@@ -1744,34 +1748,36 @@
 
 <!-- Medicine Finder Section -->
 <section class="section" id="medicine-section">
-  <h2 class="section-title">💊 Medicine Finder</h2>
+  <h2 class="section-title" data-i18n="pages.medicineFinder.medicineFinder">💊 Medicine Finder</h2>
   
   <div class="search-section">
     <!-- Disease Search -->
     <div class="search-card">
-      <h2>🏥 Search Disease</h2>
+      <h2 data-i18n="pages.medicineFinder.searchMedicinesByName">🏥 Search Disease</h2>
       <input 
         type="text" 
         class="search-input" 
         id="diseaseSearch" 
+        data-i18n-attr="placeholder:pages.medicineFinder.searchInputPlaceholder"
         placeholder="e.g., pneumonia, diabetes, asthma..."
         onkeypress="if(event.key==='Enter') searchDisease()"
       />
-      <button class="search-btn" onclick="searchDisease()">Search Disease</button>
+      <button class="search-btn" onclick="searchDisease()" data-i18n="buttons.search">Search Disease</button>
       <div id="diseaseError" style="margin-top: 10px; display: none;"></div>
     </div>
 
     <!-- Medicine Search -->
     <div class="search-card">
-      <h2>💊 Search Medicine</h2>
+      <h2 data-i18n="pages.medicineFinder.searchMedicine">💊 Search Medicine</h2>
       <input 
         type="text" 
         class="search-input" 
         id="medicineSearch" 
+        data-i18n-attr="placeholder:pages.medicineFinder.searchInputPlaceholder"
         placeholder="e.g., aspirin, paracetamol, insulin..."
         onkeypress="if(event.key==='Enter') searchMedicine()"
       />
-      <button class="search-btn" onclick="searchMedicine()">Search Medicine</button>
+      <button class="search-btn" onclick="searchMedicine()" data-i18n="buttons.search">Search Medicine</button>
       <div id="medicineError" style="margin-top: 10px; display: none;"></div>
     </div>
   </div>
@@ -1788,16 +1794,16 @@
 
 <!-- Medical Records Section -->
 <section class="section" id="records-section">
-  <h2 class="section-title">📋 Medical Records</h2>
+  <h2 class="section-title" data-i18n="pages.medicalRecords.myMedicalRecords">📋 Medical Records</h2>
   <div class="records-container">
-    <div class="success-message" id="successMessage">✅ File uploaded successfully!</div>
+    <div class="success-message" id="successMessage" data-i18n="pages.medicalRecords.uploadedSuccessfully">✅ File uploaded successfully!</div>
     
     <div class="upload-section">
-      <h3>📁 Upload Medical Record</h3>
-      <p>Supported formats: PDF, JPG, PNG (Max 10MB)</p>
+      <h3 data-i18n="pages.medicalRecords.uploadFile">📁 Upload Medical Record</h3>
+      <p data-i18n="pages.medicalRecords.supportedFormats">Supported formats: PDF, JPG, PNG (Max 10MB)</p>
       <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" />
-      <button class="upload-btn" onclick="triggerFileUpload()">Choose File</button>
-      <button class="upload-btn" onclick="uploadFile()">Upload</button>
+      <button class="upload-btn" onclick="triggerFileUpload()" data-i18n="buttons.chooseFile">Choose File</button>
+      <button class="upload-btn" onclick="uploadFile()" data-i18n="buttons.upload">Upload</button>
     </div>
 
     <div id="recordsList"></div>

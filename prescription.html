@@ -6,6 +6,8 @@
     <title>My Prescriptions - Care Without Borders</title>
     <!-- Multilingual Support - Load First! -->
     <script src="js/i18n.js"></script>
+    <!-- Audio System -->
+    <script src="js/audio.js"></script>
     <link rel="stylesheet" href="style.css">
     <style>
         .prescription-container {
@@ -77,20 +79,20 @@
 <body>
     <nav class="navbar">
         <div class="navbar-content">
-            <h1>Care Without Borders</h1>
+            <h1 data-i18n="brand.name">Care Without Borders</h1>
             <div class="nav-links">
-                <a href="patient.html">Dashboard</a>
-                <a href="medicine-finder.html">Medicine Finder</a>
-                <a href="chatbot.html">AI Assistant</a>
-                <a href="prescription.html" class="active">Prescriptions</a>
-                <a href="medical-records.html">Medical Records</a>
-                <a href="#" onclick="logout()">Logout</a>
+                <a href="patient.html" data-i18n="navigation.dashboard">Dashboard</a>
+                <a href="medicine-finder.html" data-i18n="navigation.medicineFinder">Medicine Finder</a>
+                <a href="chatbot.html" data-i18n="navigation.aiAssistant">AI Assistant</a>
+                <a href="prescription.html" class="active" data-i18n="navigation.prescriptions">Prescriptions</a>
+                <a href="medical-records.html" data-i18n="navigation.medicalRecords">Medical Records</a>
+                <a href="#" onclick="logout()" data-i18n="navigation.logout">Logout</a>
             </div>
         </div>
     </nav>
 
     <div class="prescription-container">
-        <h2>My Prescriptions</h2>
+        <h2 data-i18n="pages.prescriptions.myPrescriptions">My Prescriptions</h2>
         <div id="prescriptionsList"></div>
     </div>
 

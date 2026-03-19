@@ -21,7 +21,10 @@
     "medicineFinder": "Medicine Finder",
     "aiAssistant": "AI Assistant",
     "backToHome": "← Back to Home",
-    "or": "OR"
+    "or": "OR",
+    "features": "Features",
+    "bookAppointment": "Book Appointment",
+    "videoConsultation": "Video Consultation"
   },
   "buttons": {
     "getStarted": "Get Started →",

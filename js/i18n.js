@@ -224,7 +224,7 @@ class I18n {
 
   /**
    * Add a language switcher to the page
-   * Creates a dropdown menu for language selection
+   * Creates a modern pill-style button group for language selection
    */
   addLanguageSwitcher() {
     // Check if switcher already exists
@@ -235,67 +235,144 @@ class I18n {
     // Try to find navbar or header
     const navbar = document.querySelector('.navbar') || document.querySelector('nav') || document.body;
 
-    // Create switcher container
+    // Create switcher container with modern styling
     const switcher = document.createElement('div');
     switcher.id = 'language-switcher';
     switcher.className = 'language-switcher';
-    switcher.innerHTML = `
+    
+    // Language flags and metadata
+    const langFlags = {
+      'en': { flag: '🇬🇧', label: 'EN' },
+      'ta': { flag: '🇮🇳', label: 'தமிழ்' },
+      'hi': { flag: '🇮🇳', label: 'हिंदी' }
+    };
+
+    let buttonsHTML = `
       <style>
         .language-switcher {
-          position: relative;
-          display: inline-block;
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
           margin-left: auto;
           padding: 0 1rem;
         }
 
-        .language-switcher select {
-          padding: 0.5rem 0.75rem;
+        .language-switcher-label {
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: #6b7280;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .language-buttons {
+          display: flex;
+          gap: 0.3rem;
+          background: #f3f4f6;
+          padding: 0.35rem;
+          border-radius: 0.5rem;
           border: 1px solid #e5e7eb;
+        }
+
+        .language-btn {
+          padding: 0.4rem 0.75rem;
+          border: 2px solid transparent;
+          background: transparent;
+          color: #6b7280;
+          font-size: 0.75rem;
+          font-weight: 600;
           border-radius: 0.375rem;
-          background: white;
-          color: #1f2937;
-          font-size: 0.875rem;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
           font-family: inherit;
         }
 
-        .language-switcher select:hover {
-          border-color: #14b8a6;
-          box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+        .language-btn:hover {
+          color: #0f766e;
+          background: rgba(15, 118, 110, 0.08);
+          transform: scale(1.05);
         }
 
-        .language-switcher select:focus {
-          outline: none;
+        .language-btn.active {
+          background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+          color: white;
+          box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
           border-color: #14b8a6;
-          box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+        }
+
+        .language-btn.active:hover {
+          transform: scale(1.08);
+          box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
+        }
+
+        .language-flag {
+          font-size: 1rem;
+          display: inline-block;
+        }
+
+        @media (max-width: 640px) {
+          .language-switcher {
+            margin-left: 0;
+            margin-bottom: 0.5rem;
+          }
+          
+          .language-switcher-label {
+            display: none;
+          }
+
+          .language-btn {
+            padding: 0.35rem 0.5rem;
+            font-size: 0.7rem;
+          }
         }
       </style>
-      <select id="language-select" title="Select Language">
-      </select>
+      <span class="language-switcher-label">🌍 Language:</span>
+      <div class="language-buttons">
     `;
 
-    // Add to navbar or body
-    if (navbar.querySelector('.nav-buttons')) {
+    for (const [code, metadata] of Object.entries(langFlags)) {
+      const isActive = code === this.currentLanguage ? 'active' : '';
+      buttonsHTML += `
+        <button class="language-btn ${isActive}" data-lang="${code}" title="${this.languageNames[code]}">
+          <span class="language-flag">${metadata.flag}</span>
+          <span>${metadata.label}</span>
+        </button>
+      `;
+    }
+
+    buttonsHTML += `</div>`;
+    switcher.innerHTML = buttonsHTML;
+
+    // Add to navbar
+    if (navbar.classList.contains('navbar-content')) {
+      navbar.appendChild(switcher);
+    } else if (navbar.querySelector('.navbar-menu')) {
+      navbar.querySelector('.navbar-menu').parentElement.appendChild(switcher);
+    } else if (navbar.querySelector('.nav-buttons')) {
       navbar.querySelector('.nav-buttons').appendChild(switcher);
     } else {
       navbar.appendChild(switcher);
     }
 
-    // Populate language options
-    const select = document.getElementById('language-select');
-    for (const [code, name] of Object.entries(this.languageNames)) {
-      const option = document.createElement('option');
-      option.value = code;
-      option.textContent = name;
-      option.selected = code === this.currentLanguage;
-      select.appendChild(option);
-    }
-
-    // Add change event listener
-    select.addEventListener('change', (e) => {
-      this.setLanguage(e.target.value);
+    // Add event listeners to language buttons
+    document.querySelectorAll('.language-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const lang = btn.dataset.lang;
+        this.setLanguage(lang);
+        
+        // Update active state
+        document.querySelectorAll('.language-btn').forEach(b => {
+          b.classList.remove('active');
+        });
+        btn.classList.add('active');
+      });
     });
+
+    console.log('✓ Modern language switcher added');
   }
 
   /**
