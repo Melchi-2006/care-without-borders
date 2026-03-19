@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="css/theme-redesign.css">
   <!-- Multilingual Support - Load First! -->
   <script src="js/i18n.js"></script>
+  <!-- Audio System for VILGAX -->
+  <script src="js/audio.js"></script>
 </head>
 <body>
 <div class="bg-blur bg1"></div>
@@ -36,6 +38,7 @@
     <div class="hero-buttons">
       <button class="btn btn-primary btn-lg" data-i18n="buttons.getStarted" onclick="goRegister()">Get Started →</button>
       <button class="btn btn-outline btn-lg" data-i18n="buttons.login" onclick="goLogin()">Login</button>
+      <button class="btn btn-secondary btn-lg" id="vilgax-btn" onclick="activateVilgax()" title="🎤 Click to talk to VILGAX AI">🤖 Talk to VILGAX</button>
     </div>
   </div>
 </section>
@@ -169,6 +172,26 @@
 <footer>
   <p>© 2026 Care Without Borders. Healthcare for Everyone.</p>
 </footer>
+
+<!-- VILGAX AI Greeting and Controls -->
+<script>
+  function activateVilgax() {
+    const welcomeMsg = "Welcome to Care Without Borders! I'm VILGAX AI, your intelligent health assistant. I can help you with symptom analysis, disease information, and health advice. Say hello or ask me anything!";
+    
+    if (audio && typeof audio.speak === 'function') {
+      audio.speak(welcomeMsg);
+      console.log('✓ VILGAX activated with welcome message');
+    } else {
+      console.error('Audio system not available');
+      alert('Audio system not ready. Please refresh the page.');
+    }
+  }
+
+  // Optional: Auto-greet after page loads (can be commented out)
+  window.addEventListener('load', () => {
+    console.log('✓ Page loaded - VILGAX AI ready. Click "Talk to VILGAX" button to begin.');
+  });
+</script>
 
 <script src="script.js"></script>
 </body>
