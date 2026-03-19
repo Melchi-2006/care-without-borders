@@ -49,7 +49,9 @@
     "download": "Download",
     "endCall": "End Call",
     "endConsultation": "End Consultation",
-    "send": "Send"
+    "send": "Send",
+    "startAiConsultation": "💬 Start AI Consultation",
+    "bookDoctorVisit": "📅 Book Doctor Visit"
   },
   "pages": {
     "login": {
@@ -127,7 +129,10 @@
       "symptoms": "Symptoms",
       "medicalHistory": "Medical History",
       "noAppointments": "No appointments scheduled",
-      "reasonForVisitPlaceholder": "Describe your reason for consultation"
+      "reasonForVisitPlaceholder": "Describe your reason for consultation",
+      "talkToDoctor": "🏥 Talk to a Doctor Instantly",
+      "aiPoweredConsultations": "AI-powered health consultations at your fingertips. Get instant symptom analysis, medical advice, and prescription delivery—24/7",
+      "quickSymptomChecker": "Quick Symptom Checker"
     },
     "doctor": {
       "doctorDashboard": "Doctor Dashboard",
@@ -231,7 +236,13 @@
     "features": {
       "telemedicine": "Telemedicine",
       "aiChatbot": "AI Chatbot",
-      "medicineFinder": "Medicine Finder",
+     ,
+    "trust": {
+      "hipaaCompliant": "🔒 HIPAA Compliant",
+      "fdaApproved": "✅ FDA Approved Protocols",
+      "encrypted": "🔐 256-bit Encrypted",
+      "satisfaction": "⭐ 98% User Satisfaction"
+    } "medicineFinder": "Medicine Finder",
       "prescriptions": "Digital Prescriptions",
       "medicalRecords": "Medical Records"
     }
@@ -325,7 +336,21 @@
   },
   "settings": {
     "language": "Language",
-    "theme": "Theme",
+   ,
+  "symptoms": {
+    "feverCough": "Fever & Cough",
+    "feverCoughDesc": "Get instant analysis of respiratory symptoms",
+    "headache": "Headache",
+    "headacheDesc": "Understand causes and relief options",
+    "bodyPain": "Body Pain",
+    "bodyPainDesc": "Analyze muscle and joint pain",
+    "allergy": "Allergy",
+    "allergyDesc": "Check allergy symptoms and triggers",
+    "fatigue": "Fatigue",
+    "fatigueDesc": "Energy and vitality assessment",
+    "digestive": "Digestive Issues",
+    "digestiveDesc": "Stomach and digestion problems"
+  } "theme": "Theme",
     "notifications": "Notifications",
     "privacy": "Privacy Settings",
     "aboutUs": "About Us",

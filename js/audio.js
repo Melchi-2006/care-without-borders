@@ -484,7 +484,7 @@ class AudioSystem {
    */
   getStatus() {
     return {
-      isSpeaking: this.isSpelling,
+      isSpeaking: this.isSpeaking,
       isListening: this.isListening,
       currentLang: this.config.lang,
       rate: this.config.rate,
