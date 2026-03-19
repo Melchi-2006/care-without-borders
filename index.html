@@ -14,28 +14,29 @@
 
 <!-- NAVBAR -->
 <nav class="navbar">
-  <div class="logo">❤️ <span data-i18n="brand.name">Care Without Borders</span></div>
-  <div class="nav-buttons">
-    <button class="btn-outline" data-i18n="navigation.admin" onclick="window.location.href='admin.html'">Admin</button>
-    <button class="btn-outline" data-i18n="navigation.doctor" onclick="window.location.href='doctor-login.html'">Doctor</button>
-    <button class="btn-outline" data-i18n="navigation.login" onclick="window.location.href='login.html'">Login</button>
-    <button class="btn-solid" data-i18n="navigation.register" onclick="window.location.href='register.html'">Register</button>
+  <div class="navbar-content">
+    <a href="#" class="navbar-brand">❤️ <span data-i18n="brand.name">Care Without Borders</span></a>
+    <div class="navbar-menu" role="menubar">
+      <a href="admin.html" data-i18n="navigation.admin" role="menuitem">Admin</a>
+      <a href="doctor-login.html" data-i18n="navigation.doctor" role="menuitem">Doctor</a>
+      <a href="login.html" data-i18n="navigation.login" role="menuitem">Login</a>
+    </div>
+    <div class="navbar-actions">
+      <button class="btn btn-primary" data-i18n="navigation.register" onclick="window.location.href='register.html'">Register</button>
+    </div>
   </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero reveal">
-  <div class="hero-left">
+<section class="hero" role="main">
+  <div class="hero-content">
     <h1 data-i18n="sections.hero.title">Welcome to Care Without Borders</h1>
     <p data-i18n="sections.hero.subtitle">Accessible Healthcare for Everyone, Everywhere</p>
     <div class="hero-buttons">
-      <button class="btn-solid large" data-i18n="buttons.getStarted" onclick="goRegister()">Get Started →</button>
-      <button class="btn-outline large" data-i18n="buttons.login" onclick="goLogin()">Login</button>
+      <button class="btn btn-primary btn-lg" data-i18n="buttons.getStarted" onclick="goRegister()">Get Started →</button>
+      <button class="btn btn-outline btn-lg" data-i18n="buttons.login" onclick="goLogin()">Login</button>
     </div>
   </div>
-<div class="hero-right">
-  <img src="doctor.jpg" alt="Doctor">
-</div>
 </section>
 
 <!-- STATS -->
@@ -62,41 +63,52 @@
 <section class="features reveal">
   <h2>Comprehensive Healthcare Platform</h2>
 
-  <div class="feature-grid">
-
-    <div class="card">
-      <h3>HD Video Consultations</h3>
-      <p>Secure, high-quality doctor video calls.</p>
+  <div class="feature-grisection reveal">
+  <div class="container">
+    <div class="section-title">
+      <h2>Comprehensive Healthcare Platform</h2>
+      <p>All the tools you need for modern, accessible healthcare</p>
     </div>
 
-    <div class="card">
-      <h3>AI Health Assistant</h3>
-      <p>Instant symptom analysis and guidance.</p>
+    <div class="grid grid-3">
+
+      <div class="card">
+        <div class="feature-card-icon">📹</div>
+        <h3 class="feature-card-title">HD Video Consultations</h3>
+        <p class="feature-card-text">Secure, high-quality doctor video calls.</p>
+      </div>
+
+      <div class="card">
+        <div class="feature-card-icon">🤖</div>
+        <h3 class="feature-card-title">AI Health Assistant</h3>
+        <p class="feature-card-text">Instant symptom analysis and guidance.</p>
+      </div>
+
+      <div class="card">
+        <div class="feature-card-icon">💊</div>
+        <h3 class="feature-card-title">Medicine Search</h3>
+        <p class="feature-card-text">Search complete medicine database.</p>
+      </div>
+
+      <div class="card">
+        <div class="feature-card-icon">🏥</div>
+        <h3 class="feature-card-title">Clinic Locator</h3>
+        <p class="feature-card-text">Find nearby hospitals easily.</p>
+      </div>
+
+      <div class="card">
+        <div class="feature-card-icon">📋</div>
+        <h3 class="feature-card-title">Digital Prescriptions</h3>
+        <p class="feature-card-text">Receive secure digital prescriptions.</p>
+      </div>
+
+      <div class="card">
+        <div class="feature-card-icon">📊</div>
+        <h3 class="feature-card-title">Health Analytics</h3>
+        <p class="feature-card-text">Track healthcare insights and trends.</p>
+      </div>
+
     </div>
-
-    <div class="card">
-      <h3>Medicine Search</h3>
-      <p>Search complete medicine database.</p>
-    </div>
-
-    <div class="card">
-      <h3>Clinic Locator</h3>
-      <p>Find nearby hospitals easily.</p>
-    </div>
-
-    <div class="card">
-      <h3>Digital Prescriptions</h3>
-      <p>Receive secure digital prescriptions.</p>
-    </div>
-
-    <div class="card">
-      <h3>Health Analytics</h3>
-      <p>Track healthcare insights and trends.</p>
-    </div>
-
-  </div>
-</section>
-
 <!-- HOW IT WORKS -->
 <section class="how reveal">
   <h2>How It Works</h2>
@@ -131,10 +143,12 @@
 
     <div class="testimonial">
       <p>"Managing patients digitally is effortless."</p>
-      <strong>Dr. Arun</strong>
-    </div>
-
-    <div class="testimonial">
+      <strong>Drsection reveal" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center;">
+  <div class="container">
+    <h2 style="margin-bottom: 1rem;">Ready to Experience Better Healthcare?</h2>
+    <p style="margin-bottom: 2rem; font-size: 1.1rem;">Join thousands of patients today.</p>
+    <button class="btn btn-primary btn-lg" onclick="goRegister()" style="background: white; color: #667eea; border: none;">Create Free Account</button>
+  </div
       <p>"Found nearby clinics easily."</p>
       <strong>Rahul K.</strong>
     </div>
