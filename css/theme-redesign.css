@@ -848,6 +848,119 @@ footer {
   }
 }
 
+/* ==================== BACKWARD COMPATIBILITY ==================== */
+/* Old class names mapped to new system */
+
+.btn-solid {
+  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%);
+  color: white;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--primary-purple-dark);
+}
+
+.btn-solid:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  text-decoration: none;
+  color: white;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary-purple);
+  border: 2px solid var(--primary-purple);
+}
+
+.btn-outline:hover {
+  background: var(--primary-purple);
+  color: white;
+  text-decoration: none;
+}
+
+.btn-outline.large {
+  padding: 12px 28px;
+  font-size: 16px;
+}
+
+.btn-solid.large {
+  padding: 12px 28px;
+  font-size: 16px;
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary-purple);
+  color: white;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  z-index: 100;
+  border-radius: 0 0 var(--radius-lg) 0;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==================== DARK MODE ==================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-light: #1f2937;
+    --bg-white: #111827;
+    --text-dark: #f3f4f6;
+    --text-light: #d1d5db;
+    --text-lighter: #9ca3af;
+    --border: #374151;
+    --border-light: #4b5563;
+  }
+
+  body {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+    color: var(--text-dark);
+  }
+
+  .card {
+    background: var(--bg-white);
+    border-color: var(--border);
+  }
+
+  input,
+  textarea,
+  select {
+    background: #374151;
+    color: var(--text-dark);
+    border-color: var(--border);
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
+  }
+
+  .table thead {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
+  }
+
+  .table tbody tr:hover {
+    background: #1f2937;
+  }
+}
+
 /* ==================== UTILITIES ==================== */
 
 .text-center {
