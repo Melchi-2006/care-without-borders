@@ -10,8 +10,10 @@
   <script src="js/i18n.js"></script>
   <!-- Audio System for VILGAX -->
   <script src="js/audio.js"></script>
-  <!-- VILGAX Multilingual Assistant with voice commands -->
-  <script src="js/vilgax-multilingual.js"></script>
+  <!-- VILGAX Commander - Full-Featured AI Command Handler -->
+  <script src="js/vilgax-commander.js"></script>
+  <!-- VILGAX UI - Interactive Voice Interface -->
+  <script src="js/vilgax-ui.js"></script>
 </head>
 <body>
 <div class="bg-blur bg1"></div>
@@ -40,7 +42,7 @@
     <div class="hero-buttons">
       <button class="btn btn-primary btn-lg" data-i18n="buttons.getStarted" onclick="goRegister()">Get Started →</button>
       <button class="btn btn-outline btn-lg" data-i18n="buttons.login" onclick="goLogin()">Login</button>
-      <button class="btn btn-secondary btn-lg" id="vilgax-btn" onclick="activateVilgaxListener()" title="🎤 Click to speak commands to VILGAX">🎤 Speak to VILGAX</button>
+      <button class="btn btn-secondary btn-lg" onclick="if(window.vilgaxUI) window.vilgaxUI.togglePanel(); else alert('VILGAX is loading...')">🎤 Speak to VILGAX</button>
     </div>
   </div>
 </section>
