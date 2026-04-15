@@ -36,11 +36,9 @@ class VilgaxCommander {
    * Check if user is authenticated
    */
   checkAuthentication() {
-    // Check if user is logged in
     const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
     const userToken = localStorage.getItem('token') || sessionStorage.getItem('token');
     const isLoggedIn = userId && userToken;
-    
     return isLoggedIn;
   }
 
@@ -206,13 +204,13 @@ class VilgaxCommander {
           }
         },
         'chatbot': {
-          keywords: ['சாட்போட்', 'விலகாக்ஸ்', 'எआई உதவியாளர்', 'ஐ சபை', 'vilgax sollungo', 'health chat', 'health question pannungo'],
+          keywords: ['சாட்போட்', 'விலகாக்ஸ்', 'எআई உதவியாளர்', 'ஐ சபை', 'vilgax sollungo', 'health chat', 'health question pannungo'],
           action: 'navigate',
           target: 'chatbot.html',
           requireAuth: false,
           responses: {
             start: 'செயற்கைத்திறன் உதவியாளர் திறக்கிறது...',
-            execute: 'விலகாக்ஸ் AI உதவியாளர் பக்கம் திறக்கிறது. நீங்கள் ஸ்வாஸ்थ்য பற்றி கேட்கலாம்.',
+            execute: 'விலகாக்ஸ் AI உதவியாளர் பக்கம் திறக்கிறது. நீங்கள் ஸ்வாஸ்థ்य பற்றி கேட்கலாம்.',
             error: 'மன்னிக்கவும், சாட்போட் திறக்க முடியவில்லை.'
           }
         },
@@ -322,154 +320,6 @@ class VilgaxCommander {
       }
     };
   }
-            start: 'மருத்துவ பதிவுகள் பெறுகிறது...',
-            execute: 'உங்கள் மருத்துவ பதிவுகள் பக்கம் திறக்கிறது.',
-            error: 'மன்னிக்கவும், பதிவுகள் பெற முடியவில்லை.'
-          }
-        },
-        'video_consultation': {
-          keywords: ['வீடியோ அழை', 'வீடியோ ஆலோசனை', 'மருத்துவர் அழை', 'வீடியோ'],
-          action: 'navigate',
-          target: 'video-room.html',
-          responses: {
-            start: 'வீடியோ ஆலோசனை தயாரிக்கிறது...',
-            execute: 'வீடியோ கால் அமைப்பு பக்கம் திறக்கிறது.',
-            error: 'மன்னிக்கவும், வீடியோ ஆலோசனை கிடைக்கவில்லை.'
-          }
-        },
-        'prescriptions': {
-          keywords: ['பரிந்துரைகள்', 'என் பரிந்துரைகள்', 'மருந்து பரிந்துரை'],
-          action: 'navigate',
-          target: 'prescription.html',
-          responses: {
-            start: 'பரிந்துரைகள் ஏற்றுகிறது...',
-            execute: 'உங்கள் மருந்து பரிந்துரைகள் பக்கம் திறக்கிறது.',
-            error: 'மன்னிக்கவும், பரிந்துரைகள் பெற முடியவில்லை.'
-          }
-        },
-        'chatbot': {
-          keywords: ['சாட்போட்', 'விலகாக்ஸ்', 'எআई உதவியாளர்', 'ஐ சபை'],
-          action: 'navigate',
-          target: 'chatbot.html',
-          responses: {
-            start: 'செயற்கைத்திறன் உதவியாளர் திறக்கிறது...',
-            execute: 'விலகாக்ஸ் AI உதவியாளர் பக்கம் திறக்கிறது. நீங்கள் என்ற ஸ்வாస்થ்য பற்றி கேட்கலாம்.',
-            error: 'மன்னிக்கவும், சாட்போட் திறக்க முடியவில்லை.'
-          }
-        },
-        'doctor_page': {
-          keywords: ['மருத்துவர்', 'மருத்துவர்கள்', 'மருத்துவர் பக்கம்', 'மருத்துவர் தேடல்'],
-          action: 'navigate',
-          target: 'doctor.html',
-          responses: {
-            start: 'மருத்துவர்களை தேடுகிறது...',
-            execute: 'மருத்துவர் பக்கம் திறக்கிறது. அனைத்து மருத்துவர்களைக் காணலாம்.',
-            error: 'மன்னிக்கவும், மருத்துவர் பக்கம் திறக்க முடியவில்லை.'
-          }
-        },
-        'help': {
-          keywords: ['உதவி', 'கட்டளைகள்', 'நீ என்ன செய்ய முடியும்'],
-          action: 'speak',
-          responses: {
-            execute: 'நான் உங்களுக்கு உதவ முடியும்: நியமனம் புத்தகம், மருந்து தேடல், மருத்துவ பதிவுகள், வீடியோ ஆலோசனை, பரிந்துரைகள், சாட்போட் மற்றும் மருத்துவர் தேடல். உங்கள் கட்டளை சொல்லவும்!'
-          }
-        },
-        'close': {
-          keywords: ['மூடு', 'மூடுங்கள்', 'விலகாக்ஸ் மூடுங்கள்'],
-          action: 'close_panel',
-          responses: {
-            execute: 'விலகாக்ஸ் பக்கம் மூடுகிறது.'
-          }
-        }
-      },
-      'hi': {
-        'book_appointment': {
-          keywords: ['नियुक्ति बुक करें', 'अपॉइंटमेंट', 'डॉक्टर की मुलाकात', 'मिलने का समय'],
-          action: 'navigate',
-          target: 'patient.html#appointments',
-          responses: {
-            start: 'नियुक्ति पृष्ठ खोल रहे हैं...',
-            execute: 'अपॉइंटमेंट बुकिंग पृष्ठ खोल रहे हैं। आप डॉक्टर चुन सकते हैं।',
-            error: 'क्षमा करें, नियुक्ति पृष्ठ नहीं खोल सके।'
-          }
-        },
-        'medicines': {
-          keywords: ['दवा खोजें', 'दवा ढूंढें', 'दवाएं', 'दवा का नाम'],
-          action: 'navigate',
-          target: 'medicine-finder.html',
-          responses: {
-            start: 'दवा खोजने के लिए तैयार हो रहे हैं...',
-            execute: 'दवा खोज पृष्ठ खोल रहे हैं। आप अपनी दवा खोज सकते हैं।',
-            error: 'क्षमा करें, दवा पृष्ठ नहीं खोल सके।'
-          }
-        },
-        'medical_records': {
-          keywords: ['चिकित्सा रिकॉर्ड', 'मेरे रिकॉर्ड', 'स्वास्थ्य रिकॉर्ड', 'रिकॉर्ड'],
-          action: 'navigate',
-          target: 'medical-records.html',
-          responses: {
-            start: 'चिकित्सा रिकॉर्ड प्राप्त कर रहे हैं...',
-            execute: 'आपके चिकित्सा रिकॉर्ड पृष्ठ खोल रहे हैं।',
-            error: 'क्षमा करें, रिकॉर्ड प्राप्त नहीं कर सके।'
-          }
-        },
-        'video_consultation': {
-          keywords: ['वीडियो कॉल', 'डॉक्टर से बात करें', 'वीडियो परामर्श', 'ऑनलाइन मिलना'],
-          action: 'navigate',
-          target: 'video-room.html',
-          responses: {
-            start: 'वीडियो परामर्श तैयार कर रहे हैं...',
-            execute: 'वीडियो कॉल पृष्ठ खोल रहे हैं।',
-            error: 'क्षमा करें, वीडियो परामर्श उपलब्ध नहीं है।'
-          }
-        },
-        'prescriptions': {
-          keywords: ['नुस्खे', 'मेरी दवाएं', 'दवा की सूची', 'दवा की सिफारिश'],
-          action: 'navigate',
-          target: 'prescription.html',
-          responses: {
-            start: 'नुस्खे लोड कर रहे हैं...',
-            execute: 'आपके नुस्खे पृष्ठ खोल रहे हैं।',
-            error: 'क्षमा करें, नुस्खे प्राप्त नहीं कर सके।'
-          }
-        },
-        'chatbot': {
-          keywords: ['चैटबॉट', 'विलगैक्स', 'एआई सहायक', 'स्वास्थ्य सहायक'],
-          action: 'navigate',
-          target: 'chatbot.html',
-          responses: {
-            start: 'एआई सहायक खोल रहे हैं...',
-            execute: 'विलगैक्स एआई सहायक पृष्ठ खोल रहे हैं। आप स्वास्थ्य के बारे में पूछ सकते हैं।',
-            error: 'क्षमा करें, चैटबॉट नहीं खोल सके।'
-          }
-        },
-        'doctor_page': {
-          keywords: ['डॉक्टर', 'डॉक्टर खोजें', 'डॉक्टर सूची', 'चिकित्सक'],
-          action: 'navigate',
-          target: 'doctor.html',
-          responses: {
-            start: 'डॉक्टर खोज रहे हैं...',
-            execute: 'डॉक्टर पृष्ठ खोल रहे हैं। सभी डॉक्टर यहाँ देख सकते हैं।',
-            error: 'क्षमा करें, डॉक्टर पृष्ठ नहीं खोल सके।'
-          }
-        },
-        'help': {
-          keywords: ['मदद', 'कमांड', 'आप क्या कर सकते हैं', 'सहायता'],
-          action: 'speak',
-          responses: {
-            execute: 'मैं आपकी मदद कर सकता हूं: नियुक्ति बुक करना, दवा खोजना, चिकित्सा रिकॉर्ड देखना, वीडियो परामर्श, नुस्खे, चैटबॉट और डॉक्टर खोजना। कोई भी कमांड बोलें!'
-          }
-        },
-        'close': {
-          keywords: ['बंद करो', 'विलगैक्स बंद करो', 'पैनल बंद करो'],
-          action: 'close_panel',
-          responses: {
-            execute: 'विलगैक्स पैनल बंद कर रहे हैं।'
-          }
-        }
-      }
-    };
-  }
 
   /**
    * Setup Speech Recognition Engine
@@ -523,7 +373,6 @@ class VilgaxCommander {
 
   /**
    * Process Voice Command with Advanced Matcher (99% Accuracy, FREE)
-   * Uses: Fuzzy matching, Phonetics, Semantic similarity, NO API COSTS
    */
   async processCommand(transcript) {
     if (this.isProcessing) return;
@@ -558,7 +407,7 @@ class VilgaxCommander {
   }
 
   /**
-   * Basic fallback keyword matching (used if Advanced Matcher unavailable)
+   * Basic fallback keyword matching
    */
   basicKeywordMatch(transcript, commandList) {
     const cleanTranscript = transcript.toLowerCase().trim();
