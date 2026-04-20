@@ -448,6 +448,24 @@
     <div id="initial-greeting" style="margin: 20px 0; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 12px; font-size: 16px; line-height: 1.6; animation: fadeIn 1s ease 0.5s backwards;">
       Hello! We are here to help you with your healthcare needs.
     </div>
+    
+    <!-- Voice Play Button -->
+    <button id="play-greeting-btn" style="
+      margin: 15px auto;
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      display: inline-block;
+    " onclick="playGreetingManually()">
+      🔊 Play Greeting
+    </button>
+    
     <div class="language-grid">
       <button class="language-btn" onclick="selectLanguage('en')" style="animation: slideUp 0.6s ease 0.3s backwards;">
         <span style="font-size: 32px;">🇺🇸</span>
@@ -468,6 +486,24 @@
   <div id="step-role" class="step-screen">
     <h1>👤 Choose Your Role</h1>
     <p id="role-greeting">Select your role and let's get started</p>
+    
+    <!-- Voice Play Button -->
+    <button id="play-role-greeting-btn" style="
+      margin: 15px auto;
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      display: inline-block;
+    " onclick="playRoleGreetingManually()">
+      🔊 Hear Greeting
+    </button>
+    
     <div class="role-grid">
       <div class="role-card" onclick="selectRole('patient')">
         <div class="role-icon">🏥</div>
@@ -516,7 +552,23 @@
     <h1 style="margin-bottom: 5px;">VILGAX</h1>
     <p style="opacity: 0.9;">Your Health Companion</p>
     <div id="vilgax-greeting-message" class="vilgax-message" style="margin-top: 40px;"></div>
-    <button class="btn" onclick="nextStep()" style="margin-top: 50px;">Continue →</button>
+    
+    <button style="
+      margin: 20px auto;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    " onclick="playVilgaxGreetingManually()">
+      🔊 Hear Greeting
+    </button>
+    
+    <button class="btn" onclick="nextStep()" style="margin-top: 30px;">Continue →</button>
   </div>
 
   <!-- STEP 5: VILGAX TASK SELECTION -->
@@ -622,6 +674,24 @@
     if (window.i18n) {
       window.i18n.setLanguage(lang);
     }
+    
+    // Try to speak greeting when language selected
+    setTimeout(() => {
+      try {
+        if (window.vilgaxVoice && window.vilgaxVoice.speak) {
+          const greetingTexts = {
+            en: "Namaste! Welcome to Care Without Borders, sir or madam.",
+            ta: "வணக்கம்! Care Without Borders க்கு வரவேற்கிறோம்!",
+            hi: "नमस्ते! Care Without Borders में आपका स्वागत है!"
+          };
+          window.vilgaxVoice.speak(greetingTexts[lang], lang);
+          console.log('🔊 Greeting played in', lang);
+        }
+      } catch (e) {
+        console.log('Auto-play blocked or error:', e);
+      }
+    }, 300);
+    
     nextStep();
   }
 
@@ -724,6 +794,32 @@
     if (greetingEl) {
       greetingEl.textContent = text;
     }
+    
+    // Try to speak greeting
+    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
+      try {
+        window.vilgaxVoice.speak(text, selectedLanguage);
+      } catch (e) {
+        console.log('Voice greeting error:', e);
+      }
+    }
+  }
+
+  // Play role greeting on button click
+  function playRoleGreetingManually() {
+    const text = greetings[selectedLanguage]?.roleGreeting || greetings.en.roleGreeting;
+    
+    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
+      try {
+        window.vilgaxVoice.speak(text, selectedLanguage);
+        console.log('🔊 Playing role greeting in', selectedLanguage);
+      } catch (e) {
+        console.error('Error playing role greeting:', e);
+      }
+    } else {
+      console.log('VILGAX voice not loaded. Retrying...');
+      setTimeout(playRoleGreetingManually, 500);
+    }
   }
 
   function updateVilgaxGreeting() {
@@ -747,6 +843,23 @@
     if (window.vilgaxVoice && window.vilgaxVoice.speak) {
       const text = greetings[selectedLanguage]?.greeting || greetings.en.greeting;
       window.vilgaxVoice.speak(text, selectedLanguage);
+    }
+  }
+
+  // Play VILGAX greeting on button click
+  function playVilgaxGreetingManually() {
+    const text = greetings[selectedLanguage]?.greeting || greetings.en.greeting;
+    
+    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
+      try {
+        window.vilgaxVoice.speak(text, selectedLanguage);
+        console.log('🔊 Playing VILGAX greeting in', selectedLanguage);
+      } catch (e) {
+        console.error('Error playing VILGAX greeting:', e);
+      }
+    } else {
+      console.log('VILGAX voice not loaded. Retrying...');
+      setTimeout(playVilgaxGreetingManually, 500);
     }
   }
 
@@ -816,9 +929,36 @@
       greetingEl.textContent = displayTexts[selectedLanguage];
     }
     
-    // Speak greeting
+    // Try to speak greeting
     if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-      window.vilgaxVoice.speak(text, selectedLanguage);
+      try {
+        window.vilgaxVoice.speak(text, selectedLanguage);
+      } catch (e) {
+        console.log('Voice greeting error (this is normal if browser blocks autoplay):', e);
+      }
+    }
+  }
+
+  // Manual play button for greeting
+  function playGreetingManually() {
+    const welcomeTexts = {
+      en: "Welcome to Care Without Borders! Please select your language to begin.",
+      ta: "Care Without Borders க்கு வரவேற்கிறோம்! தயவுசெய்து தொடங்க உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்.",
+      hi: "Care Without Borders में आपका स्वागत है! कृपया शुरू करने के लिए अपनी भाषा चुनें।"
+    };
+    
+    const text = welcomeTexts[selectedLanguage];
+    
+    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
+      try {
+        window.vilgaxVoice.speak(text, selectedLanguage);
+        console.log('🔊 Playing greeting in', selectedLanguage);
+      } catch (e) {
+        console.error('Error playing greeting:', e);
+      }
+    } else {
+      console.log('VILGAX voice not loaded yet. Trying again...');
+      setTimeout(playGreetingManually, 500);
     }
   }
 </script>
