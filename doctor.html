@@ -678,8 +678,9 @@
   <div class="doctor-sidebar">
     <ul class="sidebar-menu">
       <li><a class="nav-link active" onclick="switchPanel('dashboard')" data-i18n="sections.hero.title">📊 Dashboard</a></li>
-      <li><a class="nav-link" onclick="switchPanel('profile')" data-i18n="navigation.profile">👤 My Profile</a></li>
+      <li><a class="nav-link" onclick="switchPanel('incoming-requests')" data-i18n="appointment.newRequest">🔔 Incoming Requests</a></li>
       <li><a class="nav-link" onclick="switchPanel('appointments')" data-i18n="navigation.appointments">📅 Appointments</a></li>
+      <li><a class="nav-link" onclick="switchPanel('profile')" data-i18n="navigation.profile">👤 My Profile</a></li>
       <li><a class="nav-link" onclick="switchPanel('patients')" data-i18n="pages.doctor.myPatients">👥 Patients</a></li>
       <li><a class="nav-link" onclick="switchPanel('earnings')" data-i18n="pages.doctor.consultationFee">💰 Earnings</a></li>
       <li><a class="nav-link" onclick="switchPanel('settings')" data-i18n="settings.language">⚙️ Settings</a></li>
@@ -864,6 +865,29 @@
       </div>
     </div>
 
+      </div>
+    </div>
+
+    <!-- Incoming Appointment Requests Panel -->
+    <div id="incoming-requests" class="panel-content">
+      <div class="panel-title">🔔 Incoming Appointment Requests</div>
+      <div class="doctor-container">
+        <!-- Doctor Availability Status -->
+        <div class="availability-section">
+          <div class="availability-status-container">
+            <div id="doctor-availability-status" class="availability-status available">
+              🟢 Available
+            </div>
+            <p class="availability-text">You will receive notifications for incoming requests</p>
+          </div>
+        </div>
+
+        <!-- Incoming Requests List -->
+        <div id="incoming-requests-list" class="incoming-requests-section">
+          <div class="empty-state">
+            <p>No incoming appointment requests</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1622,7 +1646,40 @@
 </script>
 
 <script src="https://meet.jit.si/external_api.js"></script>
-<script type="module" src="js/doctor.js"></script>
+<!-- Doctor Dashboard UI -->
+<script src="js/doctor-dashboard-ui.js"></script>
+<!-- Module Initialization -->
+<script type="module">
+  // Import modules for doctor dashboard
+  import { auth, db } from './js/firebase.js';
+  import AppointmentBookingEngine, { initAppointmentBookingEngine } from './js/appointment-booking.js';
+  import AppointmentManager, { initAppointmentManager } from './js/appointment-manager.js';
+  
+  // Load doctor module
+  import('./js/doctor.js');
+
+  // Wait for doctor authentication
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      console.log('[Doctor Module] Doctor authenticated:', user.email);
+      
+      // Initialize appointment booking engine
+      const engine = await initAppointmentBookingEngine();
+      window.appointmentBookingEngine = engine;
+      console.log('[Doctor Module] Appointment booking engine initialized');
+      
+      // Initialize appointment manager for real-time notifications
+      const manager = await initAppointmentManager();
+      window.appointmentManager = manager;
+      console.log('[Doctor Module] Appointment manager initialized');
+      
+      // Initialize doctor dashboard UI
+      if (window.initDoctorDashboardUI) {
+        window.initDoctorDashboardUI();
+      }
+    }
+  });
+</script>
 <!-- VILGAX AI Assistant - Advanced Version -->
 <script src="js/vilgax-assistant-advanced.js"></script>
 <!-- VILGAX Form Filling Engine -->

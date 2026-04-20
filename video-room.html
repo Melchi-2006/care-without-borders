@@ -288,66 +288,65 @@
 </head>
 <body>
   <div class="video-container">
+    <!-- Header -->
     <div class="video-header">
       <div class="video-info">
-        <h2>📞 Video Consultation</h2>
-        <div class="status-badge" id="callStatus">Waiting for payment...</div>
+        <h2 data-i18n="pages.videoConsultation.videoConsultation">📞 Video Consultation</h2>
+        <div class="status-badge" id="call-status">
+          <span class="status-dot"></span>
+          <span data-i18n="appointment.status.pending">Waiting to connect...</span>
+        </div>
       </div>
       <div class="session-timer">
-        Time Remaining: <span id="sessionTimer">15:00</span>
+        <span id="call-duration-timer" style="font-size: 20px; font-weight: bold;">00:00</span>
       </div>
     </div>
 
-    <div class="message-alert" id="messageAlert" style="display: none;"></div>
+    <!-- Appointment Details (Pre-Join) -->
+    <div id="appointment-details-container" class="appointment-details-card"></div>
 
-    <div class="video-content">
-      <div class="video-frame">
-        <video id="localVideo" class="video-stream" autoplay muted playsinline></video>
-        <video id="remoteVideo" class="video-stream" autoplay playsinline style="display: none;"></video>
-        <div class="video-placeholder" id="videoPlaceholder">
-          Click "Start Consultation" to begin
-        </div>
-        <div class="controls" id="controls" style="display: none;">
-          <button class="control-btn" id="toggleAudio" title="Toggle Audio">🎤</button>
-          <button class="control-btn" id="toggleVideo" title="Toggle Video">📹</button>
-          <button class="control-btn end-call" id="endCall" title="End Call">📞</button>
-        </div>
-      </div>
+    <!-- Countdown Timer (Pre-Join) -->
+    <div id="countdown-timer-container" class="countdown-container"></div>
 
-      <div class="sidebar">
-        <div class="pricing-card">
-          <h3>💰 Consultation Fee</h3>
-          <div class="price-display" id="priceDisplay">₹5</div>
-          <div class="duration">for 15 minutes</div>
-          <button class="pay-btn" id="paymentBtn" onclick="initiatePayment()">Start Consultation</button>
-          <div id="paymentStatus" style="margin-top: 10px; font-size: 12px; color: #666;"></div>
-        </div>
+    <!-- Jitsi Meet Video Room -->
+    <div id="jitsi-meet-container" class="video-content" style="display: none; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15);"></div>
 
-        <div class="doctor-info">
-          <div class="doctor-avatar" id="doctorAvatar">👨‍⚕️</div>
-          <div class="doctor-name" id="doctorName">Dr. Name</div>
-          <div class="doctor-specialty" id="doctorSpecialty">Medical Specialist</div>
-        </div>
-
-        <div class="chat-section">
-          <h4 style="margin: 0 0 10px 0; color: #0f766e;">Chat</h4>
-          <div class="chat-messages" id="chatMessages"></div>
-          <div class="chat-input">
-            <input type="text" id="chatInput" placeholder="Type message..." />
-            <button onclick="sendMessage()">Send</button>
-          </div>
-        </div>
-      </div>
+    <!-- Participant List -->
+    <div id="participant-list" class="participant-list" style="display: none;">
+      <h4>Participants</h4>
     </div>
   </div>
 
+  <!-- Jitsi Meet External API -->
+  <script src="https://meet.jit.si/external_api.js"></script>
+
+  <!-- Video Room Manager Script -->
   <script type="module">
-    import { initiateVideoCallPayment, showPaymentAlert, PRICING, formatAmount } from './js/razorpay.js';
+    import VideoRoomManager, { initVideoRoomManager } from './js/video-room-manager.js';
     import { auth } from './js/firebase.js';
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    let paymentCompleted = false;
-    let sessionStartTime = null;
+    // Get appointment ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const appointmentId = urlParams.get('appointmentId');
+
+    if (!appointmentId) {
+      alert('Invalid appointment ID');
+      window.location.href = 'patient.html';
+    }
+
+    // Initialize video room manager when user is authenticated
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        console.log('[Video Room] User authenticated:', user.email);
+        await initVideoRoomManager(appointmentId);
+        console.log('[Video Room] Video room manager initialized');
+      } else {
+        // Redirect to login if not authenticated
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
     let timerInterval = null;
     let audioEnabled = true;
     let videoEnabled = true;

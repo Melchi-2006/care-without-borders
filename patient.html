@@ -14,6 +14,7 @@
   <script src="js/vilgax-ui.js"></script>
   <!-- Modern UI Redesign -->
   <link rel="stylesheet" href="css/theme-redesign.css">
+  <link rel="stylesheet" href="css/theme-redesign.css">
   <style>
     * {
       margin: 0;
@@ -1653,6 +1654,58 @@
   </div>
 </section>
 
+<!-- Patient Health Assistant Section (VILGAX AI) -->
+<section class="section" id="patient-assistant-container" style="background: linear-gradient(135deg, rgba(15, 118, 110, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%);">
+  <h2 class="section-title">💬 Talk to VILGAX AI Assistant</h2>
+  <div class="vilgax-patient-assistant-panel">
+    
+    <!-- Voice & Text Input Area -->
+    <div class="assistant-input-area">
+      <button id="assistant-voice-btn" class="assistant-voice-btn" title="Click to start voice input">
+        <span class="mic-icon">🎤</span>
+        <span class="button-text">Listen</span>
+      </button>
+
+      <input 
+        type="text" 
+        id="assistant-text-input"
+        class="assistant-input"
+        placeholder="Tell me about your symptoms... (or use voice input)"
+        data-i18n-attr="placeholder:patientAssistant.greeting"
+      />
+
+      <button id="assistant-submit-btn" class="assistant-submit-btn">
+        Send
+      </button>
+    </div>
+
+    <!-- Voice Indicator -->
+    <div id="voice-indicator" class="voice-indicator" style="display: none;"></div>
+
+    <!-- Loading State -->
+    <div id="assistant-loading" class="assistant-loading" style="display: none;">
+      <div class="spinner"></div>
+      <p data-i18n="patientAssistant.greeting">Analyzing your symptoms...</p>
+    </div>
+
+    <!-- Extracted Health Details Display -->
+    <div id="extracted-details-container" class="extracted-details-container" style="display: none;"></div>
+
+    <!-- Action Options (Book Doctor, AI Diagnosis, Continue Talking) -->
+    <div id="action-options-container" class="action-options-container" style="display: none;"></div>
+
+    <!-- Appointment Time Selector -->
+    <div id="appointment-time-selector" class="appointment-time-selector" style="display: none;"></div>
+
+    <!-- Appointment Status Tracker -->
+    <div id="appointment-status-container" class="appointment-status-container" style="display: none;"></div>
+
+    <!-- AI Diagnosis Result -->
+    <div id="diagnosis-result-container" class="diagnosis-result-container" style="display: none;"></div>
+
+  </div>
+</section>
+
 <!-- Appointment Booking Section -->
 <section class="section" id="appointment">
   <h2 class="section-title" data-i18n="appointment.bookYourAppointment">Book Your Appointment</h2>
@@ -2738,6 +2791,41 @@ What would you like to know?`
 <script src="js/vilgax-form-filler.js"></script>
 <!-- VILGAX Hotword Detection -->
 <script src="js/vilgax-hotword-detector.js"></script>
+<!-- Patient Health Assistant UI -->
+<script src="js/patient-assistant-ui.js"></script>
+
+<!-- Initialize Patient Modules -->
+<script type="module">
+  // Import Firebase and assistant modules
+  import { auth, db } from './js/firebase.js';
+  import VilgaxPatientAssistant, { initVilgaxPatientAssistant } from './js/vilgax-patient-assistant.js';
+  import AppointmentBookingEngine, { initAppointmentBookingEngine } from './js/appointment-booking.js';
+
+  // Wait for patient to be authenticated, then initialize
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      console.log('[Patient Module] User authenticated:', user.email);
+      
+      // Initialize patient assistant
+      const assistant = await initVilgaxPatientAssistant();
+      window.vilgaxPatientAssistant = assistant;
+      console.log('[Patient Module] Patient assistant initialized');
+      
+      // Initialize appointment booking engine
+      const engine = await initAppointmentBookingEngine();
+      window.appointmentBookingEngine = engine;
+      console.log('[Patient Module] Appointment booking engine initialized');
+
+      // Import and load patient.js
+      const { default: patientInit } = await import('./js/patient.js');
+      
+      // Initialize patient assistant UI if not already done
+      if (window.initPatientAssistantUI) {
+        window.initPatientAssistantUI();
+      }
+    }
+  });
+</script>
 
 </body>
 </html>

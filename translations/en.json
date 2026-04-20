@@ -230,6 +230,28 @@
       "consultationInProgress": "Consultation in Progress",
       "timeElapsed": "Time Elapsed",
       "sessionTimer": "Session Timer"
+    },
+    "symptoms": {
+      "feverCough": "Fever & Cough",
+      "feverCoughDesc": "Get instant analysis of respiratory symptoms",
+      "headache": "Headache",
+      "headacheDesc": "Understand causes and relief options",
+      "stomachPain": "Stomach Pain",
+      "stomachPainDesc": "Analyze digestive symptoms",
+      "skinIssues": "Skin Issues",
+      "skinIssuesDesc": "Dermatology guidance and advice",
+      "chestPain": "Chest Pain",
+      "chestPainDesc": "Urgent cardiology assessment",
+      "diabetesCare": "Diabetes Care",
+      "diabetesCareDesc": "Personalized diabetes management",
+      "bodyPain": "Body Pain",
+      "bodyPainDesc": "Analyze muscle and joint pain",
+      "allergy": "Allergy",
+      "allergyDesc": "Check allergy symptoms and triggers",
+      "fatigue": "Fatigue",
+      "fatigueDesc": "Energy and vitality assessment",
+      "digestive": "Digestive Issues",
+      "digestiveDesc": "Stomach and digestion problems"
     }
   },
   "appointment": {
@@ -277,28 +299,6 @@
       "medicalRecords": "Medical Records"
     }
   },
-  "symptoms": {
-    "feverCough": "Fever & Cough",
-    "feverCoughDesc": "Get instant analysis of respiratory symptoms",
-    "headache": "Headache",
-    "headacheDesc": "Understand causes and relief options",
-    "stomachPain": "Stomach Pain",
-    "stomachPainDesc": "Analyze digestive symptoms",
-    "skinIssues": "Skin Issues",
-    "skinIssuesDesc": "Dermatology guidance and advice",
-    "chestPain": "Chest Pain",
-    "chestPainDesc": "Urgent cardiology assessment",
-    "diabetesCare": "Diabetes Care",
-    "diabetesCareDesc": "Personalized diabetes management",
-    "bodyPain": "Body Pain",
-    "bodyPainDesc": "Analyze muscle and joint pain",
-    "allergy": "Allergy",
-    "allergyDesc": "Check allergy symptoms and triggers",
-    "fatigue": "Fatigue",
-    "fatigueDesc": "Energy and vitality assessment",
-    "digestive": "Digestive Issues",
-    "digestiveDesc": "Stomach and digestion problems"
-  },
   "messages": {
     "success": "Operation successful",
     "error": "An error occurred",
@@ -331,5 +331,66 @@
     "aboutUs": "About Us",
     "contactUs": "Contact Us",
     "helpSupport": "Help & Support"
+  },
+  "rolePopup": {
+    "title": "Who are you?",
+    "subtitle": "Select your role to continue",
+    "patientDesc": "Book appointments & consult doctors",
+    "doctorDesc": "Manage appointments & consultations",
+    "adminDesc": "Manage platform & users",
+    "alreadyHaveAccount": "Already have an account?"
+  },
+  "roles": {
+    "patient": "Patient",
+    "doctor": "Doctor",
+    "admin": "Administrator"
+  },
+  "patientAssistant": {
+    "greeting": "Hello! I'm VILGAX, your health assistant. Tell me about your symptoms.",
+    "askForDetails": "Please tell me your name, age, gender, location, symptoms, and how long you've been experiencing them.",
+    "confirmDetails": "Let me confirm the details I've noted:",
+    "suggestedSpecialist": "Suggested Specialist",
+    "options": "What would you like to do?",
+    "bookDoctor": "Book Doctor Appointment",
+    "aiDiagnosis": "Get AI Diagnosis",
+    "continueTalking": "Continue Talking to VILGAX",
+    "askAppointmentTime": "What date and time would you prefer for your appointment?",
+    "examples": "Examples: Tomorrow at 2 PM, Next Monday morning, 3:30 PM today",
+    "preparingVideo": "Preparing your appointment with a specialist..."
+  },
+  "appointment": {
+    "newRequest": "New Appointment Request",
+    "patient": "Patient",
+    "age": "Age",
+    "symptoms": "Symptoms",
+    "requestedTime": "Requested Time",
+    "accept": "Accept",
+    "decline": "Decline",
+    "accepted": "Appointment accepted!",
+    "declined": "Appointment declined.",
+    "waitingForDoctor": "Waiting for doctor acceptance...",
+    "doctorAccepted": "Doctor accepted! Preparing video call...",
+    "noDoctorsAvailable": "No doctors available. Please try again or visit nearby hospital.",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "pendingAcceptance": "Waiting for Doctor",
+      "noAcceptance": "No Doctors Available"
+    }
+  },
+  "specializations": {
+    "cardiology": "Cardiology",
+    "neurology": "Neurology",
+    "orthopedics": "Orthopedics",
+    "pediatrics": "Pediatrics",
+    "generalPractice": "General Practice",
+    "dentistry": "Dentistry",
+    "dermatology": "Dermatology",
+    "psychiatry": "Psychiatry",
+    "gastroenterology": "Gastroenterology",
+    "ent": "ENT",
+    "pulmonology": "Pulmonology"
   }
 }

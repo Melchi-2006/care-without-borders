@@ -203,8 +203,28 @@
       "availableDoctors": "उपलब्ध डॉक्टर",
       "consultationInProgress": "परामर्श प्रगति में है",
       "timeElapsed": "समय बिताया",
-      "sessionTimer": "सत्र टाइमर"
-    }
+      "sessionTimer": "सत्र टाइमर"    },
+    "symptoms": {
+      "feverCough": "बुखार और खांसी",
+      "feverCoughDesc": "श्वसन संबंधी लक्षणों का तुरंत विश्लेषण प्राप्त करें",
+      "headache": "सिरदर्द",
+      "headacheDesc": "कारणों और राहत विकल्पों को समझें",
+      "stomachPain": "पेट दर्द",
+      "stomachPainDesc": "पाचन संबंधी लक्षणों का विश्लेषण करें",
+      "skinIssues": "त्वचा संबंधी समस्याएं",
+      "skinIssuesDesc": "त्वचा विज्ञान संबंधी मार्गदर्शन और सलाह",
+      "chestPain": "सीने में दर्द",
+      "chestPainDesc": "तत्काल हृदय विज्ञान का आकलन",
+      "diabetesCare": "मधुमेह देखभाल",
+      "diabetesCareDesc": "व्यक्तिगत मधुमेह प्रबंधन",
+      "bodyPain": "शरीर में दर्द",
+      "bodyPainDesc": "मांसपेशियों और जोड़ों के दर्द का विश्लेषण करें",
+      "allergy": "एलर्जी",
+      "allergyDesc": "एलर्जी के लक्षण और ट्रिगर जांचें",
+      "fatigue": "थकान",
+      "fatigueDesc": "ऊर्जा और जीवन शक्ति का मूल्यांकन",
+      "digestive": "पाचन समस्याएं",
+      "digestiveDesc": "पेट और पाचन समस्याएं"    }
   },
   "appointment": {
     "bookYourAppointment": "अपनी नियुक्ति बुक करें",
@@ -251,28 +271,6 @@
       "medicalRecords": "चिकित्सा रिकॉर्ड"
     }
   },
-  "symptoms": {
-    "feverCough": "बुखार और खांसी",
-    "feverCoughDesc": "श्वसन लक्षणों का तुरंत विश्लेषण प्राप्त करें",
-    "headache": "सिरदर्द",
-    "headacheDesc": "कारणों को समझें और राहत के विकल्प जानें",
-    "stomachPain": "पेट दर्द",
-    "stomachPainDesc": "पाचन लक्षणों का विश्लेषण करें",
-    "skinIssues": "त्वचा की समस्याएं",
-    "skinIssuesDesc": "त्वचा विज्ञान मार्गदर्शन और सलाह",
-    "chestPain": "सीने में दर्द",
-    "chestPainDesc": "तुरंत कार्डियोलॉजी मूल्यांकन",
-    "diabetesCare": "मधुमेह देखभाल",
-    "diabetesCareDesc": "व्यक्तिगत मधुमेह प्रबंधन",
-    "bodyPain": "शरीर का दर्द",
-    "bodyPainDesc": "मांसपेशी और जोड़ों के दर्द का विश्लेषण करें",
-    "allergy": "एलर्जी",
-    "allergyDesc": "एलर्जी के लक्षण और ट्रिगर जांचें",
-    "fatigue": "थकान",
-    "fatigueDesc": "ऊर्जा और जीवन शक्ति का मूल्यांकन",
-    "digestive": "पाचन समस्याएं",
-    "digestiveDesc": "पेट और पाचन समस्याएं"
-  },
   "messages": {
     "success": "ऑपरेशन सफल",
     "error": "एक त्रुटि हुई",
@@ -304,6 +302,65 @@
     "privacy": "गोपनीयता सेटिंग्स",
     "aboutUs": "हमारे बारे में",
     "contactUs": "हमसे संपर्क करें",
-    "helpSupport": "मदद और सहायता"
-  }
+    "helpSupport": "मदद और सहायता"  },
+  "rolePopup": {
+    "title": "आप कौन हैं?",
+    "subtitle": "जारी रखने के लिए अपनी भूमिका चुनें",
+    "patientDesc": "नियुक्तियों को बुक करें और डॉक्टरों से परामर्श लें",
+    "doctorDesc": "नियुक्तियों और परामर्शों का प्रबंधन करें",
+    "adminDesc": "प्लेटफॉर्म और उपयोगकर्ताओं का प्रबंधन करें",
+    "alreadyHaveAccount": "पहले से खाता है?"
+  },
+  "roles": {
+    "patient": "रोगी",
+    "doctor": "डॉक्टर",
+    "admin": "प्रशासक"
+  },
+  "patientAssistant": {
+    "greeting": "नमस्ते! मैं VILGAX, आपका स्वास्थ्य सहायक हूं। मुझे अपने लक्षणों के बारे में बताएं।",
+    "askForDetails": "कृपया अपना नाम, उम्र, लिंग, स्थान, लक्षण और बताएं कि आप इसे कितने समय से अनुभव कर रहे हैं।",
+    "confirmDetails": "मुझे दर्ज की गई विवरणों की पुष्टि करने दें:",
+    "suggestedSpecialist": "सुझाया गया विशेषज्ञ",
+    "options": "आप क्या करना चाहते हैं?",
+    "bookDoctor": "डॉक्टर की नियुक्ति बुक करें",
+    "aiDiagnosis": "AI निदान प्राप्त करें",
+    "continueTalking": "VILGAX से बात करना जारी रखें",
+    "askAppointmentTime": "आप अपनी नियुक्ति किस तारीख और समय पर लेना पसंद करेंगे?",
+    "examples": "उदाहरण: कल दोपहर 2 बजे, अगले सोमवार सुबह, आज दोपहर 3:30",
+    "preparingVideo": "एक विशेषज्ञ के साथ आपकी नियुक्ति तैयार की जा रही है..."
+  },
+  "appointment": {
+    "newRequest": "नई नियुक्ति अनुरोध",
+    "patient": "रोगी",
+    "age": "उम्र",
+    "symptoms": "लक्षण",
+    "requestedTime": "अनुरोधित समय",
+    "accept": "स्वीकार करें",
+    "decline": "अस्वीकार करें",
+    "accepted": "नियुक्ति स्वीकार कर ली गई!",
+    "declined": "नियुक्ति अस्वीकार कर दी गई।",
+    "waitingForDoctor": "डॉक्टर की स्वीकृति की प्रतीक्षा की जा रही है...",
+    "doctorAccepted": "डॉक्टर ने स्वीकार किया! वीडियो कॉल तैयार किया जा रहा है...",
+    "noDoctorsAvailable": "कोई डॉक्टर उपलब्ध नहीं। कृपया दोबारा कोशिश करें या पास के अस्पताल में जाएं।",
+    "status": {
+      "pending": "लंबित",
+      "confirmed": "पुष्टि",
+      "completed": "पूर्ण",
+      "cancelled": "रद्द",
+      "pendingAcceptance": "डॉक्टर की प्रतीक्षा में",
+      "noAcceptance": "कोई डॉक्टर उपलब्ध नहीं"
+    }
+  },
+  "specializations": {
+    "cardiology": "कार्डियोलॉजी",
+    "neurology": "न्यूरोलॉजी",
+    "orthopedics": "ऑर्थोपेडिक्स",
+    "pediatrics": "बाल चिकित्सा",
+    "generalPractice": "सामान्य चिकित्सा",
+    "dentistry": "दंत चिकित्सा",
+    "dermatology": "त्वचा विज्ञान",
+    "psychiatry": "मनोरोग",
+    "gastroenterology": "गैस्ट्रोएंटरोलॉजी",
+    "ent": "कान, नाक, गला",
+    "pulmonology": "पल्मोनोलॉजी"  }
 }

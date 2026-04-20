@@ -350,6 +350,297 @@ const getPatientMedicalRecordsFromFirebase = async (patientId) => {
   }
 };
 
+// ==================== HEALTH CONSULTATION OPERATIONS ====================
+
+/**
+ * Save health consultation (patient health details)
+ */
+const saveHealthConsultationToFirebase = async (consultationData) => {
+  if (!db) return { success: false, message: 'Firebase not configured' };
+
+  try {
+    const consultationRef = await db.collection('health_consultations').add({
+      patientId: consultationData.patientId,
+      patientName: consultationData.patientName || '',
+      name: consultationData.name || '',
+      location: consultationData.location || '',
+      age: consultationData.age || null,
+      gender: consultationData.gender || '',
+      symptoms: consultationData.symptoms || [],
+      duration: consultationData.duration || '',
+      suggestedSpecialization: consultationData.suggestedSpecialization || 'General Practice',
+      aiDiagnosis: consultationData.aiDiagnosis || '',
+      status: 'pending',
+      createdAt: admin.firestore.Timestamp.now(),
+      appointmentId: null
+    });
+
+    console.log('✓ Health consultation saved:', consultationRef.id);
+    return { success: true, consultationId: consultationRef.id };
+  } catch (error) {
+    console.error('❌ Error saving health consultation:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Get health consultation by ID
+ */
+const getHealthConsultationFromFirebase = async (consultationId) => {
+  if (!db) return null;
+
+  try {
+    const doc = await db.collection('health_consultations').doc(consultationId).get();
+    if (doc.exists) {
+      return { id: doc.id, ...doc.data() };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting health consultation:', error);
+    return null;
+  }
+};
+
+/**
+ * Get patient's health consultations
+ */
+const getPatientConsultationsFromFirebase = async (patientId) => {
+  if (!db) return [];
+
+  try {
+    const snapshot = await db.collection('health_consultations')
+      .where('patientId', '==', patientId)
+      .orderBy('createdAt', 'desc')
+      .get();
+    
+    const consultations = [];
+    snapshot.forEach(doc => {
+      consultations.push({ id: doc.id, ...doc.data() });
+    });
+    return consultations;
+  } catch (error) {
+    console.error('Error getting patient consultations:', error);
+    return [];
+  }
+};
+
+// ==================== APPOINTMENT REQUEST OPERATIONS ====================
+
+/**
+ * Save appointment request (when patient books with specialist)
+ */
+const saveAppointmentRequestToFirebase = async (appointmentData) => {
+  if (!db) return { success: false, message: 'Firebase not configured' };
+
+  try {
+    const appointmentRef = await db.collection('appointments').add({
+      patientId: appointmentData.patientId,
+      patientEmail: appointmentData.patientEmail || '',
+      patientName: appointmentData.patientName,
+      patientAge: appointmentData.patientAge || null,
+      patientGender: appointmentData.patientGender || '',
+      patientLocation: appointmentData.patientLocation || '',
+      consultationId: appointmentData.consultationId || null,
+      symptoms: appointmentData.symptoms || [],
+      specialization: appointmentData.specialization,
+      date: appointmentData.date, // YYYY-MM-DD
+      time: appointmentData.time, // HH:MM
+      duration: appointmentData.duration || '',
+      reason: appointmentData.reason || 'Health consultation',
+      status: 'pending_acceptance',
+      doctorNotified: appointmentData.doctorNotified || [],
+      acceptedBy: null,
+      acceptedAt: null,
+      declinedBy: appointmentData.declinedBy || [],
+      createdAt: admin.firestore.Timestamp.now(),
+      severity: appointmentData.severity || 'normal',
+      notificationTimeout: appointmentData.notificationTimeout || 180000
+    });
+
+    console.log('✓ Appointment request saved:', appointmentRef.id);
+    return { success: true, appointmentId: appointmentRef.id };
+  } catch (error) {
+    console.error('❌ Error saving appointment request:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Get appointment by ID
+ */
+const getAppointmentFromFirebase = async (appointmentId) => {
+  if (!db) return null;
+
+  try {
+    const doc = await db.collection('appointments').doc(appointmentId).get();
+    if (doc.exists) {
+      return { id: doc.id, ...doc.data() };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting appointment:', error);
+    return null;
+  }
+};
+
+/**
+ * Update appointment status
+ */
+const updateAppointmentStatusFromFirebase = async (appointmentId, status, additionalData = {}) => {
+  if (!db) return { success: false, message: 'Firebase not configured' };
+
+  try {
+    const updateData = {
+      status,
+      ...additionalData,
+      updatedAt: admin.firestore.Timestamp.now()
+    };
+
+    await db.collection('appointments').doc(appointmentId).update(updateData);
+    console.log('✓ Appointment status updated:', appointmentId, status);
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error updating appointment:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Get doctor's pending appointment requests
+ */
+const getDoctorPendingAppointmentsFromFirebase = async (doctorId) => {
+  if (!db) return [];
+
+  try {
+    const snapshot = await db.collection('doctor_notifications')
+      .where('doctorId', '==', doctorId)
+      .where('status', '==', 'pending')
+      .orderBy('createdAt', 'desc')
+      .get();
+    
+    const appointments = [];
+    snapshot.forEach(doc => {
+      appointments.push({ id: doc.id, ...doc.data() });
+    });
+    return appointments;
+  } catch (error) {
+    console.error('Error getting doctor pending appointments:', error);
+    return [];
+  }
+};
+
+/**
+ * Accept appointment (doctor accepts)
+ */
+const acceptAppointmentFromFirebase = async (appointmentId, doctorId) => {
+  if (!db) return { success: false, message: 'Firebase not configured' };
+
+  try {
+    const batch = db.batch();
+
+    // Update appointment status
+    const appointmentRef = db.collection('appointments').doc(appointmentId);
+    batch.update(appointmentRef, {
+      status: 'confirmed',
+      acceptedBy: doctorId,
+      acceptedAt: admin.firestore.Timestamp.now()
+    });
+
+    // Update all doctor notifications to mark other doctors as declined
+    const notificationsSnapshot = await db.collection('doctor_notifications')
+      .where('appointmentId', '==', appointmentId)
+      .get();
+
+    notificationsSnapshot.forEach(doc => {
+      if (doc.data().doctorId !== doctorId) {
+        batch.update(doc.ref, {
+          status: 'declined_by_other'
+        });
+      } else {
+        // Mark this doctor's notification as accepted
+        batch.update(doc.ref, {
+          status: 'accepted'
+        });
+      }
+    });
+
+    await batch.commit();
+    console.log('✓ Appointment accepted by doctor:', doctorId);
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error accepting appointment:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Decline appointment (doctor declines)
+ */
+const declineAppointmentFromFirebase = async (appointmentId, doctorId) => {
+  if (!db) return { success: false, message: 'Firebase not configured' };
+
+  try {
+    const batch = db.batch();
+
+    // Update doctor notification
+    const notificationSnapshot = await db.collection('doctor_notifications')
+      .where('appointmentId', '==', appointmentId)
+      .where('doctorId', '==', doctorId)
+      .get();
+
+    notificationSnapshot.forEach(doc => {
+      batch.update(doc.ref, {
+        status: 'declined'
+      });
+    });
+
+    // Update appointment declinedBy array
+    const appointmentRef = db.collection('appointments').doc(appointmentId);
+    batch.update(appointmentRef, {
+      declinedBy: admin.firestore.FieldValue.arrayUnion(doctorId)
+    });
+
+    await batch.commit();
+    console.log('✓ Appointment declined by doctor:', doctorId);
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error declining appointment:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Create doctor notification
+ */
+const createDoctorNotificationFromFirebase = async (notificationData) => {
+  if (!db) return { success: false, message: 'Firebase not configured' };
+
+  try {
+    const notificationRef = await db.collection('doctor_notifications').add({
+      doctorId: notificationData.doctorId,
+      doctorName: notificationData.doctorName,
+      appointmentId: notificationData.appointmentId,
+      patientName: notificationData.patientName,
+      patientAge: notificationData.patientAge,
+      symptoms: notificationData.symptoms || [],
+      specialization: notificationData.specialization,
+      date: notificationData.date,
+      time: notificationData.time,
+      status: 'pending', // pending, accepted, declined, declined_by_other, expired
+      createdAt: admin.firestore.Timestamp.now(),
+      expiresAt: admin.firestore.Timestamp.fromMillis(
+        Date.now() + (notificationData.expiresIn || 180000)
+      )
+    });
+
+    console.log('✓ Doctor notification created:', notificationRef.id);
+    return { success: true, notificationId: notificationRef.id };
+  } catch (error) {
+    console.error('❌ Error creating doctor notification:', error);
+    return { success: false, error: error.message };
+  }
+};
+
 // ==================== EXPORTS ====================
 
 module.exports = {
@@ -376,6 +667,20 @@ module.exports = {
   // Medical records operations
   saveMedicalRecordToFirebase,
   getPatientMedicalRecordsFromFirebase,
+
+  // Health consultation operations (NEW)
+  saveHealthConsultationToFirebase,
+  getHealthConsultationFromFirebase,
+  getPatientConsultationsFromFirebase,
+
+  // Appointment request operations (NEW)
+  saveAppointmentRequestToFirebase,
+  getAppointmentFromFirebase,
+  updateAppointmentStatusFromFirebase,
+  getDoctorPendingAppointmentsFromFirebase,
+  acceptAppointmentFromFirebase,
+  declineAppointmentFromFirebase,
+  createDoctorNotificationFromFirebase,
 
   // Check if Firebase is available
   isFirebaseAvailable: () => db !== null,
