@@ -62,6 +62,37 @@
       }
     }
 
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
     /* STEP 1: LANGUAGE SELECTION */
     #step-language {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -412,18 +443,21 @@
 <div class="welcome-container">
   <!-- STEP 1: LANGUAGE SELECTION -->
   <div id="step-language" class="step-screen active">
-    <h1>🌍 Choose Your Language</h1>
-    <p>Select your preferred language to continue</p>
+    <h1 style="animation: fadeInDown 0.8s ease;">🌍 Choose Your Language</h1>
+    <p style="animation: fadeInDown 0.8s ease 0.2s backwards;">Welcome! Select your language to continue</p>
+    <div id="initial-greeting" style="margin: 20px 0; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 12px; font-size: 16px; line-height: 1.6; animation: fadeIn 1s ease 0.5s backwards;">
+      Hello! We are here to help you with your healthcare needs.
+    </div>
     <div class="language-grid">
-      <button class="language-btn" onclick="selectLanguage('en')">
+      <button class="language-btn" onclick="selectLanguage('en')" style="animation: slideUp 0.6s ease 0.3s backwards;">
         <span style="font-size: 32px;">🇺🇸</span>
         <span>English</span>
       </button>
-      <button class="language-btn" onclick="selectLanguage('ta')">
+      <button class="language-btn" onclick="selectLanguage('ta')" style="animation: slideUp 0.6s ease 0.4s backwards;">
         <span style="font-size: 32px;">🇮🇳</span>
         <span>தமிழ்</span>
       </button>
-      <button class="language-btn" onclick="selectLanguage('hi')">
+      <button class="language-btn" onclick="selectLanguage('hi')" style="animation: slideUp 0.6s ease 0.5s backwards;">
         <span style="font-size: 32px;">🇮🇳</span>
         <span>हिंदी</span>
       </button>
@@ -733,13 +767,60 @@
     // Voice listening would be implemented with Web Speech API
   }
 
-  // Initialize
+  // Initialize on page load
   window.addEventListener('load', () => {
-    selectedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+    // Check if user has already selected language
+    const savedLanguage = localStorage.getItem('selectedLanguage');
+    selectedLanguage = savedLanguage || 'en';
+    
+    // Set UI language
     if (window.i18n) {
       window.i18n.setLanguage(selectedLanguage);
     }
+
+    // If language was saved before, skip to role selection
+    if (savedLanguage) {
+      setTimeout(() => {
+        currentStep = 1; // Start from language
+        nextStep();      // Go to role selection
+      }, 500);
+    } else {
+      // First time user - show language selection with welcome greeting
+      setTimeout(() => {
+        speakInitialWelcome();
+      }, 1000);
+    }
+
+    // Make sure step 1 is visible
+    showStep(1);
   });
+
+  // Speak initial welcome in detected or default language
+  function speakInitialWelcome() {
+    const welcomeTexts = {
+      en: "Welcome to Care Without Borders! Please select your language to begin.",
+      ta: "Care Without Borders க்கு வரவேற்கிறோம்! தயவுசெய்து தொடங்க உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்.",
+      hi: "Care Without Borders में आपका स्वागत है! कृपया शुरू करने के लिए अपनी भाषा चुनें।"
+    };
+    
+    const text = welcomeTexts[selectedLanguage];
+    
+    // Update greeting text on screen
+    const greetingEl = document.getElementById('initial-greeting');
+    if (greetingEl) {
+      const displayTexts = {
+        en: "Hello! We are here to help you with your healthcare needs.",
+        ta: "வணக்கம்! உங்கள் ஆரோக்கியத் தேவைகளில் உதவ நாங்கள் இருக்கிறோம்.",
+        hi: "नमस्ते! हम आपकी स्वास्थ्य सेवा में मदद करने के लिए यहाँ हैं।"
+      };
+      greetingEl.textContent = displayTexts[selectedLanguage];
+    }
+    
+    // Speak greeting
+    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
+      window.vilgaxVoice.speak(text, selectedLanguage);
+    }
+  }
 </script>
 
 </body>
