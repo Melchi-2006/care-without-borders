@@ -43,7 +43,7 @@
 
     .video-content {
       display: grid;
-      grid-template-columns: 1fr 300px;
+      grid-template-columns: 1fr 350px;
       gap: 20px;
       margin-bottom: 30px;
     }
@@ -57,6 +57,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      min-height: 400px;
+    }
+
+    #jitsi-container {
+      width: 100%;
+      height: 100%;
     }
 
     .video-placeholder {
@@ -284,211 +290,272 @@
       margin-bottom: 15px;
       color: #856404;
     }
+
+    /* Video Room Enhancements */
+    #appointment-details-banner {
+      font-size: 14px;
+    }
+
+    #appointment-details-banner strong {
+      color: #0f766e;
+    }
+
+    .room-controls {
+      display: none;
+      gap: 10px;
+      flex-direction: row;
+      flex-wrap: wrap;
+      padding: 10px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .room-controls .control-btn {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: none;
+      background: #0f766e;
+      color: white;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    .room-controls .control-btn:hover {
+      background: #14b8a6;
+      transform: scale(1.1);
+    }
+
+    .room-controls .control-btn.disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .room-controls .control-btn.end-call {
+      background: #dc2626;
+    }
+
+    .room-controls .control-btn.end-call:hover {
+      background: #b91c1c;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: #ffc107;
+      color: #333;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .status-badge.status-connected {
+      background: #4caf50;
+      color: white;
+    }
+
+    .status-badge.status-disconnected {
+      background: #dc2626;
+      color: white;
+    }
+
+    .participant-item {
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .participant-avatar {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .participant-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .participant-name {
+      font-weight: 600;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .participant-status {
+      color: #999;
+      font-size: 11px;
+    }
+
+    .symptom-badge {
+      display: inline-block;
+      background: #e8f5f4;
+      color: #0f766e;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      margin-right: 5px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .video-content {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .doctor-info,
+      .chat-section {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .room-controls {
+        flex-direction: row;
+        justify-content: space-around;
+      }
+
+      .room-controls .control-btn {
+        flex: 1;
+      }
+
+      #appointment-details-banner {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="video-container">
-    <!-- Header -->
+    <!-- Video Header -->
     <div class="video-header">
       <div class="video-info">
-        <h2 data-i18n="pages.videoConsultation.videoConsultation">📞 Video Consultation</h2>
-        <div class="status-badge" id="call-status">
-          <span class="status-dot"></span>
-          <span data-i18n="appointment.status.pending">Waiting to connect...</span>
-        </div>
+        <h2>📞 Video Consultation</h2>
+        <div id="connection-status" class="status-badge">🟠 Connecting...</div>
       </div>
       <div class="session-timer">
-        <span id="call-duration-timer" style="font-size: 20px; font-weight: bold;">00:00</span>
+        Duration: <span id="call-duration">0:00</span>
       </div>
     </div>
 
-    <!-- Appointment Details (Pre-Join) -->
-    <div id="appointment-details-container" class="appointment-details-card"></div>
+    <!-- Error Message -->
+    <div id="error-message" class="message-alert" style="display: none;"></div>
 
-    <!-- Countdown Timer (Pre-Join) -->
-    <div id="countdown-timer-container" class="countdown-container"></div>
-
-    <!-- Jitsi Meet Video Room -->
-    <div id="jitsi-meet-container" class="video-content" style="display: none; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15);"></div>
-
-    <!-- Participant List -->
-    <div id="participant-list" class="participant-list" style="display: none;">
-      <h4>Participants</h4>
+    <!-- Appointment Details -->
+    <div id="appointment-details-banner" style="background: #f0f9ff; border: 1px solid #0f766e; border-radius: 8px; padding: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <strong id="video-patient-name">Patient Name</strong> • <span id="video-appointment-time">Date & Time</span>
+      </div>
+      <div>
+        <span id="video-symptoms" style="margin-right: 15px;"></span>
+        Consultation Fee: <strong id="video-consultation-fee">₹500</strong>
+      </div>
     </div>
+
+    <!-- Main Video Content -->
+    <div class="video-content">
+      <!-- Jitsi Container -->
+      <div class="video-frame" id="jitsi-container"></div>
+
+      <!-- Sidebar Controls -->
+      <div class="sidebar">
+        <!-- Room Controls -->
+        <div id="room-controls" class="room-controls" style="display: none; gap: 10px; flex-direction: row; flex-wrap: wrap;">
+          <button class="control-btn" id="toggle-audio-btn" onclick="window.videoRoomManager.toggleAudio()" title="Toggle Audio">🎤</button>
+          <button class="control-btn" id="toggle-video-btn" onclick="window.videoRoomManager.toggleVideo()" title="Toggle Video">📹</button>
+          <button class="control-btn end-call" id="end-call-btn" onclick="window.videoRoomManager.endCall()" title="End Call">📞</button>
+        </div>
+
+        <!-- Pre-join Countdown -->
+        <div id="pre-join-countdown" style="text-align: center; padding: 20px; background: #f0f9ff; border-radius: 8px; color: #0f766e; font-weight: 600;">
+          Joining in 5s...
+        </div>
+
+        <!-- Doctor/Patient Info -->
+        <div class="doctor-info">
+          <div class="doctor-avatar">👨‍⚕️</div>
+          <div class="doctor-name" id="video-doctor-name">Doctor Name</div>
+          <div class="doctor-specialty">Medical Specialist</div>
+          <div style="margin-top: 10px; font-size: 12px; color: #999;">
+            <span id="participant-role" style="display: block; margin-top: 5px; font-weight: 600; color: #0f766e;">Patient</span>
+          </div>
+        </div>
+
+        <!-- Participant List -->
+        <div id="participant-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+
+        <!-- Chat Section -->
+        <div class="chat-section">
+          <h4 style="margin: 0 0 10px 0; color: #0f766e;">💬 Chat</h4>
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Type message..." />
+            <button onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Call Ended Message -->
+    <div id="call-ended-message" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 1000; text-align: center;"></div>
   </div>
 
-  <!-- Jitsi Meet External API -->
+  <!-- Jitsi Script -->
   <script src="https://meet.jit.si/external_api.js"></script>
+  
+  <!-- Video Room Manager -->
+  <script src="js/video-room-manager.js"></script>
 
-  <!-- Video Room Manager Script -->
+  <!-- Module Initialization -->
   <script type="module">
-    import VideoRoomManager, { initVideoRoomManager } from './js/video-room-manager.js';
-    import { auth } from './js/firebase.js';
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    // Get appointment ID from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const appointmentId = urlParams.get('appointmentId');
-
-    if (!appointmentId) {
-      alert('Invalid appointment ID');
-      window.location.href = 'patient.html';
-    }
-
-    // Initialize video room manager when user is authenticated
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        console.log('[Video Room] User authenticated:', user.email);
-        await initVideoRoomManager(appointmentId);
-        console.log('[Video Room] Video room manager initialized');
-      } else {
-        // Redirect to login if not authenticated
+    import { auth, db } from './js/firebase.js';
+    import AppointmentBookingEngine, { initAppointmentBookingEngine } from './js/appointment-booking.js';
+    
+    // Wait for Firebase and appointment engine to be ready
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
         window.location.href = 'login.html';
+        return;
+      }
+
+      // Initialize appointment booking engine
+      if (!window.appointmentBookingEngine) {
+        try {
+          const engine = await initAppointmentBookingEngine();
+          window.appointmentBookingEngine = engine;
+        } catch (error) {
+          console.error('Error initializing appointment engine:', error);
+        }
       }
     });
   </script>
-    let timerInterval = null;
-    let audioEnabled = true;
-    let videoEnabled = true;
-    let localStream = null;
 
-    // Check authentication
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        loadDoctorInfo();
-      }
-    });
-
-    // Get URL parameters
-    function getUrlParam(param) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param);
-    }
-
-    // Load doctor information
-    function loadDoctorInfo() {
-      const doctorId = getUrlParam('doctorId');
-      const doctorName = getUrlParam('doctorName') || 'Dr. Healthcare Professional';
-      const specialty = getUrlParam('specialty') || 'Medical Specialist';
-
-      document.getElementById('doctorName').textContent = doctorName;
-      document.getElementById('doctorSpecialty').textContent = specialty;
-    }
-
-    // Initiate Payment
-    window.initiatePayment = async function() {
-      const patientId = auth.currentUser.uid;
-      const patientEmail = auth.currentUser.email;
-      const patientName = auth.currentUser.displayName || 'Patient';
-      const doctorId = getUrlParam('doctorId') || 'default_doctor';
-
-      try {
-        document.getElementById('paymentBtn').disabled = true;
-        document.getElementById('paymentStatus').textContent = 'Processing...';
-        
-        await initiateVideoCallPayment(patientId, patientEmail, patientName, doctorId);
-      } catch (error) {
-        console.error('Payment error:', error);
-        document.getElementById('paymentBtn').disabled = false;
-        document.getElementById('paymentStatus').textContent = 'Payment failed. Try again.';
-      }
-    };
-
-    // Payment success callback (called from razorpay.js)
-    window.onPaymentSuccess = function() {
-      paymentCompleted = true;
-      document.getElementById('paymentBtn').textContent = '✅ Consultation Started';
-      document.getElementById('paymentBtn').disabled = true;
-      document.getElementById('callStatus').textContent = 'Active Call';
-      document.getElementById('callStatus').style.background = '#4caf50';
-      document.getElementById('controls').style.display = 'flex';
-      document.getElementById('videoPlaceholder').style.display = 'none';
-      
-      startVideoCall();
-      startSessionTimer();
-    };
-
-    // Start video call
-    async function startVideoCall() {
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: { width: { ideal: 1280 }, height: { ideal: 720 } }
-        });
-
-        document.getElementById('localVideo').srcObject = localStream;
-        showMessage('📹 Camera and microphone enabled', 'info');
-      } catch (error) {
-        console.error('Error accessing media:', error);
-        showMessage('❌ Camera/Microphone access denied', 'error');
-      }
-    }
-
-    // Start session timer
-    function startSessionTimer() {
-      sessionStartTime = Date.now();
-      const sessionDuration = PRICING.VIDEO_CALL_15_MIN.duration * 60 * 1000; // 15 minutes in ms
-
-      timerInterval = setInterval(() => {
-        const elapsed = Date.now() - sessionStartTime;
-        const remaining = Math.max(0, sessionDuration - elapsed);
-        
-        const minutes = Math.floor(remaining / 60000);
-        const seconds = Math.floor((remaining % 60000) / 1000);
-        
-        document.getElementById('sessionTimer').textContent = 
-          `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
-        if (remaining <= 0) {
-          clearInterval(timerInterval);
-          endCall();
-        }
-      }, 1000);
-    }
-
-    // Toggle Audio
-    document.getElementById('toggleAudio').addEventListener('click', function() {
-      audioEnabled = !audioEnabled;
-      if (localStream) {
-        localStream.getAudioTracks().forEach(track => {
-          track.enabled = audioEnabled;
-        });
-        this.style.opacity = audioEnabled ? '1' : '0.5';
-        this.textContent = audioEnabled ? '🎤' : '🔇';
-      }
-    });
-
-    // Toggle Video
-    document.getElementById('toggleVideo').addEventListener('click', function() {
-      videoEnabled = !videoEnabled;
-      if (localStream) {
-        localStream.getVideoTracks().forEach(track => {
-          track.enabled = videoEnabled;
-        });
-        this.style.opacity = videoEnabled ? '1' : '0.5';
-        this.textContent = videoEnabled ? '📹' : '📹❌';
-      }
-    });
-
-    // End Call
-    document.getElementById('endCall').addEventListener('click', endCall);
-
-    function endCall() {
-      if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-      }
-      clearInterval(timerInterval);
-      document.getElementById('callStatus').textContent = 'Call Ended';
-      document.getElementById('callStatus').style.background = '#dc2626';
-      document.getElementById('controls').style.display = 'none';
-      showMessage('Call ended. Thank you for using our service!', 'success');
-      setTimeout(() => {
-        window.location.href = 'patient.html';
-      }, 2000);
-    }
-
+  <!-- Chat and utilities -->
+  <script>
     // Send Chat Message
     window.sendMessage = function() {
       const input = document.getElementById('chatInput');
@@ -505,15 +572,17 @@
       }
     };
 
-    // Show Message
-    function showMessage(msg, type) {
-      const alert = document.getElementById('messageAlert');
-      alert.textContent = msg;
-      alert.style.display = 'block';
-      alert.style.background = type === 'error' ? '#f8d7da' : type === 'info' ? '#d1ecf1' : '#d4edda';
-      alert.style.borderLeftColor = type === 'error' ? '#dc3545' : type === 'info' ? '#17a2b8' : '#28a745';
-      alert.style.color = type === 'error' ? '#721c24' : type === 'info' ? '#0c5460' : '#155724';
-    }
+    // Allow Enter key to send message
+    document.addEventListener('DOMContentLoaded', () => {
+      const chatInput = document.getElementById('chatInput');
+      if (chatInput) {
+        chatInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            window.sendMessage();
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>

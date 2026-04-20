@@ -1,562 +1,521 @@
 /**
- * Video Room Manager - Jitsi Meet Integration
+ * VIDEO ROOM MANAGER
  * 
- * Handles video consultation setup:
- * 1. Unique room ID generation from appointmentId
- * 2. Pre-join countdown timer (5 minutes)
- * 3. Jitsi Meet API initialization
- * 4. Participant tracking (patient/doctor)
- * 5. Chat integration during call
- * 6. Call recording and end handling
- * 7. Video quality settings
+ * Manages video consultation room setup and Jitsi Meet integration
+ * 
+ * Handles:
+ * 1. Appointment data retrieval
+ * 2. Jitsi room creation with unique IDs
+ * 3. Pre-join countdown timer
+ * 4. Video quality settings and optimization
+ * 5. Participant tracking (patient/doctor)
+ * 6. Call duration monitoring
+ * 7. End call and cleanup
+ * 8. Network quality monitoring
  */
 
 import { auth, db } from "./firebase.js";
-import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 class VideoRoomManager {
   constructor() {
     this.appointmentId = null;
-    this.roomId = null;
+    this.appointment = null;
     this.jitsiApi = null;
-    this.isJoined = false;
-    this.countdownTimer = null;
-    this.currentUser = null;
-    this.userRole = null; // 'patient' or 'doctor'
-    this.otherParticipant = null;
+    this.roomName = null;
+    this.participantRole = null; // 'patient' or 'doctor'
+    this.isLocalAudioEnabled = true;
+    this.isLocalVideoEnabled = true;
+    this.countdownInterval = null;
+    this.durationInterval = null;
+    this.callStartTime = null;
+    this.networkQuality = 'good';
   }
 
   /**
-   * Initialize video room from appointment ID
+   * Initialize video room from URL params or appointment ID
    */
-  async init(appointmentId) {
-    console.log('[Video Room Manager] Initializing with appointment:', appointmentId);
+  async init() {
+    console.log('[Video Room Manager] Initializing...');
 
-    this.appointmentId = appointmentId;
-    this.roomId = this.generateRoomId(appointmentId);
+    // Get appointment ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    this.appointmentId = urlParams.get('appointmentId');
 
-    // Wait for Firebase auth
-    if (!window.auth) {
-      setTimeout(() => this.init(appointmentId), 100);
-      return;
+    if (!this.appointmentId) {
+      console.error('[Video Room Manager] No appointment ID provided');
+      this.showError('No appointment found. Please book an appointment first.');
+      return false;
     }
 
-    // Get current user
-    window.auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.currentUser = user;
-        this.getUserRole();
-      }
-    });
+    try {
+      // Fetch appointment details
+      await this.loadAppointmentDetails();
+
+      // Determine role (patient or doctor)
+      this.determineParticipantRole();
+
+      // Generate room name
+      this.generateRoomName();
+
+      // Setup Jitsi Meet
+      this.setupJitsiMeet();
+
+      // Start countdown
+      this.startCountdown();
+
+      console.log('[Video Room Manager] Initialized successfully');
+      return true;
+    } catch (error) {
+      console.error('[Video Room Manager] Initialization error:', error);
+      this.showError('Failed to initialize video room: ' + error.message);
+      return false;
+    }
   }
 
   /**
-   * Generate unique room ID from appointmentId
-   * Format: cwb-appointment-{last8chars}
+   * Load appointment details from Firestore
    */
-  generateRoomId(appointmentId) {
-    // Use last 8 characters of appointment ID for room name
-    const roomName = 'cwb-' + appointmentId.slice(-8).toLowerCase();
-    console.log('[Video Room Manager] Generated room ID:', roomName);
-    return roomName;
+  async loadAppointmentDetails() {
+    console.log('[Video Room Manager] Loading appointment:', this.appointmentId);
+
+    try {
+      if (!window.appointmentBookingEngine) {
+        throw new Error('Appointment Booking Engine not available');
+      }
+
+      const appointment = await window.appointmentBookingEngine.getAppointment(this.appointmentId);
+
+      if (!appointment) {
+        throw new Error('Appointment not found');
+      }
+
+      this.appointment = appointment;
+      console.log('[Video Room Manager] Appointment loaded:', appointment);
+
+      // Update UI with appointment details
+      this.displayAppointmentDetails(appointment);
+    } catch (error) {
+      console.error('[Video Room Manager] Error loading appointment:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Display appointment details on the page
+   */
+  displayAppointmentDetails(appointment) {
+    // Patient name
+    const patientNameEl = document.getElementById('video-patient-name');
+    if (patientNameEl) {
+      patientNameEl.textContent = appointment.patientName || 'Patient';
+    }
+
+    // Doctor name
+    const doctorNameEl = document.getElementById('video-doctor-name');
+    if (doctorNameEl) {
+      doctorNameEl.textContent = appointment.acceptedBy || 'Dr. Healthcare Provider';
+    }
+
+    // Appointment time
+    const appointmentTimeEl = document.getElementById('video-appointment-time');
+    if (appointmentTimeEl) {
+      appointmentTimeEl.textContent = `${appointment.date} at ${appointment.time}`;
+    }
+
+    // Symptoms
+    const symptomsEl = document.getElementById('video-symptoms');
+    if (symptomsEl && appointment.symptoms && appointment.symptoms.length > 0) {
+      symptomsEl.innerHTML = appointment.symptoms
+        .map(s => `<span class="symptom-badge">${s}</span>`)
+        .join('');
+    }
+
+    // Consultation fee
+    const feeEl = document.getElementById('video-consultation-fee');
+    if (feeEl) {
+      feeEl.textContent = `₹${CONFIG.APPOINTMENT.CONSULTATION_FEE}`;
+    }
   }
 
   /**
    * Determine if current user is patient or doctor
    */
-  async getUserRole() {
-    try {
-      const userDoc = await getDoc(doc(window.db, 'users', this.currentUser.uid));
-      
-      if (userDoc.exists()) {
-        this.userRole = userDoc.data().role || 'patient';
-        console.log('[Video Room Manager] User role:', this.userRole);
-        this.displayAppointmentDetails();
-        this.startCountdown();
-      }
-    } catch (error) {
-      console.error('[Video Room Manager] Error getting user role:', error);
+  determineParticipantRole() {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      throw new Error('User not authenticated');
+    }
+
+    // Check if user is patient or doctor
+    // Patient: appointment.patientId === currentUser.uid
+    // Doctor: appointment.acceptedBy === currentUser.uid
+    if (this.appointment.patientId === currentUser.uid) {
+      this.participantRole = 'patient';
+    } else if (this.appointment.acceptedBy === currentUser.uid) {
+      this.participantRole = 'doctor';
+    } else {
+      throw new Error('User is not part of this appointment');
+    }
+
+    console.log('[Video Room Manager] Participant role:', this.participantRole);
+
+    // Set display name
+    const displayNameEl = document.getElementById('participant-role');
+    if (displayNameEl) {
+      displayNameEl.textContent = this.participantRole === 'patient' ? 'Patient' : 'Doctor';
     }
   }
 
   /**
-   * Display appointment details before joining
+   * Generate unique room name from appointment ID
    */
-  async displayAppointmentDetails() {
-    try {
-      const appointmentDoc = await getDoc(doc(window.db, 'appointments', this.appointmentId));
-      
-      if (!appointmentDoc.exists()) {
-        console.error('[Video Room Manager] Appointment not found');
-        return;
-      }
+  generateRoomName() {
+    // Use appointment ID as basis for room name
+    // Format: appt-{appointmentId}
+    // Must be URL-safe, lowercase
+    this.roomName = `appt-${this.appointmentId.toLowerCase().replace(/[^a-z0-9-]/g, '')}`;
 
-      const appointment = appointmentDoc.data();
-      const detailsContainer = document.getElementById('appointment-details-container');
-
-      if (!detailsContainer) return;
-
-      const patientInfo = this.userRole === 'doctor' 
-        ? appointment.patientName
-        : 'Dr. ' + (appointment.acceptedByName || 'Healthcare Provider');
-
-      const specialization = this.userRole === 'doctor'
-        ? appointment.specialization
-        : appointment.specialization;
-
-      detailsContainer.innerHTML = `
-        <div class="appointment-info">
-          <div class="info-header">
-            <h2 data-i18n="pages.videoConsultation.videoConsultation">Video Consultation</h2>
-            <span class="appointment-status">
-              <span class="status-dot active"></span>
-              <span data-i18n="appointment.status.confirmed">Confirmed</span>
-            </span>
-          </div>
-
-          <div class="participant-section">
-            <div class="participant">
-              <div class="participant-role">${this.userRole === 'doctor' ? 'Patient' : 'Doctor'}</div>
-              <div class="participant-name">${patientInfo}</div>
-              <div class="participant-spec">${specialization || 'General Practice'}</div>
-            </div>
-          </div>
-
-          <div class="appointment-details-grid">
-            <div class="detail">
-              <span class="label" data-i18n="appointment.date">Date</span>
-              <span class="value">${appointment.date || 'Today'}</span>
-            </div>
-            <div class="detail">
-              <span class="label" data-i18n="appointment.time">Time</span>
-              <span class="value">${appointment.time || 'Now'}</span>
-            </div>
-            <div class="detail">
-              <span class="label" data-i18n="appointment.duration">Duration</span>
-              <span class="value">15 minutes</span>
-            </div>
-            <div class="detail">
-              <span class="label" data-i18n="pages.videoConsultation.consultationFee">Fee</span>
-              <span class="value">₹500</span>
-            </div>
-          </div>
-
-          ${appointment.symptoms ? `
-            <div class="symptoms-section">
-              <strong data-i18n="patientAssistant.greeting">Symptoms</strong>
-              <div class="symptoms-list">
-                ${appointment.symptoms.map(s => `<span class="symptom-tag">${s}</span>`).join('')}
-              </div>
-            </div>
-          ` : ''}
-        </div>
-      `;
-
-      this.otherParticipant = patientInfo;
-    } catch (error) {
-      console.error('[Video Room Manager] Error displaying appointment:', error);
-    }
+    console.log('[Video Room Manager] Room name:', this.roomName);
   }
 
   /**
-   * Start pre-join countdown timer (5 minutes)
+   * Setup Jitsi Meet API
    */
-  startCountdown() {
-    const timerContainer = document.getElementById('countdown-timer-container');
-    if (!timerContainer) {
-      console.log('[Video Room Manager] Timer container not found');
-      return;
-    }
+  setupJitsiMeet() {
+    console.log('[Video Room Manager] Setting up Jitsi Meet');
 
-    let remainingSeconds = 300; // 5 minutes
-
-    const updateDisplay = () => {
-      const minutes = Math.floor(remainingSeconds / 60);
-      const seconds = remainingSeconds % 60;
-
-      timerContainer.innerHTML = `
-        <div class="countdown">
-          <div class="countdown-display">
-            <div class="countdown-number">
-              ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}
-            </div>
-            <div class="countdown-label" data-i18n="appointment.preparingVideo">Preparing video call...</div>
-          </div>
-          <div class="countdown-info">
-            <p data-i18n="appointment.waitingForDoctor">
-              ${this.userRole === 'doctor' 
-                ? 'Waiting for patient to join...' 
-                : 'Waiting for doctor to join...'}
-            </p>
-          </div>
-          <button class="btn-join-now" onclick="window.videoRoomManager.joinRoom()">
-            Join Now
-          </button>
-        </div>
-      `;
+    // Jitsi configuration
+    const options = {
+      roomName: this.roomName,
+      width: '100%',
+      height: '100%',
+      parentNode: document.querySelector('#jitsi-container'),
+      configOverwrite: {
+        startAudioOnly: false,
+        disableModeratorIndicator: true,
+        prejoinPageEnabled: false,
+        startWithAudioMuted: false,
+        startWithVideoMuted: false,
+        enableNoAudioDetectionOnStart: true,
+        // Quality settings
+        constraints: {
+          video: {
+            height: { ideal: 720, max: 1080 },
+            width: { ideal: 1280, max: 1920 }
+          }
+        },
+        // Network quality monitoring
+        enableNetworkQualityIndicator: true,
+        // Recording
+        fileRecordingsEnabled: false,
+        // Screen sharing
+        desktopSharingChromeExtId: null,
+        // Chat
+        disableChatMessageEditing: false
+      },
+      interfaceConfigOverwrite: {
+        DISABLE_FOCUS_INDICATOR: false,
+        SHOW_CHROME_EXTENSION_BANNER: false,
+        MOBILE_APP_PROMO: false,
+        AUTHENTICATION_ENABLE: false,
+        TOOLBAR_BUTTONS: [
+          'microphone',
+          'camera',
+          'desktop',
+          'fullscreen',
+          'fodeviceselection',
+          'hangup',
+          'chat',
+          'settings',
+          'raisehand',
+          'videoquality',
+          'filmstrip',
+          'stats'
+        ]
+      }
     };
 
-    updateDisplay();
-
-    this.countdownTimer = setInterval(() => {
-      remainingSeconds--;
-
-      if (remainingSeconds <= 0) {
-        clearInterval(this.countdownTimer);
-        this.joinRoom();
-      } else {
-        updateDisplay();
-      }
-    }, 1000);
-  }
-
-  /**
-   * Join the Jitsi Meet video room
-   */
-  async joinRoom() {
-    console.log('[Video Room Manager] Joining room:', this.roomId);
-
-    if (this.isJoined) {
-      console.log('[Video Room Manager] Already joined');
-      return;
-    }
-
+    // Create Jitsi API
     try {
-      // Clear countdown
-      if (this.countdownTimer) {
-        clearInterval(this.countdownTimer);
+      const JitsiMeetExternalAPI = window.JitsiMeetExternalAPI;
+      if (!JitsiMeetExternalAPI) {
+        throw new Error('Jitsi API not loaded');
       }
 
-      // Hide pre-join UI
-      const preJoinContainer = document.getElementById('countdown-timer-container');
-      if (preJoinContainer) {
-        preJoinContainer.style.display = 'none';
-      }
+      this.jitsiApi = new JitsiMeetExternalAPI('meet.jit.si', options);
 
-      // Show video frame
-      const videoFrame = document.getElementById('jitsi-meet-container');
-      if (!videoFrame) {
-        console.error('[Video Room Manager] Video frame container not found');
-        return;
-      }
+      // Setup event listeners
+      this.setupJitsiEventListeners();
 
-      videoFrame.style.display = 'block';
-
-      // Initialize Jitsi Meet API
-      await this.initJitsiAPI(videoFrame);
-
-      // Mark as joined
-      this.isJoined = true;
-
-      // Update appointment status
-      await this.updateAppointmentStatus('active');
-
-      // Show call duration timer
-      this.startCallTimer();
+      console.log('[Video Room Manager] Jitsi Meet initialized');
     } catch (error) {
-      console.error('[Video Room Manager] Error joining room:', error);
-      alert('Error starting video call. Please refresh and try again.');
+      console.error('[Video Room Manager] Error setting up Jitsi:', error);
+      throw error;
     }
   }
 
   /**
-   * Initialize Jitsi Meet API
+   * Setup Jitsi event listeners
    */
-  async initJitsiAPI(container) {
-    console.log('[Video Room Manager] Initializing Jitsi Meet API');
-
-    return new Promise((resolve, reject) => {
-      // Wait for Jitsi Meet API to be available
-      if (!window.JitsiMeetExternalAPI) {
-        setTimeout(() => this.initJitsiAPI(container).then(resolve).catch(reject), 500);
-        return;
-      }
-
-      try {
-        const options = {
-          roomName: this.roomId,
-          width: '100%',
-          height: '100%',
-          parentNode: container,
-          interfaceConfigOverrides: {
-            DISABLE_AUDIO_LEVELS: false,
-            DISABLE_PRESENCE_STATUS: false,
-            DISABLE_DOMINANT_SPEAKER_INDICATOR: false,
-            SHOW_JITSI_WATERMARK: true,
-            DEFAULT_BACKGROUND: '#000',
-            SHOW_BRAND_WATERMARK: false,
-            TOOLBAR_BUTTONS: [
-              'microphone', 'camera', 'closedcaptions', 'desktop', 
-              'fullscreen', 'fodeviceselection', 'hangup', 'chat',
-              'settings', 'raisehand', 'videoquality', 'filmstrip'
-            ]
-          },
-          configOverrides: {
-            startAudioMuted: 0,
-            startVideoMuted: false,
-            defaultLanguage: document.documentElement.lang || 'en',
-            enableTcc: true,
-            enableLipSync: true,
-            p2p: {
-              enabled: true,
-              stunServers: [
-                { urls: ['stun:stun.l.google.com:19302'] },
-                { urls: ['stun:stun1.l.google.com:19302'] }
-              ]
-            }
-          },
-          userInfo: {
-            displayName: this.currentUser.displayName || this.currentUser.email,
-            email: this.currentUser.email
-          }
-        };
-
-        // Create Jitsi Meet API instance
-        this.jitsiApi = new window.JitsiMeetExternalAPI('meet.jit.si', options);
-
-        // Handle API events
-        this.setupJitsiEventHandlers();
-
-        resolve();
-      } catch (error) {
-        console.error('[Video Room Manager] Error initializing Jitsi:', error);
-        reject(error);
-      }
-    });
-  }
-
-  /**
-   * Setup event handlers for Jitsi Meet API
-   */
-  setupJitsiEventHandlers() {
+  setupJitsiEventListeners() {
     if (!this.jitsiApi) return;
 
-    // Ready event
-    this.jitsiApi.addEventListeners({
-      onReadyToClose: () => this.handleCallEnd(),
-      participantJoined: (event) => this.handleParticipantJoined(event),
-      participantLeft: (event) => this.handleParticipantLeft(event),
-      videoConferenceJoined: (event) => this.handleConferenceJoined(event),
-      videoConferenceLeft: (event) => this.handleConferenceLeft(event),
-      chatUpdated: (event) => this.handleChatMessage(event),
-      dominantSpeakerChanged: (event) => this.handleDominantSpeaker(event),
-      screenShareToggled: (event) => this.handleScreenShare(event)
+    // User joined
+    this.jitsiApi.addEventListener('participantJoined', (participant) => {
+      console.log('[Video Room Manager] Participant joined:', participant);
+      this.onParticipantJoined(participant);
     });
 
-    console.log('[Video Room Manager] Jitsi event handlers configured');
+    // User left
+    this.jitsiApi.addEventListener('participantLeft', (participant) => {
+      console.log('[Video Room Manager] Participant left:', participant);
+      this.onParticipantLeft(participant);
+    });
+
+    // Ready to close
+    this.jitsiApi.addEventListener('readyToClose', () => {
+      console.log('[Video Room Manager] Ready to close');
+      this.onReadyToClose();
+    });
+
+    // Display name change
+    this.jitsiApi.addEventListener('displayNameChange', (data) => {
+      console.log('[Video Room Manager] Display name changed:', data);
+    });
+
+    // Audio availability change
+    this.jitsiApi.addEventListener('audioAvailabilityChanged', (data) => {
+      console.log('[Video Room Manager] Audio availability:', data);
+    });
+
+    // Video availability change
+    this.jitsiApi.addEventListener('videoAvailabilityChanged', (data) => {
+      console.log('[Video Room Manager] Video availability:', data);
+    });
+
+    // Video conference joined
+    this.jitsiApi.addEventListener('videoConferenceJoined', () => {
+      console.log('[Video Room Manager] Video conference joined');
+      this.onConferenceJoined();
+    });
+
+    // Video conference left
+    this.jitsiApi.addEventListener('videoConferenceLeft', () => {
+      console.log('[Video Room Manager] Video conference left');
+      this.onConferenceLeft();
+    });
   }
 
   /**
-   * Start call duration timer
+   * Start pre-join countdown
    */
-  startCallTimer() {
-    let callDuration = 0;
-    const maxDuration = 900; // 15 minutes
+  startCountdown() {
+    const countdownEl = document.getElementById('pre-join-countdown');
+    if (!countdownEl) {
+      this.autoJoinRoom();
+      return;
+    }
 
-    const timerElement = document.getElementById('call-duration-timer');
-    if (!timerElement) return;
+    const countdownDuration = 5; // 5 seconds
+    let remaining = countdownDuration;
 
-    const updateTimer = () => {
-      const minutes = Math.floor(callDuration / 60);
-      const seconds = callDuration % 60;
-      
-      timerElement.textContent = 
-        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-      if (callDuration >= maxDuration) {
-        // Auto-end call after 15 minutes
-        console.log('[Video Room Manager] Call time limit reached');
-        this.endCall();
+    const updateCountdown = () => {
+      if (remaining > 0) {
+        countdownEl.textContent = `Joining in ${remaining}s...`;
+        remaining--;
+      } else {
+        clearInterval(this.countdownInterval);
+        this.autoJoinRoom();
       }
     };
 
-    const timerInterval = setInterval(() => {
-      callDuration++;
-      updateTimer();
-    }, 1000);
-
-    // Store interval for cleanup
-    this.callTimerInterval = timerInterval;
+    updateCountdown(); // Initial display
+    this.countdownInterval = setInterval(updateCountdown, 1000);
   }
 
   /**
-   * Handle participant joined event
+   * Auto-join the video room
    */
-  handleParticipantJoined(event) {
-    console.log('[Video Room Manager] Participant joined:', event.id);
+  autoJoinRoom() {
+    console.log('[Video Room Manager] Auto-joining room');
 
-    const participantList = document.getElementById('participant-list');
-    if (participantList) {
-      const currentCount = participantList.querySelectorAll('.participant-item').length;
-      
-      if (currentCount === 0) {
-        // First participant (other user) joined
-        const item = document.createElement('div');
-        item.className = 'participant-item';
-        item.innerHTML = `
-          <span class="participant-status">🟢</span>
-          <span class="participant-name">${this.otherParticipant || 'Participant'}</span>
-          <span class="participant-video-indicator">📹</span>
-        `;
-        participantList.appendChild(item);
+    // Hide countdown
+    const countdownEl = document.getElementById('pre-join-countdown');
+    if (countdownEl) {
+      countdownEl.style.display = 'none';
+    }
+
+    // The Jitsi API will automatically join when initialized
+    // Start monitoring call duration
+    this.startCallDurationMonitor();
+  }
+
+  /**
+   * Start call duration monitor
+   */
+  startCallDurationMonitor() {
+    this.callStartTime = new Date();
+    const durationEl = document.getElementById('call-duration');
+
+    if (!durationEl) return;
+
+    const updateDuration = () => {
+      const elapsed = Math.floor((new Date() - this.callStartTime) / 1000);
+      const hours = Math.floor(elapsed / 3600);
+      const minutes = Math.floor((elapsed % 3600) / 60);
+      const seconds = elapsed % 60;
+
+      let display = '';
+      if (hours > 0) {
+        display = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      } else {
+        display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
       }
+
+      durationEl.textContent = display;
+    };
+
+    updateDuration(); // Initial display
+    this.durationInterval = setInterval(updateDuration, 1000);
+  }
+
+  /**
+   * Handle participant joined
+   */
+  onParticipantJoined(participant) {
+    const participantListEl = document.getElementById('participant-list');
+    if (participantListEl) {
+      const participantEl = document.createElement('div');
+      participantEl.className = 'participant-item';
+      participantEl.id = `participant-${participant.id}`;
+      participantEl.innerHTML = `
+        <div class="participant-avatar">👤</div>
+        <div class="participant-info">
+          <div class="participant-name">${participant.displayName || 'Participant'}</div>
+          <div class="participant-status">Connected</div>
+        </div>
+      `;
+      participantListEl.appendChild(participantEl);
     }
   }
 
   /**
-   * Handle participant left event
+   * Handle participant left
    */
-  handleParticipantLeft(event) {
-    console.log('[Video Room Manager] Participant left:', event.id);
-
-    const participantList = document.getElementById('participant-list');
-    if (participantList) {
-      const items = participantList.querySelectorAll('.participant-item');
-      if (items.length > 0) {
-        items[0].remove();
-      }
+  onParticipantLeft(participant) {
+    const participantEl = document.getElementById(`participant-${participant.id}`);
+    if (participantEl) {
+      participantEl.remove();
     }
   }
 
   /**
-   * Handle video conference joined
+   * Handle conference joined
    */
-  handleConferenceJoined(event) {
+  onConferenceJoined() {
     console.log('[Video Room Manager] Conference joined');
 
-    const statusElement = document.getElementById('call-status');
-    if (statusElement) {
-      statusElement.className = 'call-status active';
-      statusElement.innerHTML = '<span class="status-dot"></span> In Call';
+    // Update status
+    const statusEl = document.getElementById('connection-status');
+    if (statusEl) {
+      statusEl.className = 'status-connected';
+      statusEl.textContent = '🟢 Connected';
     }
+
+    // Hide join button, show controls
+    const joinBtn = document.getElementById('join-room-btn');
+    if (joinBtn) {
+      joinBtn.style.display = 'none';
+    }
+
+    const controls = document.getElementById('room-controls');
+    if (controls) {
+      controls.style.display = 'flex';
+    }
+
+    // Store appointment as active
+    this.updateAppointmentStatus('active');
   }
 
   /**
-   * Handle video conference left (call ended)
+   * Handle conference left
    */
-  handleConferenceLeft(event) {
+  onConferenceLeft() {
     console.log('[Video Room Manager] Conference left');
-    this.handleCallEnd();
+
+    // Clear duration monitor
+    if (this.durationInterval) {
+      clearInterval(this.durationInterval);
+    }
+
+    // Update status
+    const statusEl = document.getElementById('connection-status');
+    if (statusEl) {
+      statusEl.className = 'status-disconnected';
+      statusEl.textContent = '🔴 Disconnected';
+    }
+
+    // Show end call message
+    this.showCallEndedMessage();
+
+    // Update appointment status
+    this.updateAppointmentStatus('completed');
   }
 
   /**
-   * Handle chat message
+   * Handle ready to close
    */
-  handleChatMessage(event) {
-    console.log('[Video Room Manager] Chat message:', event);
+  onReadyToClose() {
+    console.log('[Video Room Manager] Ready to close');
+    setTimeout(() => {
+      window.location.href = 'patient.html';
+    }, 3000);
+  }
 
-    if (event.message) {
-      const chatBox = document.getElementById('chat-box');
-      if (chatBox) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'chat-message';
-        messageDiv.innerHTML = `
-          <strong>${event.from || 'Other'}</strong>: ${event.message}
-        `;
-        chatBox.appendChild(messageDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }
+  /**
+   * Toggle local audio
+   */
+  toggleAudio() {
+    if (!this.jitsiApi) return;
+
+    this.isLocalAudioEnabled = !this.isLocalAudioEnabled;
+    this.jitsiApi.executeCommand('toggleAudio');
+
+    const audioBtn = document.getElementById('toggle-audio-btn');
+    if (audioBtn) {
+      audioBtn.classList.toggle('disabled');
+      audioBtn.innerHTML = this.isLocalAudioEnabled ? '🎤' : '🔇';
     }
   }
 
   /**
-   * Handle dominant speaker changed
+   * Toggle local video
    */
-  handleDominantSpeaker(event) {
-    console.log('[Video Room Manager] Dominant speaker:', event.id);
+  toggleVideo() {
+    if (!this.jitsiApi) return;
+
+    this.isLocalVideoEnabled = !this.isLocalVideoEnabled;
+    this.jitsiApi.executeCommand('toggleVideo');
+
+    const videoBtn = document.getElementById('toggle-video-btn');
+    if (videoBtn) {
+      videoBtn.classList.toggle('disabled');
+      videoBtn.innerHTML = this.isLocalVideoEnabled ? '📹' : '📹';
+    }
   }
 
   /**
-   * Handle screen share toggle
+   * End the call
    */
-  handleScreenShare(event) {
-    console.log('[Video Room Manager] Screen share toggled:', event.sharing);
-  }
-
-  /**
-   * End the video call
-   */
-  async endCall() {
+  endCall() {
     console.log('[Video Room Manager] Ending call');
 
-    try {
-      // Stop call timer
-      if (this.callTimerInterval) {
-        clearInterval(this.callTimerInterval);
-      }
-
-      // Dispose Jitsi API
-      if (this.jitsiApi) {
-        this.jitsiApi.dispose();
-        this.jitsiApi = null;
-      }
-
-      // Update appointment status
-      await this.updateAppointmentStatus('completed');
-
-      // Show end call screen
-      this.showCallEndScreen();
-    } catch (error) {
-      console.error('[Video Room Manager] Error ending call:', error);
+    if (this.jitsiApi) {
+      this.jitsiApi.dispose();
     }
-  }
 
-  /**
-   * Show call end summary screen
-   */
-  showCallEndScreen() {
-    const container = document.getElementById('jitsi-meet-container');
-    if (!container) return;
-
-    container.innerHTML = `
-      <div class="call-end-screen">
-        <h2>✓ Call Ended</h2>
-        <p>Thank you for using Care Without Borders</p>
-        
-        <div class="call-summary">
-          <div class="summary-item">
-            <span class="label">Duration:</span>
-            <span class="value" id="final-duration">15:00</span>
-          </div>
-          <div class="summary-item">
-            <span class="label">Consultation Fee:</span>
-            <span class="value">₹500</span>
-          </div>
-          <div class="summary-item">
-            <span class="label">Status:</span>
-            <span class="value">Completed</span>
-          </div>
-        </div>
-
-        <div class="call-end-actions">
-          <button class="btn-primary" onclick="window.location.href='patient.html'">
-            Back to Dashboard
-          </button>
-          <button class="btn-secondary" onclick="window.location.href='video-consultation-component.html'">
-            View Recording
-          </button>
-        </div>
-
-        <div class="call-feedback">
-          <p>How was your experience?</p>
-          <div class="rating-stars">
-            <span onclick="window.videoRoomManager.submitRating(1)">⭐</span>
-            <span onclick="window.videoRoomManager.submitRating(2)">⭐</span>
-            <span onclick="window.videoRoomManager.submitRating(3)">⭐</span>
-            <span onclick="window.videoRoomManager.submitRating(4)">⭐</span>
-            <span onclick="window.videoRoomManager.submitRating(5)">⭐</span>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  /**
-   * Handle call end event
-   */
-  async handleCallEnd() {
-    console.log('[Video Room Manager] Call ended');
-    await this.endCall();
+    this.updateAppointmentStatus('completed');
+    window.location.href = 'patient.html';
   }
 
   /**
@@ -564,42 +523,104 @@ class VideoRoomManager {
    */
   async updateAppointmentStatus(status) {
     try {
-      await updateDoc(doc(window.db, 'appointments', this.appointmentId), {
+      if (!window.appointmentBookingEngine) {
+        return;
+      }
+
+      const updateData = {
         status: status,
-        updatedAt: new Date()
-      });
+        lastUpdated: new Date()
+      };
+
+      if (status === 'active') {
+        updateData.startedAt = new Date();
+      } else if (status === 'completed') {
+        updateData.completedAt = new Date();
+        if (this.callStartTime) {
+          updateData.duration = Math.floor((new Date() - this.callStartTime) / 1000);
+        }
+      }
+
+      await window.appointmentBookingEngine.updateAppointmentStatus(
+        this.appointmentId,
+        status,
+        updateData
+      );
 
       console.log('[Video Room Manager] Appointment status updated:', status);
     } catch (error) {
-      console.error('[Video Room Manager] Error updating appointment:', error);
+      console.error('[Video Room Manager] Error updating status:', error);
     }
   }
 
   /**
-   * Submit call rating
+   * Show call ended message
    */
-  async submitRating(rating) {
-    try {
-      await updateDoc(doc(window.db, 'appointments', this.appointmentId), {
-        rating: rating,
-        ratedAt: new Date()
-      });
+  showCallEndedMessage() {
+    const messageEl = document.getElementById('call-ended-message');
+    if (messageEl) {
+      messageEl.style.display = 'block';
+      messageEl.innerHTML = `
+        <div class="call-ended-container">
+          <h3>Call Ended</h3>
+          <p>Thank you for the consultation</p>
+          <p style="font-size: 12px; color: #999;">Redirecting to dashboard...</p>
+        </div>
+      `;
+    }
+  }
 
-      console.log('[Video Room Manager] Rating submitted:', rating);
-      alert('Thank you for your feedback!');
-    } catch (error) {
-      console.error('[Video Room Manager] Error submitting rating:', error);
+  /**
+   * Show error message
+   */
+  showError(message) {
+    const errorEl = document.getElementById('error-message');
+    if (errorEl) {
+      errorEl.style.display = 'block';
+      errorEl.textContent = message;
+    } else {
+      alert(message);
     }
   }
 }
 
-// Initialize and export
-const videoRoomManager = new VideoRoomManager();
-window.videoRoomManager = videoRoomManager;
+// Initialize when page loads
+let videoRoomManager;
+
+async function initVideoRoomManager() {
+  try {
+    // Wait for Firebase to be ready
+    if (!window.auth) {
+      setTimeout(initVideoRoomManager, 100);
+      return;
+    }
+
+    // Wait for appointment booking engine
+    if (!window.appointmentBookingEngine) {
+      setTimeout(initVideoRoomManager, 100);
+      return;
+    }
+
+    videoRoomManager = new VideoRoomManager();
+    window.videoRoomManager = videoRoomManager;
+
+    const success = await videoRoomManager.init();
+    if (success) {
+      console.log('✓ Video Room Manager initialized');
+    }
+  } catch (error) {
+    console.error('[Video Room Manager] Initialization failed:', error);
+  }
+}
+
+// Auto-initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initVideoRoomManager);
+} else {
+  initVideoRoomManager();
+}
 
 // Export for module usage
-export default VideoRoomManager;
-export async function initVideoRoomManager(appointmentId) {
-  await videoRoomManager.init(appointmentId);
-  return videoRoomManager;
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = VideoRoomManager;
 }
