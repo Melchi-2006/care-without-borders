@@ -55,6 +55,8 @@
   <script src="js/audio.js"></script>
   <!-- ML Engine (Severity, Similarity, Naive Bayes, Routing, Learning) -->
   <script src="js/ml-engine.js"></script>
+  <!-- Professional UI System -->
+  <script src="js/ui-system.js"></script>
   <!-- Medical Analysis & Booking Systems -->
   <script src="js/medical-analysis.js"></script>
   <script src="js/doctor-booking.js"></script>
@@ -564,17 +566,350 @@
   });
 
   /**
-   * Feedback Collection System
-   * Called after doctor consultation to train ML models
+   * Display VILGAX Professional Dashboard
+   */
+  function displayVILGAXDashboard() {
+    // Create dashboard container
+    const existingDashboard = document.getElementById('vilgaxMetricsDashboard');
+    if (existingDashboard) {
+      existingDashboard.remove();
+    }
+
+    // Create new dashboard
+    const dashboard = vilgaxUI.createMetricsDashboard();
+    
+    // Insert at the beginning of page
+    const pageContainer = document.querySelector('.page-container');
+    if (pageContainer) {
+      pageContainer.insertBefore(dashboard, pageContainer.firstChild);
+    } else {
+      document.body.insertBefore(dashboard, document.body.firstChild);
+    }
+
+    // Update with real metrics
+    updateDashboardMetrics();
+    
+    // Auto-update every 5 seconds
+    setInterval(updateDashboardMetrics, 5000);
+  }
+
+  /**
+   * Update dashboard metrics in real-time
+   */
+  function updateDashboardMetrics() {
+    if (!vilgaxMLEngine) return;
+    
+    const metrics = vilgaxMLEngine.getPerformanceMetrics();
+    vilgaxUI.updateMetrics(metrics);
+
+    console.log('📊 Dashboard updated:', metrics);
+  }
+
+  /**
+   * Display Doctor Selection Cards
+   */
+  function displayDoctorSelection(doctors, specialty) {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      padding: 20px;
+    `;
+
+    const container = document.createElement('div');
+    container.style.cssText = `
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 1200px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+    `;
+
+    container.innerHTML = `
+      <h2 style="color: #0f766e; font-size: 28px; margin-bottom: 10px;">🏥 Available ${specialty} Specialists</h2>
+      <p style="color: #64748b; margin-bottom: 30px;">Select your preferred doctor for consultation</p>
+      <div id="doctorCardsContainer"></div>
+    `;
+
+    const cardsContainer = container.querySelector('#doctorCardsContainer');
+    cardsContainer.appendChild(vilgaxUI.createDoctorCards(doctors));
+
+    modal.appendChild(container);
+    document.body.appendChild(modal);
+
+    // Close on background click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.remove();
+      }
+    });
+  }
+
+  /**
+   * Select a doctor
+   */
+  function selectDoctor(doctorId, doctorName) {
+    console.log(`Selected doctor: ${doctorName}`);
+    
+    // Close modal
+    document.querySelectorAll('[style*="position: fixed"]').forEach(el => {
+      if (el.style.background.includes('rgba(0, 0, 0, 0.7)')) {
+        el.remove();
+      }
+    });
+
+    // Trigger appointment creation
+    vilgax.confirmAndBookAppointment();
+  }
+
+  /**
+   * Display Appointment Confirmation
+   */
+  function displayAppointmentConfirmation(appointment, severity) {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10001;
+      padding: 20px;
+    `;
+
+    const container = document.createElement('div');
+    container.style.cssText = `
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+    `;
+
+    container.innerHTML = vilgaxUI.createAppointmentStatus(appointment, severity);
+    container.innerHTML += `
+      <div style="margin-top: 25px; display: flex; gap: 15px;">
+        <button class="btn btn-primary" style="flex: 1;" onclick="startConsultation()">
+          Start Video Consultation 📹
+        </button>
+        <button class="btn btn-secondary" style="flex: 1;" onclick="this.closest('div').parentElement.parentElement.remove()">
+          Close
+        </button>
+      </div>
+    `;
+
+    modal.appendChild(container);
+    document.body.appendChild(modal);
+  }
+
+  /**
+   * Display Consultation Summary
+   */
+  function displayConsultationSummary(patientInfo, analysis) {
+    const summary = document.createElement('div');
+    summary.style.cssText = 'margin-top: 30px;';
+    summary.innerHTML = vilgaxUI.createConsultationSummary(patientInfo, analysis);
+    
+    const pageContainer = document.querySelector('.page-container');
+    if (pageContainer) {
+      pageContainer.appendChild(summary);
+    }
+  }
+
+  /**
+   * Display Feedback Form
+   */
+  function displayFeedbackForm(appointmentId) {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10002;
+      padding: 20px;
+    `;
+
+    const container = document.createElement('div');
+    container.style.cssText = `
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+    `;
+
+    container.innerHTML = vilgaxUI.createFeedbackForm(appointmentId);
+    
+    // Add star rating functionality
+    setTimeout(() => {
+      setupStarRatings();
+    }, 100);
+
+    modal.appendChild(container);
+    document.body.appendChild(modal);
+  }
+
+  /**
+   * Setup star rating interactions
+   */
+  function setupStarRatings() {
+    const setupSelector = (selectorId) => {
+      const selector = document.getElementById(selectorId);
+      if (!selector) return;
+
+      const stars = selector.querySelectorAll('.star');
+      stars.forEach(star => {
+        star.addEventListener('click', () => {
+          const value = star.dataset.value;
+          stars.forEach(s => {
+            if (s.dataset.value <= value) {
+              s.classList.add('active');
+            } else {
+              s.classList.remove('active');
+            }
+          });
+          star.closest('.star-selector').dataset.value = value;
+        });
+
+        star.addEventListener('mouseenter', () => {
+          const value = star.dataset.value;
+          stars.forEach(s => {
+            if (s.dataset.value <= value) {
+              s.style.opacity = '1';
+            } else {
+              s.style.opacity = '0.3';
+            }
+          });
+        });
+      });
+
+      selector.addEventListener('mouseleave', () => {
+        stars.forEach(s => {
+          if (s.classList.contains('active')) {
+            s.style.opacity = '1';
+          } else {
+            s.style.opacity = '0.5';
+          }
+        });
+      });
+    };
+
+    setupSelector('doctorRatingStars');
+    setupSelector('qualityRatingStars');
+  }
+
+  /**
+   * Submit Feedback Form and Train Models
+   */
+  function submitFeedbackForm(appointmentId) {
+    const doctorRating = parseInt(
+      document.querySelector('#doctorRatingStars')?.dataset.value || '0'
+    );
+    const qualityRating = parseInt(
+      document.querySelector('#qualityRatingStars')?.dataset.value || '0'
+    );
+    const correctSpecialty = document.querySelector('input[name="correctSpecialty"]:checked')?.value === 'yes';
+    const outcome = document.querySelector('input[name="outcome"]:checked')?.value || 'neutral';
+
+    if (doctorRating === 0 || qualityRating === 0) {
+      alert('Please rate both doctor and appointment quality');
+      return;
+    }
+
+    // Submit feedback
+    submitAppointmentFeedback(appointmentId, {
+      doctorRating,
+      correctSpecialty,
+      appointmentQuality: qualityRating,
+      patientOutcome: outcome
+    });
+
+    // Close modal and show success
+    document.querySelectorAll('[style*="position: fixed"]').forEach(el => {
+      if (el.style.zIndex === '10002') {
+        el.remove();
+      }
+    });
+
+    alert('✅ Thank you! Your feedback helps VILGAX improve. System accuracy now: ' + 
+          (vilgaxMLEngine.feedbackLearner.calculateAccuracy() * 100).toFixed(2) + '%');
+
+    // Show updated dashboard
+    updateDashboardMetrics();
+  }
+
+  /**
+   * Start Video Consultation
+   */
+  function startConsultation() {
+    const appointment = window.currentAppointment;
+    if (!appointment) {
+      alert('No active appointment');
+      return;
+    }
+
+    // Close modal
+    document.querySelectorAll('[style*="position: fixed"]').forEach(el => {
+      if (el.style.zIndex === '10001') {
+        el.remove();
+      }
+    });
+
+    alert(`📹 Starting video consultation with ${appointment.doctor.name}...\\n\\nVideo Room: ${appointment.videoRoomId}`);
+
+    // In production, this would initiate actual video call
+    setTimeout(() => {
+      displayFeedbackForm(appointment.appointmentId);
+    }, 3000);
+  }
+
+  // Auto-display dashboard on page load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      displayVILGAXDashboard();
+    }, 2000);
+  });
+
+  /**
+   * Display VILGAX Performance Metrics
+   */
+  function showVILGAXMetrics() {
+    if (!vilgaxMLEngine) {
+      console.error('ML Engine not available');
+      return;
+    }
+
+    const metrics = vilgaxMLEngine.getPerformanceMetrics();
+    const metricsHTML = vilgaxUI.createMetricsDashboard();
+    vilgaxUI.updateMetrics(metrics);
+    
+    document.body.appendChild(metricsHTML);
+  }
+
+  /**
+   * Submit Appointment Feedback to Train Models
    */
   function submitAppointmentFeedback(appointmentId, feedback) {
-    // feedback = {
-    //   doctorRating: 1-5,
-    //   correctSpecialty: true/false,
-    //   appointmentQuality: 1-5,
-    //   patientOutcome: 'positive' | 'negative' | 'neutral'
-    // }
-
     if (!vilgaxMLEngine || !vilgaxMLEngine.feedbackLearner) {
       console.error('ML Engine not available');
       return;
@@ -598,15 +933,6 @@
 
     return metrics;
   }
-
-  /**
-   * Display VILGAX Performance Metrics
-   */
-  function showVILGAXMetrics() {
-    if (!vilgaxMLEngine) {
-      console.error('ML Engine not available');
-      return;
-    }
 
     const metrics = vilgaxMLEngine.getPerformanceMetrics();
     const stats = vilgaxMLEngine.feedbackLearner.getStatistics();

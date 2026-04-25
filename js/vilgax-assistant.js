@@ -851,7 +851,8 @@ class VILGAXAssistant {
    * Show Available Doctors
    */
   showAvailableDoctors(specialty) {
-    const doctors = doctorBookingSystem.findDoctorsBySpecialty(specialty);
+    const patientSeverity = medicalAnalyzer.patientInfo._severity || 'STANDARD';
+    const doctors = doctorBookingSystem.findDoctorsBySpecialty(specialty, patientSeverity);
     
     if (doctors.length === 0) {
       this.respond('Sorry, no doctors available in this specialty right now. Try again later.');
@@ -864,8 +865,14 @@ class VILGAXAssistant {
     this.respond(listText);
     audio?.speak(`Found ${doctors.length} available doctors. The top doctor is ${doctors[0].name}, with a ${doctors[0].rating} star rating.`);
 
-    // Ask for preferred time
-    setTimeout(() => this.askForAppointmentTime(), 2000);
+    // Display beautiful doctor selection cards
+    setTimeout(() => {
+      if (typeof displayDoctorSelection === 'function') {
+        displayDoctorSelection(doctors, specialty);
+      } else {
+        this.askForAppointmentTime();
+      }
+    }, 1000);
   }
 
   /**
@@ -945,7 +952,7 @@ class VILGAXAssistant {
   }
 
   /**
-   * Show Appointment Confirmation
+   * Show Appointment Confirmation with Professional UI
    */
   showAppointmentConfirmation(appointment) {
     const analysis = medicalAnalyzer.patientInfo._analysis || {};
@@ -970,9 +977,15 @@ class VILGAXAssistant {
     window.currentAppointment = appointment;
     window.currentAnalysis = analysis;
 
-    // Start video call after 3 seconds
+    // Show beautiful appointment confirmation modal with professional UI
     setTimeout(() => {
-      this.startVideoCall(appointment);
+      if (typeof displayAppointmentConfirmation === 'function') {
+        const severity = medicalAnalyzer.patientInfo._severity || 'STANDARD';
+        displayAppointmentConfirmation(appointment, severity);
+      } else {
+        this.startVideoCall(appointment);
+      }
+    }, 500);
     }, 3000);
   }
 
