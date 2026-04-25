@@ -16,6 +16,7 @@ class AudioSystem {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     this.recognition = new SpeechRecognition();
     this.isListening = false;
+    this.shouldKeepListening = false;  // Flag to maintain continuous listening
 
     // Audio Notifications
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -131,7 +132,7 @@ class AudioSystem {
    * Setup Speech Recognition
    */
   setupSpeechRecognition() {
-    this.recognition.continuous = false;
+    this.recognition.continuous = true;  // Keep listening for multiple commands
     this.recognition.interimResults = true;
     this.recognition.lang = this.languageMap['en'];
 
@@ -176,6 +177,16 @@ class AudioSystem {
     this.recognition.onend = () => {
       this.isListening = false;
       window.dispatchEvent(new CustomEvent('audioListeningEnd'));
+      // Auto-restart listening if it was intentionally active
+      if (this.shouldKeepListening) {
+        setTimeout(() => {
+          try {
+            this.recognition.start();
+          } catch (e) {
+            console.log('Cannot restart recognition:', e);
+          }
+        }, 100);
+      }
     };
 
     this.recognition.onerror = (event) => {
@@ -192,14 +203,24 @@ class AudioSystem {
    */
   listen(lang = 'en') {
     this.recognition.lang = this.languageMap[lang] || 'en-US';
-    this.recognition.start();
+    this.shouldKeepListening = true;  // Flag to keep listening active
+    try {
+      this.recognition.start();
+    } catch (e) {
+      console.log('Already listening or recognition error:', e);
+    }
   }
 
   /**
    * Stop listening
    */
   stopListening() {
-    this.recognition.stop();
+    this.shouldKeepListening = false;  // Stop auto-restart
+    try {
+      this.recognition.stop();
+    } catch (e) {
+      console.log('Already stopped or recognition error:', e);
+    }
   }
 
   /**

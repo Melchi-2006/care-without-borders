@@ -446,6 +446,43 @@ class VILGAXAssistant {
       this.togglePanel();
       this.respond('Panel closed. Say "Hey VILGAX" to open again.');
     });
+
+    // Appointment form voice commands
+    this.commands.set('cardiologist', () => {
+      const field = document.getElementById('appointment')?.querySelector('[name="selectDoctorSpecialty"]');
+      if (field) {
+        field.value = 'Cardiology';
+        field.dispatchEvent(new Event('change', { bubbles: true }));
+        this.respond('Specialty set to Cardiology. Now tell me your chief complaint.');
+      }
+    });
+
+    this.commands.set('dermatologist', () => {
+      const field = document.getElementById('appointment')?.querySelector('[name="selectDoctorSpecialty"]');
+      if (field) {
+        field.value = 'Dermatology';
+        field.dispatchEvent(new Event('change', { bubbles: true }));
+        this.respond('Specialty set to Dermatology. Now tell me your chief complaint.');
+      }
+    });
+
+    this.commands.set('psychiatrist', () => {
+      const field = document.getElementById('appointment')?.querySelector('[name="selectDoctorSpecialty"]');
+      if (field) {
+        field.value = 'Psychiatry';
+        field.dispatchEvent(new Event('change', { bubbles: true }));
+        this.respond('Specialty set to Psychiatry. Now tell me your chief complaint.');
+      }
+    });
+
+    this.commands.set('general practitioner|general doctor|general physician', () => {
+      const field = document.getElementById('appointment')?.querySelector('[name="selectDoctorSpecialty"]');
+      if (field) {
+        field.value = 'General Practice';
+        field.dispatchEvent(new Event('change', { bubbles: true }));
+        this.respond('Specialty set to General Practice. Now tell me your chief complaint.');
+      }
+    });
   }
 
   /**
@@ -564,16 +601,39 @@ class VILGAXAssistant {
         transcript.textContent = final;
         transcript.classList.remove('interim');
         this.executeCommand(final);
+        // Keep listening for next command
+        console.log('✅ Command executed. Still listening...');
       }
     };
 
     audio.recognition.onend = () => {
-      this.stopListening();
+      // Don't stop listening - only stop if user explicitly stops
+      if (this.isListening) {
+        // Auto-restart listening
+        console.log('🔄 Restarting listening...');
+        try {
+          audio.recognition.start();
+        } catch (e) {
+          console.log('Listening restart:', e);
+        }
+      }
     };
 
     audio.recognition.onerror = (event) => {
       console.error('Speech recognition error:', event.error);
-      this.respond('Sorry, I didn\'t understand. Try again.');
+      if (event.error === 'no-speech' || event.error === 'network') {
+        this.respond('No speech detected. Still listening...');
+        // Continue listening even on error
+        if (this.isListening) {
+          try {
+            audio.recognition.start();
+          } catch (e) {
+            console.log('Restart after error:', e);
+          }
+        }
+      } else {
+        this.respond('Sorry, there was an error. Try again.');
+      }
     };
 
     audio.listen(this.currentLanguage);
@@ -607,13 +667,17 @@ class VILGAXAssistant {
 
     console.log(`🎯 Executing command: ${lowerCommand}`);
 
-    // Check for exact match
+    // Check for matches - handle pipe-separated aliases
     for (const [cmd, handler] of this.commands) {
-      if (lowerCommand.includes(cmd)) {
-        handler();
-        this.commandsExecuted++;
-        this.isProcessing = false;
-        return;
+      // Split by | to handle multiple command aliases
+      const aliases = cmd.split('|').map(a => a.trim());
+      for (const alias of aliases) {
+        if (lowerCommand.includes(alias)) {
+          handler();
+          this.commandsExecuted++;
+          this.isProcessing = false;
+          return;
+        }
       }
     }
 
