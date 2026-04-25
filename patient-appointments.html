@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="pages.patient.appointments">Care Without Borders | Book Appointment</title>
+  
+  <!-- Firebase Authentication Redirect -->
+  <script type="module">
+    import { auth } from './js/firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    let userIsAuthenticated = false;
+    let authCheckTimeout;
+
+    function checkAuthStatus() {
+      const backendAuth = localStorage.getItem('patientLoggedIn') || sessionStorage.getItem('patientLoggedIn');
+      const firebaseUID = localStorage.getItem('firebaseUserUID') || sessionStorage.getItem('firebaseUserUID');
+      
+      if (backendAuth === 'true' || firebaseUID) {
+        userIsAuthenticated = true;
+        clearTimeout(authCheckTimeout);
+        return;
+      }
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          userIsAuthenticated = true;
+          localStorage.setItem('firebaseUserUID', user.uid);
+          clearTimeout(authCheckTimeout);
+        } else {
+          if (!userIsAuthenticated) {
+            window.location.href = 'login.html';
+          }
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      checkAuthStatus();
+      authCheckTimeout = setTimeout(function() {
+        if (!userIsAuthenticated && !localStorage.getItem('patientLoggedIn')) {
+          window.location.href = 'login.html';
+        }
+      }, 2000);
+    });
+
+    checkAuthStatus();
+  </script>
+  
+  <!-- Multilingual Support - Load First! -->
+  <script src="js/i18n.js"></script>
+  <!-- Audio System -->
+  <script src="js/audio.js"></script>
+  <!-- VILGAX Commander -->
+  <script src="js/vilgax-commander.js"></script>
+  <!-- VILGAX UI -->
+  <script src="js/vilgax-ui.js"></script>
+  <!-- Modern UI Redesign -->
+  <link rel="stylesheet" href="css/theme-redesign.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    :root {
+      --primary-blue: #0f766e;
+      --primary-mint: #14b8a6;
+      --light-mint: #ccf0ee;
+      --light-blue: #e8f5f4;
+      --accent-blue: #667eea;
+      --accent-purple: #764ba2;
+      --text-dark: #1f2937;
+      --text-light: #6b7280;
+      --border-color: #e5e7eb;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    html, body {
+      height: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      color: var(--text-dark);
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 998;
+      background: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .navbar-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-brand {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary-blue);
+      text-decoration: none;
+    }
+
+    .navbar-menu {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+      flex: 1;
+      margin-left: 50px;
+    }
+
+    .navbar-menu a {
+      color: var(--text-dark);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+      font-size: 14px;
+    }
+
+    .navbar-menu a:hover {
+      color: var(--primary-mint);
+    }
+
+    .btn-logout {
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-logout:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* PAGE CONTAINER */
+    .page-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .section-title {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    /* FORM STYLES */
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: var(--text-dark);
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid #f0f0f0;
+      border-radius: 12px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      background: #fafafa;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.08);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-mint) 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .appointment-section {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .message {
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+
+    @media (max-width: 768px) {
+      .navbar-menu {
+        gap: 15px;
+        margin-left: 20px;
+      }
+
+      .navbar-menu a {
+        font-size: 12px;
+      }
+
+      .section-title {
+        font-size: 28px;
+      }
+
+      .appointment-section {
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <a href="patient.html" class="navbar-brand">❤️ <span data-i18n="brand.name">Care Without Borders</span></a>
+    <ul class="navbar-menu">
+      <li><a href="patient-appointments.html" style="color: var(--primary-mint); font-weight: 700;" data-i18n="navigation.bookAppointment">📅 Book Appointment</a></li>
+      <li><a href="patient-video.html" data-i18n="navigation.videoConsultation">🎥 Video Consultation</a></li>
+      <li><a href="patient-medicine.html" data-i18n="navigation.medicineFinder">💊 Medicine Finder</a></li>
+      <li><a href="patient-records.html" data-i18n="navigation.medicalRecords">📋 Medical Records</a></li>
+    </ul>
+    <button class="btn-logout" onclick="logout()" data-i18n="navigation.logout">Logout</button>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="page-container">
+  <h1 class="section-title" data-i18n="pages.patient.appointments">📅 Book Your Appointment</h1>
+  
+  <div class="appointment-section">
+    <form id="appointmentForm">
+      <div class="form-group">
+        <label data-i18n="appointment.selectDoctorSpecialty">Select Doctor Specialty</label>
+        <select required onchange="updateDoctorList()" name="selectDoctorSpecialty">
+          <option data-i18n="appointment.chooseSpecialty" value="">-- Choose Specialty --</option>
+          <option data-i18n="appointment.cardiology" value="cardiology">💗 Cardiology</option>
+          <option data-i18n="appointment.neurology" value="neurology">🧠 Neurology</option>
+          <option data-i18n="appointment.orthopedics" value="orthopedics">🦴 Orthopedics</option>
+          <option data-i18n="appointment.dermatology" value="dermatology">🩹 Dermatology</option>
+          <option data-i18n="appointment.generalPractice" value="general">🏥 General Practice</option>
+          <option data-i18n="appointment.pediatrics" value="pediatrics">👶 Pediatrics</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label data-i18n="appointment.selectDoctor">Select Doctor</label>
+        <select id="doctorSelect" required name="selectDoctor">
+          <option data-i18n="appointment.firstSelectSpecialty" value="">-- First select specialty --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label data-i18n="appointment.preferredDate">Preferred Date</label>
+        <input type="date" required name="preferredDate">
+      </div>
+
+      <div class="form-group">
+        <label data-i18n="appointment.preferredTime">Preferred Time</label>
+        <input type="time" required name="preferredTime">
+      </div>
+
+      <div class="form-group">
+        <label data-i18n="appointment.chiefComplaint">Chief Complaint / Reason for Visit</label>
+        <textarea name="chiefComplaint" required data-i18n-attr="placeholder:appointment.bookAppointmentPlaceholder" placeholder="How can we help you today?"></textarea>
+      </div>
+
+      <button type="submit" class="btn-primary" data-i18n="appointment.bookBtn">📅 Book Appointment</button>
+      <div id="appointmentMessage" class="message"></div>
+    </form>
+  </div>
+</div>
+
+<script src="js/vilgax-assistant.js"></script>
+<script>
+  // Get minimum date (today)
+  const dateInput = document.querySelector('input[name="preferredDate"]');
+  dateInput.min = new Date().toISOString().split('T')[0];
+
+  // Doctor list data
+  const doctors = {
+    cardiology: ['Dr. Sarah Johnson', 'Dr. Rajesh Patel', 'Dr. Anna Williams'],
+    neurology: ['Dr. James Smith', 'Dr. Priya Sharma', 'Dr. Michael Chen'],
+    orthopedics: ['Dr. David Brown', 'Dr. Amit Kumar', 'Dr. Lisa Anderson'],
+    dermatology: ['Dr. Emily White', 'Dr. Kavya Nair', 'Dr. Robert Taylor'],
+    general: ['Dr. John Doe', 'Dr. Meera Rao', 'Dr. Emma Davis'],
+    pediatrics: ['Dr. Alex Green', 'Dr. Neha Singh', 'Dr. David Miller']
+  };
+
+  function updateDoctorList() {
+    const specialty = document.querySelector('select[name="selectDoctorSpecialty"]').value;
+    const doctorSelect = document.getElementById('doctorSelect');
+    doctorSelect.innerHTML = '';
+
+    if (specialty && doctors[specialty]) {
+      doctors[specialty].forEach(doctor => {
+        const option = document.createElement('option');
+        option.value = doctor;
+        option.textContent = doctor;
+        doctorSelect.appendChild(option);
+      });
+    } else {
+      doctorSelect.innerHTML = '<option data-i18n="appointment.firstSelectSpecialty">-- First select specialty --</option>';
+    }
+  }
+
+  function showMessage(message, type) {
+    const msgDiv = document.getElementById('appointmentMessage');
+    msgDiv.textContent = message;
+    msgDiv.className = 'message ' + type;
+    msgDiv.style.display = 'block';
+
+    if (type === 'success') {
+      setTimeout(() => {
+        msgDiv.style.display = 'none';
+      }, 3000);
+    }
+  }
+
+  document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const specialty = document.querySelector('select[name="selectDoctorSpecialty"]').value;
+    const doctor = document.querySelector('select[name="selectDoctor"]').value;
+    const date = document.querySelector('input[name="preferredDate"]').value;
+    const time = document.querySelector('input[name="preferredTime"]').value;
+    const complaint = document.querySelector('textarea[name="chiefComplaint"]').value;
+
+    if (!specialty || !doctor || !date || !time || !complaint) {
+      showMessage('Please fill in all fields', 'error');
+      return;
+    }
+
+    // Simulate booking
+    showMessage('✅ Appointment booked successfully! You will receive a confirmation email.', 'success');
+    this.reset();
+    updateDoctorList();
+  });
+
+  function logout() {
+    localStorage.removeItem('patientLoggedIn');
+    localStorage.removeItem('firebaseUserUID');
+    localStorage.removeItem('patientToken');
+    localStorage.removeItem('patientData');
+    localStorage.removeItem('userEmail');
+    
+    sessionStorage.removeItem('patientLoggedIn');
+    sessionStorage.removeItem('firebaseUserUID');
+    
+    window.location.href = 'login.html';
+  }
+</script>
+
+</body>
+</html>

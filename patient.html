@@ -3,6 +3,398 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="pages.patient.dashboard">Care Without Borders | Patient Dashboard</title>
+  
+  <!-- Firebase Authentication Redirect -->
+  <script type="module">
+    import { auth } from './js/firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    let userIsAuthenticated = false;
+    let authCheckTimeout;
+
+    function checkAuthStatus() {
+      const backendAuth = localStorage.getItem('patientLoggedIn') || sessionStorage.getItem('patientLoggedIn');
+      const firebaseUID = localStorage.getItem('firebaseUserUID') || sessionStorage.getItem('firebaseUserUID');
+      
+      if (backendAuth === 'true' || firebaseUID) {
+        userIsAuthenticated = true;
+        clearTimeout(authCheckTimeout);
+        return;
+      }
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          userIsAuthenticated = true;
+          localStorage.setItem('firebaseUserUID', user.uid);
+          clearTimeout(authCheckTimeout);
+        } else {
+          if (!userIsAuthenticated) {
+            window.location.href = 'login.html';
+          }
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      checkAuthStatus();
+      authCheckTimeout = setTimeout(function() {
+        if (!userIsAuthenticated && !localStorage.getItem('patientLoggedIn')) {
+          window.location.href = 'login.html';
+        }
+      }, 2000);
+    });
+
+    checkAuthStatus();
+  </script>
+  
+  <!-- Multilingual Support -->
+  <script src="js/i18n.js"></script>
+  <!-- Audio System -->
+  <script src="js/audio.js"></script>
+  <!-- Modern UI Redesign -->
+  <link rel="stylesheet" href="css/theme-redesign.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    :root {
+      --primary-blue: #0f766e;
+      --primary-mint: #14b8a6;
+      --light-mint: #ccf0ee;
+      --light-blue: #e8f5f4;
+      --accent-blue: #667eea;
+      --accent-purple: #764ba2;
+      --text-dark: #1f2937;
+      --text-light: #6b7280;
+      --border-color: #e5e7eb;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    html, body {
+      height: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      color: var(--text-dark);
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 998;
+      background: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .navbar-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-brand {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary-blue);
+      text-decoration: none;
+    }
+
+    .btn-logout {
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-logout:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* HERO SECTION */
+    .hero {
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-mint) 100%);
+      color: white;
+      padding: 80px 20px;
+      text-align: center;
+      min-height: 50vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 20px;
+      opacity: 0.95;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    /* PAGE CONTAINER */
+    .page-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 20px;
+    }
+
+    .section-title {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    /* FEATURE CARDS GRID */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-md);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-mint);
+    }
+
+    .feature-icon {
+      font-size: 60px;
+      margin-bottom: 15px;
+    }
+
+    .feature-card h3 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary-blue);
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: var(--text-light);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      flex-grow: 1;
+    }
+
+    .feature-card .btn-primary {
+      width: 100%;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-mint) 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .feature-card .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.3);
+    }
+
+    /* STATS SECTION */
+    .stats-section {
+      background: linear-gradient(135deg, rgba(15, 118, 110, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
+      padding: 40px;
+      border-radius: 20px;
+      margin-bottom: 60px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--primary-mint);
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: var(--text-light);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .section-title {
+        font-size: 28px;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-container {
+        padding: 40px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <a href="patient.html" class="navbar-brand">❤️ <span data-i18n="brand.name">Care Without Borders</span></a>
+    <button class="btn-logout" onclick="logout()" data-i18n="navigation.logout">Logout</button>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+  <h1 data-i18n="pages.patient.welcomeBack">🏥 Welcome Back!</h1>
+  <p data-i18n="pages.patient.heroSubtitle">Access your healthcare services with just one click</p>
+</section>
+
+<!-- Main Content -->
+<div class="page-container">
+  <h2 class="section-title" data-i18n="pages.patient.selectService">Select a Service</h2>
+  
+  <!-- Feature Cards -->
+  <div class="features-grid">
+    <!-- Book Appointment -->
+    <a href="patient-appointments.html" class="feature-card">
+      <div class="feature-icon">📅</div>
+      <h3 data-i18n="navigation.bookAppointment">Book Appointment</h3>
+      <p data-i18n="pages.patient.bookAppointmentDesc">Schedule a consultation with a healthcare professional</p>
+      <button class="btn-primary" data-i18n="buttons.goto">Go to Appointments</button>
+    </a>
+
+    <!-- Video Consultation -->
+    <a href="patient-video.html" class="feature-card">
+      <div class="feature-icon">🎥</div>
+      <h3 data-i18n="navigation.videoConsultation">Video Consultation</h3>
+      <p data-i18n="pages.patient.videoConsultationDesc">Connect with doctors via secure video call</p>
+      <button class="btn-primary" data-i18n="buttons.goto">Go to Video Calls</button>
+    </a>
+
+    <!-- Medicine Finder -->
+    <a href="patient-medicine.html" class="feature-card">
+      <div class="feature-icon">💊</div>
+      <h3 data-i18n="navigation.medicineFinder">Medicine Finder</h3>
+      <p data-i18n="pages.patient.medicineFinderDesc">Search medicines and get prescriptions</p>
+      <button class="btn-primary" data-i18n="buttons.goto">Find Medicines</button>
+    </a>
+
+    <!-- Medical Records -->
+    <a href="patient-records.html" class="feature-card">
+      <div class="feature-icon">📋</div>
+      <h3 data-i18n="navigation.medicalRecords">Medical Records</h3>
+      <p data-i18n="pages.patient.medicalRecordsDesc">View and manage your medical documents</p>
+      <button class="btn-primary" data-i18n="buttons.goto">View Records</button>
+    </a>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number">24/7</div>
+        <div class="stat-label" data-i18n="pages.patient.availableAlways">Available Always</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">1000+</div>
+        <div class="stat-label" data-i18n="pages.patient.healthExperts">Health Experts</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">100%</div>
+        <div class="stat-label" data-i18n="pages.patient.secure">Secure & Private</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">50K+</div>
+        <div class="stat-label" data-i18n="pages.patient.happyPatients">Happy Patients</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function logout() {
+    localStorage.removeItem('patientLoggedIn');
+    localStorage.removeItem('firebaseUserUID');
+    localStorage.removeItem('patientToken');
+    localStorage.removeItem('patientData');
+    localStorage.removeItem('userEmail');
+    
+    sessionStorage.removeItem('patientLoggedIn');
+    sessionStorage.removeItem('firebaseUserUID');
+    
+    window.location.href = 'login.html';
+  }
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="pages.patient.talkToDoctor">Care Without Borders | Modern Telemedicine & VILGAX AI</title>
   
   <!-- Firebase Authentication Redirect -->
