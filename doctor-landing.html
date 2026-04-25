@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Doctor Portal - Care Without Borders</title>
+  <title>Professional Portal - Care Without Borders</title>
   <style>
     * {
       margin: 0;
@@ -18,18 +18,23 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 20px;
     }
 
     .container {
       text-align: center;
       color: white;
-      padding: 20px;
-      max-width: 600px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .header {
+      margin-bottom: 50px;
     }
 
     .logo {
       font-size: 80px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       animation: bounce 2s infinite;
     }
 
@@ -44,71 +49,76 @@
       font-weight: 800;
     }
 
-    p {
+    .subtitle {
       font-size: 18px;
       opacity: 0.95;
       margin-bottom: 30px;
       line-height: 1.6;
     }
 
-    .button-group {
+    .role-options {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 30px;
       margin-bottom: 30px;
     }
 
-    .btn {
-      padding: 20px 30px;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: 2px solid white;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 700;
+    .role-card {
+      background: white;
+      padding: 50px 30px;
+      border-radius: 20px;
       cursor: pointer;
       transition: all 0.4s ease;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
       text-decoration: none;
-      display: inline-block;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
     }
 
-    .btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateY(-5px);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    .role-card:hover {
+      transform: translateY(-15px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
     }
 
-    .btn-primary {
-      background: white;
+    .role-icon {
+      font-size: 70px;
+    }
+
+    .role-title {
+      font-size: 28px;
+      font-weight: 800;
       color: #0f766e;
-      border-color: white;
-      grid-column: span 2;
-      font-size: 18px;
-      padding: 25px 40px;
     }
 
-    .btn-primary:hover {
-      background: #f0f0f0;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    .role-description {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
     }
 
     .features {
       background: rgba(255, 255, 255, 0.1);
       padding: 30px;
       border-radius: 15px;
-      margin-top: 30px;
       text-align: left;
+      max-width: 500px;
+      margin: 30px auto 0;
     }
 
     .features h3 {
-      font-size: 20px;
+      font-size: 18px;
       margin-bottom: 20px;
+      font-weight: 700;
     }
 
     .features ul {
       list-style: none;
-      font-size: 16px;
+      font-size: 14px;
       line-height: 2;
+      opacity: 0.95;
     }
 
     .features li:before {
@@ -117,43 +127,81 @@
       font-weight: 700;
       margin-right: 10px;
     }
+
+    @media (max-width: 768px) {
+      .role-options {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .logo {
+        font-size: 60px;
+      }
+
+      .role-card {
+        padding: 35px 20px;
+      }
+
+      .role-icon {
+        font-size: 50px;
+      }
+
+      .role-title {
+        font-size: 24px;
+      }
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="logo">👨‍⚕️</div>
-  <h1>Doctor Portal</h1>
-  <p>Manage your patients and appointments efficiently</p>
+  <div class="header">
+    <div class="logo">💼</div>
+    <h1>Professional Portal</h1>
+    <p class="subtitle">Manage your patients and platform efficiently</p>
+  </div>
 
-  <div class="button-group">
-    <a href="doctor-login.html" class="btn">🔐 Sign In</a>
-    <a href="doctor-register.html" class="btn">✨ Register</a>
-    <a href="doctor.html" class="btn btn-primary">→ Go to Dashboard</a>
+  <div class="role-options">
+    <a href="doctor-login.html" class="role-card">
+      <div class="role-icon">👨‍⚕️</div>
+      <div class="role-title">Doctor</div>
+      <div class="role-description">Manage appointments and patient care</div>
+    </a>
+
+    <a href="admin.html" class="role-card">
+      <div class="role-icon">👨‍💼</div>
+      <div class="role-title">Admin</div>
+      <div class="role-description">Manage platform and users</div>
+    </a>
   </div>
 
   <div class="features">
-    <h3>Doctor Features:</h3>
+    <h3>Professional Features:</h3>
     <ul>
-      <li>Manage patient appointments</li>
-      <li>View medical records</li>
-      <li>Video consultations</li>
-      <li>Prescription management</li>
-      <li>Real-time notifications</li>
+      <li>Real-time patient management</li>
+      <li>Secure consultations</li>
+      <li>Appointment scheduling</li>
+      <li>Medical records access</li>
+      <li>Performance analytics</li>
     </ul>
   </div>
 </div>
 
 <script>
-  // Auto-redirect if doctor is already logged in
+  // Auto-redirect if professional is already logged in
   window.addEventListener('load', function() {
     if (typeof firebase !== 'undefined') {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-          // Check if user is a doctor
           const userRole = localStorage.getItem('userRole');
           if (userRole === 'doctor') {
             window.location.href = 'doctor.html';
+          } else if (userRole === 'admin') {
+            window.location.href = 'admin.html';
           }
         }
       });
