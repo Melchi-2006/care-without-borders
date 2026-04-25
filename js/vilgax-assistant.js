@@ -20,6 +20,13 @@ class VILGAXAssistant {
     this.commandsExecuted = 0;
     this.isProcessing = false;
     
+    // Medical Intake Flow State
+    this.intakeMode = true; // Start in intake mode to listen for symptoms
+    this.patientInfoCollected = false;
+    this.awaitingAppointmentDecision = false;
+    this.selectedSpecialty = null;
+    this.selectedTime = null;
+    
     // Voice command registry
     this.commands = new Map();
     this.voiceResponses = new Map();
@@ -408,12 +415,32 @@ class VILGAXAssistant {
    * Register Voice Commands
    */
   registerCommands() {
-    this.commands.set('book appointment', () => {
-      this.respond('Opening appointment booking form...');
-      document.getElementById('appointment')?.scrollIntoView({ behavior: 'smooth' });
-      setTimeout(() => audio?.speakTranslation('pages.patient.bookNewAppointment'), 800);
+    // Medical Intake Commands
+    this.commands.set('intake', () => {
+      this.respond('Please describe your health concern. Include your name, age, and symptoms.');
+      audio?.speak('Please tell me about your health concern. You can say your name, age, and describe your symptoms.');
+      this.intakeMode = true;
     });
 
+    // Appointment Flow
+    this.commands.set('book appointment', () => {
+      if (!this.patientInfoCollected) {
+        this.startMedicalIntake();
+      } else {
+        this.offerAppointmentOrDiagnosis();
+      }
+    });
+
+    // Diagnosis
+    this.commands.set('ai diagnosis|check symptoms|symptom checker', () => {
+      if (!this.patientInfoCollected) {
+        this.startMedicalIntake();
+      } else {
+        this.provideDiagnosis();
+      }
+    });
+
+    // Standard Commands
     this.commands.set('find medicine', () => {
       this.respond('Opening medicine finder...');
       document.getElementById('medicine-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -438,8 +465,9 @@ class VILGAXAssistant {
     });
 
     this.commands.set('help', () => {
-      this.respond('I can help you with: Book appointment, Find medicine, Show records, Start video call, View prescriptions. What would you like to do?');
-      audio?.speak('I can help you with: Book appointment, Find medicine, Show records, Start video call, or View prescriptions. What would you like to do?');
+      const helpText = 'I can help you with: Describe your health concern for medical intake, Book an appointment, Get AI diagnosis, Find medicine, Show records, Start video call, View prescriptions. What would you like to do?';
+      this.respond(helpText);
+      audio?.speak(helpText);
     });
 
     this.commands.set('close', () => {
@@ -449,39 +477,23 @@ class VILGAXAssistant {
 
     // Appointment form voice commands
     this.commands.set('cardiologist', () => {
-      const field = document.getElementById('appointment')?.querySelector('[name="selectDoctorSpecialty"]');
-      if (field) {
-        field.value = 'Cardiology';
-        field.dispatchEvent(new Event('change', { bubbles: true }));
-        this.respond('Specialty set to Cardiology. Now tell me your chief complaint.');
-      }
+      this.selectedSpecialty = 'Cardiology';
+      this.handleSpecialtySelection('Cardiology');
     });
 
     this.commands.set('dermatologist', () => {
-      const field = document.getElementById('appointment')?.querySelector('[name="selectDoctorSpecialty"]');
-      if (field) {
-        field.value = 'Dermatology';
-        field.dispatchEvent(new Event('change', { bubbles: true }));
-        this.respond('Specialty set to Dermatology. Now tell me your chief complaint.');
-      }
+      this.selectedSpecialty = 'Dermatology';
+      this.handleSpecialtySelection('Dermatology');
     });
 
     this.commands.set('psychiatrist', () => {
-      const field = document.getElementById('appointment')?.querySelector('[name="selectDoctorSpecialty"]');
-      if (field) {
-        field.value = 'Psychiatry';
-        field.dispatchEvent(new Event('change', { bubbles: true }));
-        this.respond('Specialty set to Psychiatry. Now tell me your chief complaint.');
-      }
+      this.selectedSpecialty = 'Psychiatry';
+      this.handleSpecialtySelection('Psychiatry');
     });
 
     this.commands.set('general practitioner|general doctor|general physician', () => {
-      const field = document.getElementById('appointment')?.querySelector('[name="selectDoctorSpecialty"]');
-      if (field) {
-        field.value = 'General Practice';
-        field.dispatchEvent(new Event('change', { bubbles: true }));
-        this.respond('Specialty set to General Practice. Now tell me your chief complaint.');
-      }
+      this.selectedSpecialty = 'General Practice';
+      this.handleSpecialtySelection('General Practice');
     });
   }
 
@@ -520,17 +532,22 @@ class VILGAXAssistant {
   playWelcome() {
     console.log('🎤 Playing VILGAX welcome...');
     const welcomeTexts = {
-      'en': "Hello! I'm VILGAX, your AI health assistant. Welcome to Care Without Borders. I can help you book appointments, find medicines, view your medical records, and more. Just tell me what you need!",
-      'ta': "வணக்கம்! நான் விள்கேக்ஸ், உங்களின் AI சுகாதார உதவியாளர். கேர் வித்தவுட் வோர்டர்ஸ்க்கு வரவேற்கிறோம். மருத்துவர் சந்திப்பு பதிவு செய்ய, மருந்து கண்டுபிடிக்க, உங்கள் மருத்துவ பதிவுகளைப் பார்க்க நான் உதவ முடியும். என்ன செய்ய வேண்டும் என்று சொல்லுங்கள்!",
-      'hi': "नमस्ते! मैं VILGAX, आपका AI स्वास्थ्य सहायक। Care Without Borders में आपका स्वागत है। मैं आपको डॉक्टर की नियुक्ति बुक करने, दवाएं खोजने, अपने चिकित्सा रिकॉर्ड देखने में मदद कर सकता हूं। बताइए आपको क्या चाहिए!"
+      'en': "Hello! I'm VILGAX, your AI health assistant. Welcome to Care Without Borders. Please tell me about any health concerns you have - include your name, age, and symptoms - and I'll help you book an appointment with the right doctor, provide AI diagnosis, find medicines, and more. Just describe what's troubling you!",
+      'ta': "வணக்கம்! நான் விள்கேக்ஸ், உங்களின் AI சுகாதார உதவியாளர். கேர் வித்தவுட் வோர்டர்ஸ்க்கு வரவேற்கிறோம். உங்கள் எந்த சுகாதார கவலைகளையும் எனக்கு சொல்லுங்கள் - உங்கள் பெயர், வயது மற்றும் அறிகுறிகளை சேர்த்து. நான் உங்களுக்கு சரியான மருத்துவருடன் ஒரு சந்திப்பை பதிவு செய்ய உதவ முடியும், AI நির்ணயம் வழங்க, மருந்து கண்டுபிடிக்க மற்றும் பல. என்ன சிக்கல் என்று விவரிக்கவும்!",
+      'hi': "नमस्ते! मैं VILGAX, आपका AI स्वास्थ्य सहायक। Care Without Borders में आपका स्वागत है। मुझे अपने स्वास्थ्य संबंधी किसी भी समस्या के बारे में बताइए - अपना नाम, उम्र और लक्षण शामिल करें। मैं आपको सही डॉक्टर के साथ नियुक्ति बुक करने, AI निदान देने, दवाएं खोजने और अधिक में मदद कर सकता हूं। बताइए क्या परेशानी है!"
     };
 
     const welcomeText = welcomeTexts[this.currentLanguage] || welcomeTexts['en'];
-    this.respond('Welcome to VILGAX AI Assistant! 🤖');
+    this.respond('🤖 VILGAX AI Medical Assistant Ready!\n\nTell me about your health concern and I\'ll guide you through everything.');
     
     setTimeout(() => {
       audio?.speak(welcomeText);
-    }, 1000);
+    }, 800);
+
+    // Auto-show panel and start listening
+    setTimeout(() => {
+      this.togglePanel();
+    }, 2000);
   }
 
   /**
@@ -662,6 +679,12 @@ class VILGAXAssistant {
   executeCommand(command) {
     if (this.isProcessing) return;
     
+    // In medical intake mode, process as symptom description unless it's a direct command
+    if (this.intakeMode && !this.isDirectCommand(command)) {
+      this.processMedicalIntake(command);
+      return;
+    }
+    
     this.isProcessing = true;
     const lowerCommand = command.toLowerCase().trim();
 
@@ -681,10 +704,245 @@ class VILGAXAssistant {
       }
     }
 
-    // No match found
-    this.respond(`Sorry, I didn't understand "${command}". Try: Book appointment, Find medicine, Show records, or Video call.`);
-    audio?.speak('Sorry, I did not understand. Try asking for: Book appointment, Find medicine, Show records, or Video call.');
-    this.isProcessing = false;
+    // No match found - ask for clarification
+    if (this.intakeMode) {
+      this.processMedicalIntake(command); // Process as symptoms if in intake mode
+    } else {
+      this.respond(`Sorry, I didn't understand "${command}". Try: Book appointment, Find medicine, Show records, or Video call.`);
+      audio?.speak('Sorry, I did not understand. Try asking for: Book appointment, Find medicine, Show records, or Video call.');
+      this.isProcessing = false;
+    }
+  }
+
+  /**
+   * Check if command is a direct command (not a symptom description)
+   */
+  isDirectCommand(text) {
+    const directCmds = [
+      'book', 'appointment', 'medicine', 'records', 'video', 'call', 
+      'diagnosis', 'symptoms', 'help', 'close', 'yes', 'no',
+      'cardiologist', 'dermatologist', 'psychiatrist'
+    ];
+    return directCmds.some(cmd => text.toLowerCase().includes(cmd));
+  }
+
+  /**
+   * Start Medical Intake Process
+   */
+  startMedicalIntake() {
+    this.intakeMode = true;
+    const intakePrompt = 'Please tell me about your health concern. Include your name, age, location, and describe your symptoms with when they started.';
+    this.respond(`🏥 Starting Medical Intake...\n\n${intakePrompt}`);
+    audio?.speak(intakePrompt);
+  }
+
+  /**
+   * Process Medical Intake - Extract symptoms from patient description
+   */
+  processMedicalIntake(userInput) {
+    if (!medicalAnalyzer) {
+      console.error('Medical analyzer not loaded');
+      return;
+    }
+
+    // Extract patient information
+    const patientInfo = medicalAnalyzer.extractPatientInfo(userInput);
+    
+    // Update global tracker
+    Object.assign(medicalAnalyzer.patientInfo, patientInfo);
+    this.patientInfoCollected = true;
+
+    // Show extracted information
+    const summary = medicalAnalyzer.formatIntakeSummary(patientInfo);
+    this.respond(`✅ Information Captured:\n\n${summary}`);
+
+    console.log('📋 Extracted Patient Info:', patientInfo);
+
+    // Recommend specialist
+    if (patientInfo.symptoms.length > 0) {
+      const recommendedSpecialty = medicalAnalyzer.recommendSpecialty(patientInfo.symptoms);
+      this.selectedSpecialty = recommendedSpecialty;
+      
+      const confirmText = `Based on your symptoms (${medicalAnalyzer.formatSymptoms(patientInfo.symptoms)}), I recommend a ${recommendedSpecialty} specialist.\n\nWould you like to book an appointment or get AI diagnosis?`;
+      this.respond(confirmText);
+      audio?.speak(`Based on your symptoms, I recommend seeing a ${recommendedSpecialty} specialist. Would you like to book an appointment or get AI diagnosis? Say "Book appointment" or "AI diagnosis".`);
+    } else {
+      // No symptoms detected, ask for clarification
+      const clarifyText = 'I didn\'t catch any specific symptoms. Could you describe more clearly what\'s troubling you? For example: fever, headache, cough, etc.';
+      this.respond(clarifyText);
+      audio?.speak(clarifyText);
+      this.patientInfoCollected = false; // Reset to ask again
+    }
+  }
+
+  /**
+   * Offer appointment or diagnosis choice
+   */
+  offerAppointmentOrDiagnosis() {
+    const choiceText = '📋 Would you like to:\n1. BOOK an appointment with a doctor\n2. Get AI DIAGNOSIS';
+    this.respond(choiceText);
+    audio?.speak('Would you like to book an appointment with a doctor or get AI diagnosis? Say "Book appointment" or "AI diagnosis".');
+    this.awaitingAppointmentDecision = true;
+  }
+
+  /**
+   * Provide AI Diagnosis
+   */
+  provideDiagnosis() {
+    const patientInfo = medicalAnalyzer.patientInfo;
+    const symptoms = patientInfo.symptoms;
+
+    if (symptoms.length === 0) {
+      this.respond('Please describe your symptoms first.');
+      return;
+    }
+
+    const symptomList = medicalAnalyzer.formatSymptoms(symptoms);
+    const diagnosisText = `🔍 AI Diagnosis Analysis\n\nSymptoms: ${symptomList}\nDuration: ${patientInfo.duration || 'Not specified'}\nSeverity: ${patientInfo.severity}\n\nRecommended Specialty: ${this.selectedSpecialty}\n\n⚠️ This is AI-powered preliminary analysis. Please consult with a doctor for proper diagnosis.`;
+    
+    this.respond(diagnosisText);
+    audio?.speak(`Based on your symptoms, I recommend consulting a ${this.selectedSpecialty} specialist. This is an AI analysis. Please consult with a doctor for accurate diagnosis.`);
+
+    // Offer to book appointment
+    setTimeout(() => {
+      const offerText = 'Would you like to book an appointment with a specialist now?';
+      this.respond(offerText);
+      audio?.speak(offerText);
+    }, 2000);
+  }
+
+  /**
+   * Handle Specialty Selection
+   */
+  handleSpecialtySelection(specialty) {
+    this.selectedSpecialty = specialty;
+    const selectedText = `✅ Specialty selected: ${specialty}\n\nFinding available doctors...`;
+    this.respond(selectedText);
+    audio?.speak(`Great! I'm finding available ${specialty} specialists for you.`);
+
+    // Get available doctors
+    setTimeout(() => this.showAvailableDoctors(specialty), 1500);
+  }
+
+  /**
+   * Show Available Doctors
+   */
+  showAvailableDoctors(specialty) {
+    const doctors = doctorBookingSystem.findDoctorsBySpecialty(specialty);
+    
+    if (doctors.length === 0) {
+      this.respond('Sorry, no doctors available in this specialty right now. Try again later.');
+      audio?.speak('Sorry, no doctors are available in this specialty right now.');
+      return;
+    }
+
+    const doctorList = doctorBookingSystem.formatDoctorList(doctors);
+    const listText = `👨‍⚕️ Available Doctors:\n\n${doctorList}`;
+    this.respond(listText);
+    audio?.speak(`Found ${doctors.length} available doctors. The top doctor is ${doctors[0].name}, with a ${doctors[0].rating} star rating.`);
+
+    // Ask for preferred time
+    setTimeout(() => this.askForAppointmentTime(), 2000);
+  }
+
+  /**
+   * Ask for Appointment Time
+   */
+  askForAppointmentTime() {
+    const timeText = 'What time would you prefer? Available times: 9:00 AM, 10:00 AM, 2:00 PM, 3:00 PM';
+    this.respond(timeText);
+    audio?.speak('What time would you prefer for your appointment? You can choose from morning slots like 9 AM or 10 AM, or afternoon slots like 2 PM or 3 PM.');
+  }
+
+  /**
+   * Process Appointment Time Selection
+   */
+  processTimeSelection(timeInput) {
+    // Parse time
+    const timeMatch = timeInput.match(/(\d{1,2}):(\d{2})?\s*(am|pm)?/i);
+    if (timeMatch) {
+      this.selectedTime = timeInput;
+      this.confirmAndBookAppointment();
+    } else {
+      const clarifyText = 'Please specify a time. For example: "9 AM" or "2:30 PM"';
+      this.respond(clarifyText);
+      audio?.speak(clarifyText);
+    }
+  }
+
+  /**
+   * Confirm and Book Appointment
+   */
+  confirmAndBookAppointment() {
+    if (!this.selectedSpecialty || !medicalAnalyzer.patientInfo.name) {
+      this.respond('Missing patient information. Please try again.');
+      return;
+    }
+
+    const confirmText = `📅 Booking Appointment...\n\nPatient: ${medicalAnalyzer.patientInfo.name}\nAge: ${medicalAnalyzer.patientInfo.age}\nSpecialty: ${this.selectedSpecialty}\nTime: ${this.selectedTime || 'Next available'}\nSymptoms: ${medicalAnalyzer.formatSymptoms(medicalAnalyzer.patientInfo.symptoms)}`;
+    
+    this.respond(confirmText);
+    audio?.speak(`Booking appointment for ${medicalAnalyzer.patientInfo.name}. Finding the best available doctor...`);
+
+    // Create appointment request
+    setTimeout(() => this.createAppointmentRequest(), 1500);
+  }
+
+  /**
+   * Create Appointment Request (Triggers Uber-like booking)
+   */
+  createAppointmentRequest() {
+    const appointmentRequest = doctorBookingSystem.createAppointmentRequest(
+      medicalAnalyzer.patientInfo,
+      this.selectedSpecialty,
+      this.selectedTime
+    );
+
+    // Wait for doctor acceptance
+    setTimeout(() => {
+      const request = doctorBookingSystem.getRequestStatus(appointmentRequest.requestId);
+      
+      if (request.status === 'accepted') {
+        const appointment = doctorBookingSystem.activeAppointments.values().next().value;
+        if (appointment && appointment.requestId === appointmentRequest.requestId) {
+          this.showAppointmentConfirmation(appointment);
+        }
+      } else {
+        this.respond('No doctor available. Please try again later.');
+        audio?.speak('Sorry, no doctor was available for this time. Please try a different time or specialty.');
+      }
+    }, 2500);
+  }
+
+  /**
+   * Show Appointment Confirmation
+   */
+  showAppointmentConfirmation(appointment) {
+    const confirmationText = doctorBookingSystem.formatAppointmentSummary(appointment);
+    this.respond(`✅ Appointment Confirmed!\n\n${confirmationText}\n\nA video call will be initiated shortly.`);
+    audio?.speak(`Your appointment is confirmed! Doctor ${appointment.doctor.name} will join you in a video call shortly.`);
+
+    // Store appointment for video call
+    window.currentAppointment = appointment;
+
+    // Start video call after 3 seconds
+    setTimeout(() => {
+      this.startVideoCall(appointment);
+    }, 3000);
+  }
+
+  /**
+   * Start Video Call
+   */
+  startVideoCall(appointment) {
+    const videoText = `📹 Starting Video Consultation...\n\nRoom: ${appointment.videoRoomId}\nDoctor: ${appointment.doctor.name}\n\nWaiting for doctor to join...`;
+    this.respond(videoText);
+    
+    // In production, this would trigger actual video infrastructure
+    audio?.speak(`Starting your video consultation with ${appointment.doctor.name}. Please wait for the doctor to join.`);
+    
+    // Simulate video call initiation
+    doctorBookingSystem.startVideoCall(appointment.appointmentId);
   }
 
   /**
