@@ -4,6 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-i18n="pages.patient.talkToDoctor">Care Without Borders | Modern Telemedicine & VILGAX AI</title>
+  
+  <!-- Firebase Authentication Redirect -->
+  <script>
+    // Check if user is logged in before page loads
+    window.addEventListener('DOMContentLoaded', function() {
+      // If user is not authenticated, redirect to login
+      const isAuthenticated = localStorage.getItem('firebaseUserUID') || sessionStorage.getItem('firebaseUserUID');
+      
+      if (!isAuthenticated) {
+        // Check if Firebase is available
+        if (typeof firebase !== 'undefined') {
+          // Firebase is loaded, use it for auth check
+          firebase.auth().onAuthStateChanged(function(user) {
+            if (!user) {
+              // No user logged in - redirect to login page
+              window.location.href = 'login.html';
+            }
+          });
+        } else {
+          // Firebase not loaded yet, wait a bit and redirect
+          setTimeout(function() {
+            const user = localStorage.getItem('firebaseUserUID') || sessionStorage.getItem('firebaseUserUID');
+            if (!user) {
+              window.location.href = 'login.html';
+            }
+          }, 1000);
+        }
+      }
+    });
+  </script>
+  
   <!-- Multilingual Support - Load First! -->
   <script src="js/i18n.js"></script>
   <!-- Audio System -->

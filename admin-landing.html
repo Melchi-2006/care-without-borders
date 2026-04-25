@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal - Care Without Borders</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #06b6d4 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      text-align: center;
+      color: white;
+      padding: 20px;
+      max-width: 600px;
+    }
+
+    .logo {
+      font-size: 80px;
+      margin-bottom: 30px;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    h1 {
+      font-size: 42px;
+      margin-bottom: 15px;
+      font-weight: 800;
+    }
+
+    p {
+      font-size: 18px;
+      opacity: 0.95;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      padding: 20px 30px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid white;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary {
+      background: white;
+      color: #0f766e;
+      border-color: white;
+      grid-column: span 2;
+      font-size: 18px;
+      padding: 25px 40px;
+    }
+
+    .btn-primary:hover {
+      background: #f0f0f0;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    .features {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 15px;
+      margin-top: 30px;
+      text-align: left;
+    }
+
+    .features h3 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .features ul {
+      list-style: none;
+      font-size: 16px;
+      line-height: 2;
+    }
+
+    .features li:before {
+      content: "✓ ";
+      color: #14b8a6;
+      font-weight: 700;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">👨‍💼</div>
+  <h1>Admin Portal</h1>
+  <p>Manage the Care Without Borders platform</p>
+
+  <div class="button-group">
+    <a href="admin.html" class="btn btn-primary">→ Go to Admin Dashboard</a>
+  </div>
+
+  <div class="features">
+    <h3>Admin Features:</h3>
+    <ul>
+      <li>Manage users (Patients & Doctors)</li>
+      <li>Monitor consultations</li>
+      <li>System analytics & reports</li>
+      <li>Platform settings</li>
+      <li>User support & management</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  // Auto-redirect if admin is already logged in
+  window.addEventListener('load', function() {
+    if (typeof firebase !== 'undefined') {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // Check if user is an admin
+          const userRole = localStorage.getItem('userRole');
+          if (userRole === 'admin') {
+            window.location.href = 'admin.html';
+          }
+        }
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

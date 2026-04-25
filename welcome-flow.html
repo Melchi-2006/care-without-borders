@@ -13,7 +13,7 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #06b6d4 100%);
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -33,14 +33,14 @@
     .step-screen {
       display: none;
       width: 100%;
-      max-width: 700px;
+      max-width: 800px;
       height: 100vh;
       background: white;
-      padding: 50px 40px;
+      padding: 60px 45px;
       text-align: center;
       animation: slideInRight 0.6s ease;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      border-radius: 20px;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+      border-radius: 25px;
       overflow-y: auto;
     }
 
@@ -95,29 +95,56 @@
 
     /* STEP 1: LANGUAGE SELECTION */
     #step-language {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+      background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
+      color: #0f766e;
+    }
+
+    #step-language h1 {
+      color: #0f766e;
+      font-size: 42px;
+      margin-bottom: 15px;
+      font-weight: 800;
+    }
+
+    #step-language > p {
+      color: #14b8a6;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 30px;
+    }
+
+    .greeting-box {
+      margin: 25px 0;
+      padding: 25px;
+      background: linear-gradient(135deg, rgba(15, 118, 110, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
+      border-radius: 15px;
+      border-left: 5px solid #14b8a6;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #1f2937;
+      font-weight: 500;
+      animation: fadeIn 1s ease 0.5s backwards;
     }
 
     .language-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 25px;
-      margin-top: 40px;
+      gap: 20px;
+      margin-top: 35px;
       width: 100%;
     }
 
     .language-btn {
-      padding: 35px 25px;
+      padding: 40px 20px;
       border: none;
-      background: white;
-      color: #667eea;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: white;
       font-size: 18px;
       font-weight: 700;
       cursor: pointer;
-      border-radius: 16px;
+      border-radius: 18px;
       transition: all 0.4s ease;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 12px 30px rgba(15, 118, 110, 0.2);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -125,10 +152,9 @@
     }
 
     .language-btn:hover {
-      background: #f0f0ff;
-      color: #667eea;
       transform: translateY(-8px);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 18px 50px rgba(15, 118, 110, 0.35);
+      background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
     }
 
     .language-btn:active {
@@ -137,56 +163,64 @@
 
     /* STEP 2: ROLE SELECTION */
     #step-role {
-      background: white;
+      background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
     }
 
     #step-role h1 {
-      color: #667eea;
+      color: #0f766e;
+    }
+
+    #step-role > p {
+      color: #14b8a6;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 35px;
     }
 
     .role-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 25px;
-      margin-top: 40px;
+      gap: 20px;
+      margin-top: 35px;
       width: 100%;
     }
 
     .role-card {
       padding: 40px 25px;
-      border: 2px solid #e0e0e0;
+      border: 2px solid #e0f2f1;
       background: white;
       cursor: pointer;
-      border-radius: 16px;
+      border-radius: 18px;
       transition: all 0.4s ease;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.08);
     }
 
     .role-card:hover {
-      border-color: #667eea;
-      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.25);
-      transform: translateY(-10px);
+      border-color: #14b8a6;
+      box-shadow: 0 15px 40px rgba(15, 118, 110, 0.2);
+      transform: translateY(-8px);
     }
 
     .role-icon {
-      font-size: 60px;
+      font-size: 70px;
       margin-bottom: 20px;
       display: block;
     }
 
     .role-title {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
-      color: #333;
+      color: #0f766e;
+      margin-bottom: 10px;
     }
 
-    /* STEP 3: PATIENT LOGIN/SIGNUP */
+    /* STEP 3: PATIENT AUTH */
     #step-patient-auth {
-      background: white;
+      background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
     }
 
     #step-patient-auth h1 {
-      color: #667eea;
+      color: #0f766e;
     }
 
     .auth-options {
@@ -198,80 +232,69 @@
     }
 
     .auth-btn {
-      padding: 30px 25px;
-      border: 2px solid #e0e0e0;
+      padding: 35px 25px;
+      border: 2px solid #e0f2f1;
       background: white;
       font-size: 18px;
       font-weight: 700;
       cursor: pointer;
-      border-radius: 16px;
+      border-radius: 18px;
       transition: all 0.4s ease;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      gap: 15px;
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.08);
     }
 
     .auth-btn:hover {
-      border-color: #667eea;
-      background: #f8f8ff;
-      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.25);
+      border-color: #14b8a6;
+      background: #f0fdfa;
+      box-shadow: 0 15px 40px rgba(15, 118, 110, 0.2);
       transform: translateY(-5px);
     }
 
     /* STEP 4: VILGAX WELCOME */
     #step-vilgax-welcome {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
       color: white;
     }
 
     .vilgax-avatar {
-      width: 140px;
-      height: 140px;
-      background: rgba(255, 255, 255, 0.25);
+      width: 150px;
+      height: 150px;
+      background: rgba(255, 255, 255, 0.2);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 70px;
+      font-size: 80px;
       margin: 30px auto;
       animation: bounce 2s infinite;
-      box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
+      box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
     }
 
     .vilgax-message {
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 600;
       margin-top: 30px;
       line-height: 1.7;
+      opacity: 0.98;
     }
 
     /* STEP 5: VILGAX TASK SELECTION */
     #step-vilgax-task {
-      background: white;
+      background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
     }
 
     #step-vilgax-task h2 {
-      color: #667eea;
-    }
-
-    .task-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-      margin-top: 30px;
-      width: 100%;
+      color: #0f766e;
     }
 
     .task-btn {
       padding: 25px;
-      border: 2px solid #e0e0e0;
+      border: 2px solid #e0f2f1;
       background: white;
       font-size: 18px;
       font-weight: 600;
@@ -279,17 +302,18 @@
       border-radius: 14px;
       transition: all 0.4s ease;
       text-align: center;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 15px;
+      color: #1f2937;
     }
 
     .task-btn:hover {
-      border-color: #667eea;
-      background: #f8f8ff;
-      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.25);
+      border-color: #14b8a6;
+      background: #f0fdfa;
+      box-shadow: 0 15px 40px rgba(15, 118, 110, 0.2);
       transform: translateX(10px);
     }
 
@@ -299,7 +323,7 @@
 
     /* STEP 7: THANK YOU */
     #step-thank-you {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
       color: white;
     }
 
@@ -355,7 +379,7 @@
 
     .btn {
       padding: 15px 40px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
       color: white;
       border: none;
       border-radius: 12px;
@@ -364,12 +388,12 @@
       cursor: pointer;
       transition: all 0.4s ease;
       margin-top: 25px;
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 10px 25px rgba(15, 118, 110, 0.2);
     }
 
     .btn:hover {
       transform: translateY(-3px);
-      box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 15px 40px rgba(15, 118, 110, 0.3);
     }
 
     .voice-indicator {
@@ -377,9 +401,9 @@
       margin-top: 25px;
       font-size: 15px;
       padding: 15px 25px;
-      background: rgba(102, 126, 234, 0.1);
+      background: rgba(15, 118, 110, 0.1);
       border-radius: 12px;
-      color: #667eea;
+      color: #0f766e;
       font-weight: 600;
     }
 
@@ -443,29 +467,13 @@
 <div class="welcome-container">
   <!-- STEP 1: LANGUAGE SELECTION -->
   <div id="step-language" class="step-screen active">
-    <h1 style="animation: fadeInDown 0.8s ease;">🌍 Choose Your Language</h1>
-    <p style="animation: fadeInDown 0.8s ease 0.2s backwards;">Welcome! Select your language to continue</p>
-    <div id="initial-greeting" style="margin: 20px 0; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 12px; font-size: 16px; line-height: 1.6; animation: fadeIn 1s ease 0.5s backwards;">
-      Hello! We are here to help you with your healthcare needs.
+    <h1>🤖 Care Without Borders</h1>
+    <p>Select Your Language | உங்கள் மொழியைத் தேர்ந்தெடுக்கவும் | अपनी भाषा चुनें</p>
+    
+    <div class="greeting-box" id="initial-greeting">
+      🙏 Namaste! I am very concerned about your health and welfare. I am here to help you and understand your healthcare needs with warmth and care. Please choose your language so we can take care of you properly, okay?
     </div>
-    
-    <!-- Voice Play Button -->
-    <button id="play-greeting-btn" style="
-      margin: 15px auto;
-      padding: 10px 20px;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      border: 2px solid white;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-      transition: all 0.3s ease;
-      display: inline-block;
-    " onclick="playGreetingManually()">
-      🔊 Play Greeting
-    </button>
-    
+
     <div class="language-grid">
       <button class="language-btn" onclick="selectLanguage('en')" style="animation: slideUp 0.6s ease 0.3s backwards;">
         <span style="font-size: 32px;">🇺🇸</span>
@@ -480,27 +488,42 @@
         <span>हिंदी</span>
       </button>
     </div>
+
+    <button style="
+      margin: 25px auto;
+      padding: 12px 30px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      display: inline-block;
+    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'" onclick="playGreetingManually()">
+      🔊 Hear Greeting
+    </button>
   </div>
 
   <!-- STEP 2: ROLE SELECTION WITH GREETING -->
   <div id="step-role" class="step-screen">
-    <h1>👤 Choose Your Role</h1>
-    <p id="role-greeting">Select your role and let's get started</p>
+    <h1>👤 Who Are You?</h1>
+    <p id="role-greeting">Please select your role so we can help you better</p>
     
-    <!-- Voice Play Button -->
-    <button id="play-role-greeting-btn" style="
-      margin: 15px auto;
-      padding: 10px 20px;
-      background: #667eea;
+    <button style="
+      margin: 20px auto;
+      padding: 10px 25px;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
       color: white;
       border: none;
       border-radius: 20px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 14px;
       transition: all 0.3s ease;
       display: inline-block;
-    " onclick="playRoleGreetingManually()">
+    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="playRoleGreetingManually()">
       🔊 Hear Greeting
     </button>
     
@@ -508,67 +531,68 @@
       <div class="role-card" onclick="selectRole('patient')">
         <div class="role-icon">🏥</div>
         <div class="role-title">Patient</div>
-        <p style="margin-top: 10px; font-size: 13px; opacity: 0.6;">Get healthcare online</p>
+        <p style="margin-top: 10px; font-size: 13px; opacity: 0.6; color: #666;">Get online consultation</p>
       </div>
       <div class="role-card" onclick="selectRole('doctor')">
         <div class="role-icon">👨‍⚕️</div>
         <div class="role-title">Doctor</div>
-        <p style="margin-top: 10px; font-size: 13px; opacity: 0.6;">Manage appointments</p>
+        <p style="margin-top: 10px; font-size: 13px; opacity: 0.6; color: #666;">Manage appointments</p>
       </div>
       <div class="role-card" onclick="selectRole('admin')">
         <div class="role-icon">👨‍💼</div>
         <div class="role-title">Admin</div>
-        <p style="margin-top: 10px; font-size: 13px; opacity: 0.6;">Manage platform</p>
+        <p style="margin-top: 10px; font-size: 13px; opacity: 0.6; color: #666;">Manage platform</p>
       </div>
     </div>
   </div>
 
   <!-- STEP 3: PATIENT LOGIN/SIGNUP -->
   <div id="step-patient-auth" class="step-screen">
-    <h1>👋 Welcome!</h1>
-    <p>Sign in or create a new account to get started</p>
+    <h1>👋 Welcome, Friend!</h1>
+    <p>Choose how you'd like to continue your healthcare journey</p>
     <div class="auth-options">
       <button class="auth-btn" onclick="goToPatientLogin()">
-        <span>🔐</span>
+        <span style="font-size: 32px;">🔐</span>
         <div>
-          <div style="font-weight: 700;">Sign In</div>
-          <div style="font-size: 12px; opacity: 0.6;">Use existing account</div>
+          <div style="font-weight: 700; color: #0f766e;">Sign In</div>
+          <div style="font-size: 12px; opacity: 0.6; margin-top: 5px; color: #666;">Use your account</div>
         </div>
       </button>
       <button class="auth-btn" onclick="goToPatientRegister()">
-        <span>✨</span>
+        <span style="font-size: 32px;">✨</span>
         <div>
-          <div style="font-weight: 700;">Sign Up</div>
-          <div style="font-size: 12px; opacity: 0.6;">Create new account</div>
+          <div style="font-weight: 700; color: #0f766e;">Sign Up</div>
+          <div style="font-size: 12px; opacity: 0.6; margin-top: 5px; color: #666;">Create new account</div>
         </div>
       </button>
     </div>
-    <button class="btn" onclick="previousStep()" style="margin-top: 40px; background: white; color: #667eea; border: 2px solid #667eea;">← Back</button>
+    <button class="btn" onclick="previousStep()" style="margin-top: 40px; background: white; color: #0f766e; border: 2px solid #0f766e;">← Back</button>
   </div>
 
   <!-- STEP 4: VILGAX WELCOME GREETING -->
   <div id="step-vilgax-welcome" class="step-screen">
     <div class="vilgax-avatar">🤖</div>
-    <h1 style="margin-bottom: 5px;">VILGAX</h1>
-    <p style="opacity: 0.9;">Your Health Companion</p>
-    <div id="vilgax-greeting-message" class="vilgax-message" style="margin-top: 40px;"></div>
+    <h1 style="margin-bottom: 5px; font-size: 40px;">VILGAX</h1>
+    <p style="opacity: 0.95; font-size: 18px;">Your Personal Health Companion</p>
+    <div id="vilgax-greeting-message" class="vilgax-message"></div>
     
     <button style="
-      margin: 20px auto;
-      padding: 10px 20px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 25px auto;
+      padding: 12px 30px;
+      background: rgba(255,255,255,0.2);
       color: white;
-      border: none;
+      border: 2px solid white;
       border-radius: 20px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 14px;
       transition: all 0.3s ease;
-    " onclick="playVilgaxGreetingManually()">
+      display: inline-block;
+    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'" onclick="playVilgaxGreetingManually()">
       🔊 Hear Greeting
     </button>
     
-    <button class="btn" onclick="nextStep()" style="margin-top: 30px;">Continue →</button>
+    <button class="btn" onclick="nextStep()" style="margin-top: 30px; background: white; color: #0f766e; border: none;">Continue →</button>
   </div>
 
   <!-- STEP 5: VILGAX TASK SELECTION -->
@@ -617,22 +641,25 @@
   let selectedLanguage = 'en';
   let selectedRole = null;
 
-  // Translation texts for greeting
+  // Translation texts for greeting - WARM, CONCERNING, WELCOMING, ASIAN ENGLISH TONE
   const greetings = {
     en: {
-      greeting: "Hello! Welcome to Care Without Borders",
+      greeting: "Namaste! I am very concerned about your health and safety, sir or madam. I am here to listen to you carefully and help you with your healthcare needs. You are in good hands with us, okay? Let me understand what is troubling you so I can help you better.",
       tasksDescription: "What would you like to do today?",
-      roleGreeting: "Select your role and let's get started"
+      roleGreeting: "Thank you very much for choosing your role. Now, let me help you properly. We are always here for your wellness and care, okay?",
+      shortGreeting: "Hello, my dear friend! I am VILGAX, your health companion. I am very happy to meet you today. How can I be helping you with your health, sir? Please tell me what is your concern?"
     },
     ta: {
-      greeting: "வணக்கம்! Care Without Borders க்கு வரவேற்கிறோம்",
+      greeting: "வணக்கம்! உங்கள் ஆரோக்கியம் பற்றி நான் மிக்க கவலை கொண்டுள்ளேன், ஐயா. நான் உங்களை கவனமாக கேட்க இருக்கிறேன் மற்றும் உங்கள் ஆரோக்கிய தேவைகளை பூர்த்தி செய்ய நான் இருக்கிறேன். நீங்கள் நல்ல கைகளில் இருக்கிறீர்கள், சரியா?",
       tasksDescription: "இன்று நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?",
-      roleGreeting: "உங்கள் பாத்திரத்தைத் தேர்ந்தெடுக்கவும்"
+      roleGreeting: "உங்கள் பாத்திரத்தைத் தேர்ந்தெடுத்ததற்கு நன்றி. இப்போது, நான் உங்களுக்கு சரியாக உதவ முடியும். உங்கள் நலனுக்கு நாங்கள் எப்போதும் இருக்கிறோம்.",
+      shortGreeting: "வணக்கம், என் அன்பு நண்பா! நான் VILGAX, உங்கள் ஆரோக்கிய உதவியாளி. உங்களை இன்று சந்திக்க நான் மிக்க மகிழ்ச்சி. உங்கள் ஆரோக்கியத்தில் நான் உங்களுக்கு எவ்வாறு உதவ முடியும்?"
     },
     hi: {
-      greeting: "नमस्ते! Care Without Borders में आपका स्वागत है",
+      greeting: "नमस्ते! आपके स्वास्थ्य के बारे में मुझे बहुत चिंता है, जी। मैं आपकी सुनने के लिए यहाँ हूँ और आपकी स्वास्थ्य सेवा में मदद करने के लिए तैयार हूँ। आप सही हाथों में हैं, ठीक है? मुझे बताइए आप क्या सोच रहे हैं।",
       tasksDescription: "आप आज क्या करना चाहते हैं?",
-      roleGreeting: "अपनी भूमिका चुनें और शुरू करें"
+      roleGreeting: "अपनी भूमिका चुनने के लिए धन्यवाद। अब, मैं आपको सही तरीके से मदद दे सकता हूँ। आपकी भलाई के लिए हम हमेशा यहाँ हैं।",
+      shortGreeting: "नमस्ते, मेरे प्रिय मित्र! मैं VILGAX हूँ, आपका स्वास्थ्य सहायक। आपसे मिलकर मुझे बहुत खुशी हुई। आपके स्वास्थ्य में मैं आपकी कितनी मदद कर सकता हूँ? कृपया मुझे बताइए।"
     }
   };
 
@@ -675,20 +702,15 @@
       window.i18n.setLanguage(lang);
     }
     
-    // Try to speak greeting when language selected
+    // Speak improved greeting when language selected
     setTimeout(() => {
       try {
         if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-          const greetingTexts = {
-            en: "Namaste! Welcome to Care Without Borders, sir or madam.",
-            ta: "வணக்கம்! Care Without Borders க்கு வரவேற்கிறோம்!",
-            hi: "नमस्ते! Care Without Borders में आपका स्वागत है!"
-          };
-          window.vilgaxVoice.speak(greetingTexts[lang], lang);
+          window.vilgaxVoice.speak(greetings[lang].greeting, lang);
           console.log('🔊 Greeting played in', lang);
         }
       } catch (e) {
-        console.log('Auto-play blocked or error:', e);
+        console.log('Auto-play blocked (normal behavior):', e);
       }
     }, 300);
     
@@ -823,7 +845,7 @@
   }
 
   function updateVilgaxGreeting() {
-    const text = greetings[selectedLanguage]?.greeting || greetings.en.greeting;
+    const text = greetings[selectedLanguage]?.shortGreeting || greetings.en.shortGreeting;
     document.getElementById('vilgax-greeting-message').textContent = text;
   }
 
@@ -848,7 +870,7 @@
 
   // Play VILGAX greeting on button click
   function playVilgaxGreetingManually() {
-    const text = greetings[selectedLanguage]?.greeting || greetings.en.greeting;
+    const text = greetings[selectedLanguage]?.shortGreeting || greetings.en.shortGreeting;
     
     if (window.vilgaxVoice && window.vilgaxVoice.speak) {
       try {
@@ -882,72 +904,36 @@
 
   // Initialize on page load
   window.addEventListener('load', () => {
-    // Check if user has already selected language
-    const savedLanguage = localStorage.getItem('selectedLanguage');
-    selectedLanguage = savedLanguage || 'en';
+    // ALWAYS show language selection first, even if saved
+    selectedLanguage = localStorage.getItem('selectedLanguage') || 'en';
     
     // Set UI language
     if (window.i18n) {
       window.i18n.setLanguage(selectedLanguage);
     }
 
-    // If language was saved before, skip to role selection
-    if (savedLanguage) {
-      setTimeout(() => {
-        currentStep = 1; // Start from language
-        nextStep();      // Go to role selection
-      }, 500);
-    } else {
-      // First time user - show language selection with welcome greeting
-      setTimeout(() => {
-        speakInitialWelcome();
-      }, 1000);
-    }
-
-    // Make sure step 1 is visible
+    // Always start at language selection screen
+    currentStep = 1;
     showStep(1);
+
+    // Play initial greeting after a delay
+    setTimeout(() => {
+      try {
+        if (window.vilgaxVoice && window.vilgaxVoice.speak) {
+          window.vilgaxVoice.speak(greetings[selectedLanguage].greeting, selectedLanguage);
+        }
+      } catch (e) {
+        console.log('Voice greeting error (normal if browser blocks autoplay):', e);
+      }
+    }, 800);
   });
 
-  // Speak initial welcome in detected or default language
-  function speakInitialWelcome() {
-    const welcomeTexts = {
-      en: "Welcome to Care Without Borders! Please select your language to begin.",
-      ta: "Care Without Borders க்கு வரவேற்கிறோம்! தயவுசெய்து தொடங்க உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்.",
-      hi: "Care Without Borders में आपका स्वागत है! कृपया शुरू करने के लिए अपनी भाषा चुनें।"
-    };
-    
-    const text = welcomeTexts[selectedLanguage];
-    
-    // Update greeting text on screen
-    const greetingEl = document.getElementById('initial-greeting');
-    if (greetingEl) {
-      const displayTexts = {
-        en: "Hello! We are here to help you with your healthcare needs.",
-        ta: "வணக்கம்! உங்கள் ஆரோக்கியத் தேவைகளில் உதவ நாங்கள் இருக்கிறோம்.",
-        hi: "नमस्ते! हम आपकी स्वास्थ्य सेवा में मदद करने के लिए यहाँ हैं।"
-      };
-      greetingEl.textContent = displayTexts[selectedLanguage];
-    }
-    
-    // Try to speak greeting
-    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-      try {
-        window.vilgaxVoice.speak(text, selectedLanguage);
-      } catch (e) {
-        console.log('Voice greeting error (this is normal if browser blocks autoplay):', e);
-      }
-    }
-  }
+  // No longer needed - greeting is handled in window load event
+  // speakInitialWelcome moved to window.addEventListener('load')
 
   // Manual play button for greeting
   function playGreetingManually() {
-    const welcomeTexts = {
-      en: "Welcome to Care Without Borders! Please select your language to begin.",
-      ta: "Care Without Borders க்கு வரவேற்கிறோம்! தயவுசெய்து தொடங்க உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்.",
-      hi: "Care Without Borders में आपका स्वागत है! कृपया शुरू करने के लिए अपनी भाषा चुनें।"
-    };
-    
-    const text = welcomeTexts[selectedLanguage];
+    const text = greetings[selectedLanguage]?.greeting || greetings.en.greeting;
     
     if (window.vilgaxVoice && window.vilgaxVoice.speak) {
       try {
