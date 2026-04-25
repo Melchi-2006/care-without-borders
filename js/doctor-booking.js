@@ -153,20 +153,35 @@ class DoctorBookingSystem {
   }
 
   /**
-   * Find available doctors by specialty
+   * Find available doctors by specialty, sorted by rating and patient severity
    */
-  findDoctorsBySpecialty(specialty) {
-    const availableDoctors = Array.from(this.doctors.values())
-      .filter(doc => doc.specialty === specialty && doc.isOnline)
-      .sort((a, b) => b.rating - a.rating); // Sort by rating
-    
-    return availableDoctors;
+  findDoctorsBySpecialty(specialty, patientSeverity = null) {
+    let availableDoctors = Array.from(this.doctors.values())
+      .filter(doc => doc.specialty === specialty && doc.isOnline);
+
+    // If we have severity info, prioritize high-rated doctors for urgent cases
+    if (patientSeverity && patientSeverity.level !== 'ROUTINE') {
+      const minRating = patientSeverity.doctorMinRating || 4.0;
+      
+      // Split into high-priority and standard
+      const highPriority = availableDoctors.filter(doc => doc.rating >= minRating);
+      const standard = availableDoctors.filter(doc => doc.rating < minRating);
+
+      // Return high-priority first, sorted by rating
+      return [
+        ...highPriority.sort((a, b) => b.rating - a.rating),
+        ...standard.sort((a, b) => b.rating - a.rating)
+      ];
+    }
+
+    // Default sort by rating
+    return availableDoctors.sort((a, b) => b.rating - a.rating);
   }
 
   /**
    * Create an appointment request (broadcasts to doctors)
    */
-  createAppointmentRequest(patientInfo, specialty, preferredTime) {
+  createAppointmentRequest(patientInfo, specialty, preferredTime, severity = null) {
     const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     const request = {
@@ -174,6 +189,7 @@ class DoctorBookingSystem {
       patientInfo,
       specialty,
       preferredTime,
+      severity,
       createdAt: new Date(),
       status: 'pending', // pending -> accepted -> active -> completed
       acceptedByDoctor: null,
@@ -184,13 +200,16 @@ class DoctorBookingSystem {
 
     this.appointmentRequests.set(requestId, request);
 
-    // Log request
+    // Log request with severity
     console.log(`📋 Appointment Request Created: ${requestId}`);
     console.log(`   Specialty: ${specialty}`);
     console.log(`   Patient: ${patientInfo.name || 'Anonymous'}`);
+    if (severity) {
+      console.log(`   Severity: ${severity.level} (Priority: ${severity.priority})`);
+    }
     console.log(`   Expires in 2 minutes`);
 
-    // In production, broadcast to all doctors in specialty
+    // Broadcast with severity consideration
     this.broadcastToDocdoctors(request);
 
     return request;
@@ -200,14 +219,14 @@ class DoctorBookingSystem {
    * Broadcast request to available doctors (simulated)
    */
   broadcastToDocdoctors(request) {
-    const doctors = this.findDoctorsBySpecialty(request.specialty);
+    const doctors = this.findDoctorsBySpecialty(request.specialty, request.severity);
     
     console.log(`📢 Broadcasting to ${doctors.length} doctors in ${request.specialty}`);
-    doctors.forEach(doctor => {
-      console.log(`   - Sent to: ${doctor.name} (${doctor.id})`);
+    doctors.forEach((doctor, index) => {
+      console.log(`   ${index + 1}. ${doctor.name} (Rating: ⭐${doctor.rating}, Acceptance Rate: ${doctor.acceptanceRate}%)`);
     });
 
-    // Simulate automatic acceptance by first doctor (highest rating)
+    // Simulate automatic acceptance by first doctor (highest rating or best for severity)
     if (doctors.length > 0) {
       setTimeout(() => {
         const acceptingDoctor = doctors[0];

@@ -206,6 +206,14 @@ class MedicalAnalyzer {
     this.extractSeverity(text, info);
     this.extractAdditionalInfo(text, info);
 
+    // Run ML Engine Analysis if available
+    if (typeof vilgaxMLEngine !== 'undefined') {
+      const mlAnalysis = vilgaxMLEngine.analyzePatient(info);
+      info._severity = mlAnalysis.severity;
+      info._mlAnalysis = mlAnalysis;
+      console.log('🧠 ML Analysis integrated into patient info');
+    }
+
     return info;
   }
 

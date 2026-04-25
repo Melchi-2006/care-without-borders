@@ -752,20 +752,29 @@ class VILGAXAssistant {
     Object.assign(medicalAnalyzer.patientInfo, patientInfo);
     this.patientInfoCollected = true;
 
+    // ===== ML ENGINE ANALYSIS =====
+    // Run through professional ML pipeline
+    const analysis = vilgaxMLEngine.analyzePatient(patientInfo);
+    
+    console.log('🧠 ML Analysis Results:', analysis);
+
     // Show extracted information
     const summary = medicalAnalyzer.formatIntakeSummary(patientInfo);
-    this.respond(`✅ Information Captured:\n\n${summary}`);
+    const mlSummary = this.formatMLAnalysisSummary(analysis);
+    
+    this.respond(`✅ Information Captured:\n\n${summary}\n\n${mlSummary}`);
 
     console.log('📋 Extracted Patient Info:', patientInfo);
 
-    // Recommend specialist
+    // Recommend specialist based on ML analysis
     if (patientInfo.symptoms.length > 0) {
-      const recommendedSpecialty = medicalAnalyzer.recommendSpecialty(patientInfo.symptoms);
-      this.selectedSpecialty = recommendedSpecialty;
+      this.selectedSpecialty = analysis.recommendedSpecialty;
       
-      const confirmText = `Based on your symptoms (${medicalAnalyzer.formatSymptoms(patientInfo.symptoms)}), I recommend a ${recommendedSpecialty} specialist.\n\nWould you like to book an appointment or get AI diagnosis?`;
+      const confidencePercent = (analysis.confidence * 100).toFixed(1);
+      const confirmText = `Based on your symptoms (${medicalAnalyzer.formatSymptoms(patientInfo.symptoms)}), I recommend a ${analysis.recommendedSpecialty} specialist (${confidencePercent}% confidence).\n\nSeverity: ${analysis.severity.level}\n\nWould you like to book an appointment or get AI diagnosis?`;
+      
       this.respond(confirmText);
-      audio?.speak(`Based on your symptoms, I recommend seeing a ${recommendedSpecialty} specialist. Would you like to book an appointment or get AI diagnosis? Say "Book appointment" or "AI diagnosis".`);
+      audio?.speak(`Based on your symptoms, I recommend seeing a ${analysis.recommendedSpecialty} specialist. Would you like to book an appointment or get AI diagnosis? Say "Book appointment" or "AI diagnosis".`);
     } else {
       // No symptoms detected, ask for clarification
       const clarifyText = 'I didn\'t catch any specific symptoms. Could you describe more clearly what\'s troubling you? For example: fever, headache, cough, etc.';
@@ -773,6 +782,20 @@ class VILGAXAssistant {
       audio?.speak(clarifyText);
       this.patientInfoCollected = false; // Reset to ask again
     }
+  }
+
+  /**
+   * Format ML Analysis Summary
+   */
+  formatMLAnalysisSummary(analysis) {
+    let summary = [];
+    summary.push(`🧠 AI Analysis:`);
+    summary.push(`   Severity: ${analysis.severity.level} (Score: ${(analysis.severity.score * 100).toFixed(0)}%)`);
+    summary.push(`   Confidence: ${(analysis.confidence * 100).toFixed(1)}%`);
+    summary.push(`   Priority: ${analysis.doctorPriority.urgency}`);
+    summary.push(`   Expected Wait: ${analysis.doctorPriority.waitTime}`);
+    summary.push(`   Doctor Rating Needed: ⭐ ${analysis.doctorPriority.doctorMinRating}+`);
+    return summary.join('\n');
   }
 
   /**
@@ -892,11 +915,18 @@ class VILGAXAssistant {
    * Create Appointment Request (Triggers Uber-like booking)
    */
   createAppointmentRequest() {
+    const patientInfo = medicalAnalyzer.patientInfo;
+    const severity = patientInfo._severity || null;
+
     const appointmentRequest = doctorBookingSystem.createAppointmentRequest(
-      medicalAnalyzer.patientInfo,
+      patientInfo,
       this.selectedSpecialty,
-      this.selectedTime
+      this.selectedTime,
+      severity
     );
+
+    // Store analysis for feedback
+    patientInfo._analysis = window.currentAnalysis || null;
 
     // Wait for doctor acceptance
     setTimeout(() => {
@@ -918,17 +948,64 @@ class VILGAXAssistant {
    * Show Appointment Confirmation
    */
   showAppointmentConfirmation(appointment) {
-    const confirmationText = doctorBookingSystem.formatAppointmentSummary(appointment);
-    this.respond(`✅ Appointment Confirmed!\n\n${confirmationText}\n\nA video call will be initiated shortly.`);
+    const analysis = medicalAnalyzer.patientInfo._analysis || {};
+    
+    let confirmationText = `✅ Appointment Confirmed!\n\n`;
+    confirmationText += `👨‍⚕️ Doctor: ${appointment.doctor.name}\n`;
+    confirmationText += `🏥 Specialty: ${appointment.doctor.specialty}\n`;
+    confirmationText += `📍 Experience: ${appointment.doctor.experience}\n`;
+    confirmationText += `⭐ Rating: ${appointment.doctor.rating}/5\n`;
+    confirmationText += `🎥 Video Room: ${appointment.videoRoomId}\n`;
+    
+    if (analysis.severity) {
+      confirmationText += `⚠️ Severity Level: ${analysis.severity.level}\n`;
+    }
+    
+    confirmationText += `📱 Status: Ready for Video Call\n`;
+    
+    this.respond(confirmationText);
     audio?.speak(`Your appointment is confirmed! Doctor ${appointment.doctor.name} will join you in a video call shortly.`);
 
-    // Store appointment for video call
+    // Store appointment for video call and feedback
     window.currentAppointment = appointment;
+    window.currentAnalysis = analysis;
 
     // Start video call after 3 seconds
     setTimeout(() => {
       this.startVideoCall(appointment);
     }, 3000);
+  }
+
+  /**
+   * End Appointment and Collect Doctor Feedback
+   */
+  endAppointmentWithFeedback(appointment, doctorFeedback) {
+    // doctorFeedback format:
+    // { doctorRating: 1-5, correctSpecialty: true/false, appointmentQuality: 1-5, patientOutcome: 'positive'|'negative'|'neutral' }
+
+    if (!vilgaxMLEngine) {
+      console.error('ML Engine not available');
+      return;
+    }
+
+    // Record feedback for learning
+    vilgaxMLEngine.feedbackLearner.recordFeedback({
+      appointmentId: appointment.appointmentId,
+      doctorId: appointment.doctorId,
+      specialty: appointment.specialty,
+      ...doctorFeedback
+    });
+
+    // Get updated performance metrics
+    const metrics = vilgaxMLEngine.getPerformanceMetrics();
+    console.log('📊 Updated VILGAX Performance:', metrics);
+
+    // Show learning progress
+    const accuracy = (metrics.overallAccuracy * 100).toFixed(2);
+    const feedbackMsg = `Thank you for the feedback! VILGAX is now at ${accuracy}% accuracy with ${metrics.feedbackSamples} feedback samples.`;
+    
+    this.respond(feedbackMsg);
+    audio?.speak(feedbackMsg);
   }
 
   /**

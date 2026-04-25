@@ -53,6 +53,8 @@
   
   <!-- Audio System -->
   <script src="js/audio.js"></script>
+  <!-- ML Engine (Severity, Similarity, Naive Bayes, Routing, Learning) -->
+  <script src="js/ml-engine.js"></script>
   <!-- Medical Analysis & Booking Systems -->
   <script src="js/medical-analysis.js"></script>
   <script src="js/doctor-booking.js"></script>
@@ -560,6 +562,77 @@
       sendMessage();
     }
   });
+
+  /**
+   * Feedback Collection System
+   * Called after doctor consultation to train ML models
+   */
+  function submitAppointmentFeedback(appointmentId, feedback) {
+    // feedback = {
+    //   doctorRating: 1-5,
+    //   correctSpecialty: true/false,
+    //   appointmentQuality: 1-5,
+    //   patientOutcome: 'positive' | 'negative' | 'neutral'
+    // }
+
+    if (!vilgaxMLEngine || !vilgaxMLEngine.feedbackLearner) {
+      console.error('ML Engine not available');
+      return;
+    }
+
+    // Record feedback
+    vilgaxMLEngine.feedbackLearner.recordFeedback({
+      appointmentId,
+      ...feedback
+    });
+
+    // Save models
+    vilgaxMLEngine.saveModels();
+
+    // Get updated metrics
+    const metrics = vilgaxMLEngine.getPerformanceMetrics();
+    const accuracy = (metrics.overallAccuracy * 100).toFixed(2);
+
+    console.log('✅ Feedback recorded! VILGAX accuracy:', accuracy + '%');
+    console.log('📊 Performance Metrics:', metrics);
+
+    return metrics;
+  }
+
+  /**
+   * Display VILGAX Performance Metrics
+   */
+  function showVILGAXMetrics() {
+    if (!vilgaxMLEngine) {
+      console.error('ML Engine not available');
+      return;
+    }
+
+    const metrics = vilgaxMLEngine.getPerformanceMetrics();
+    const stats = vilgaxMLEngine.feedbackLearner.getStatistics();
+
+    const metricsText = `
+🧠 VILGAX ML Performance:
+━━━━━━━━━━━━━━━━━━━━━━━
+Severity Classifier: ${(metrics.severityAccuracy * 100).toFixed(1)}%
+Symptom Matching: ${(metrics.symptomMatchingAccuracy * 100).toFixed(1)}%
+Specialty Prediction: ${(metrics.naiveBayesAccuracy * 100).toFixed(1)}%
+Doctor Routing: ${(metrics.doctorRoutingAccuracy * 100).toFixed(1)}%
+━━━━━━━━━━━━━━━━━━━━━━━
+📊 Overall Accuracy: ${(metrics.overallAccuracy * 100).toFixed(2)}%
+Feedback Samples: ${metrics.feedbackSamples}
+Training Iterations: ${metrics.trainingIterations}
+
+Patient Outcomes:
+✅ Positive: ${stats.outcomes.positive}
+❌ Negative: ${stats.outcomes.negative}
+➖ Neutral: ${stats.outcomes.neutral}
+    `;
+
+    console.log(metricsText);
+    alert(metricsText);
+    return metrics;
+  }
 
   function logout() {
     localStorage.removeItem('patientLoggedIn');
