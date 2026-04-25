@@ -659,6 +659,13 @@
         localStorage.setItem('patientToken', data.token.token);
         localStorage.setItem('patientData', JSON.stringify(data.patient));
         
+        // Save user ID if available from backend
+        if (data.patient && data.patient.uid) {
+          localStorage.setItem('firebaseUserUID', data.patient.uid);
+        } else if (data.patient && data.patient.id) {
+          localStorage.setItem('patientID', data.patient.id);
+        }
+        
         showAlert(`✅ Welcome ${data.patient.name}!`, 'success');
         
         setTimeout(() => {
@@ -695,6 +702,10 @@
       
       // User signed in successfully
       const user = result.user;
+      
+      // Save Firebase UID for patient page auth check
+      localStorage.setItem('firebaseUserUID', user.uid);
+      localStorage.setItem('patientLoggedIn', 'true');
       
       // Check if user exists in Firestore
       const userDoc = await getDoc(doc(db, "users", user.uid));

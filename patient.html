@@ -6,33 +6,59 @@
   <title data-i18n="pages.patient.talkToDoctor">Care Without Borders | Modern Telemedicine & VILGAX AI</title>
   
   <!-- Firebase Authentication Redirect -->
-  <script>
+  <script type="module">
     // Check if user is logged in before page loads
-    window.addEventListener('DOMContentLoaded', function() {
-      // If user is not authenticated, redirect to login
-      const isAuthenticated = localStorage.getItem('firebaseUserUID') || sessionStorage.getItem('firebaseUserUID');
+    import { auth } from './js/firebase.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // Flag to track if user is authenticated
+    let userIsAuthenticated = false;
+    let authCheckTimeout;
+
+    // Check for either backend auth OR Firebase auth
+    function checkAuthStatus() {
+      // Check backend auth (email/password login)
+      const backendAuth = localStorage.getItem('patientLoggedIn') || sessionStorage.getItem('patientLoggedIn');
       
-      if (!isAuthenticated) {
-        // Check if Firebase is available
-        if (typeof firebase !== 'undefined') {
-          // Firebase is loaded, use it for auth check
-          firebase.auth().onAuthStateChanged(function(user) {
-            if (!user) {
-              // No user logged in - redirect to login page
-              window.location.href = 'login.html';
-            }
-          });
-        } else {
-          // Firebase not loaded yet, wait a bit and redirect
-          setTimeout(function() {
-            const user = localStorage.getItem('firebaseUserUID') || sessionStorage.getItem('firebaseUserUID');
-            if (!user) {
-              window.location.href = 'login.html';
-            }
-          }, 1000);
-        }
+      // Check Firebase auth
+      const firebaseUID = localStorage.getItem('firebaseUserUID') || sessionStorage.getItem('firebaseUserUID');
+      
+      if (backendAuth === 'true' || firebaseUID) {
+        userIsAuthenticated = true;
+        clearTimeout(authCheckTimeout);
+        return;
       }
+
+      // Check Firebase auth state
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          userIsAuthenticated = true;
+          // Save Firebase UID for consistency
+          localStorage.setItem('firebaseUserUID', user.uid);
+          clearTimeout(authCheckTimeout);
+        } else {
+          // No user found - redirect to login
+          if (!userIsAuthenticated) {
+            window.location.href = 'login.html';
+          }
+        }
+      });
+    }
+
+    // Run auth check on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      checkAuthStatus();
+      
+      // Set fallback timeout - if still not authenticated after 2 seconds, redirect
+      authCheckTimeout = setTimeout(function() {
+        if (!userIsAuthenticated && !localStorage.getItem('patientLoggedIn')) {
+          window.location.href = 'login.html';
+        }
+      }, 2000);
     });
+
+    // Also check immediately
+    checkAuthStatus();
   </script>
   
   <!-- Multilingual Support - Load First! -->
@@ -2338,7 +2364,17 @@ What would you like to know?`
   }
 
   function logout() {
-    localStorage.clear();
+    // Clear all authentication data
+    localStorage.removeItem('patientLoggedIn');
+    localStorage.removeItem('firebaseUserUID');
+    localStorage.removeItem('patientToken');
+    localStorage.removeItem('patientData');
+    localStorage.removeItem('userEmail');
+    
+    sessionStorage.removeItem('patientLoggedIn');
+    sessionStorage.removeItem('firebaseUserUID');
+    
+    // Redirect to login
     window.location.href = 'login.html';
   }
 
