@@ -18,6 +18,542 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 20px;
+    }
+
+    .main-container {
+      background: white;
+      border-radius: 30px;
+      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.25);
+      max-width: 900px;
+      width: 100%;
+      padding: 60px 50px;
+      animation: slideInDown 0.6s ease;
+    }
+
+    @keyframes slideInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* HEADER SECTION */
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .logo {
+      font-size: 80px;
+      margin-bottom: 20px;
+      display: inline-block;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    h1 {
+      font-size: 48px;
+      color: #0f766e;
+      margin-bottom: 12px;
+      font-weight: 800;
+    }
+
+    .tagline {
+      font-size: 18px;
+      color: #14b8a6;
+      margin-bottom: 40px;
+      font-weight: 600;
+    }
+
+    /* ROLE SELECTION */
+    .section-title {
+      font-size: 24px;
+      color: #0f766e;
+      margin-bottom: 25px;
+      font-weight: 700;
+    }
+
+    .role-selection {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-bottom: 50px;
+    }
+
+    .role-option {
+      padding: 40px 30px;
+      border: 3px solid #e0f2f1;
+      background: white;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: all 0.4s ease;
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.08);
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .role-option:hover {
+      border-color: #14b8a6;
+      box-shadow: 0 20px 50px rgba(15, 118, 110, 0.2);
+      transform: translateY(-8px);
+      background: linear-gradient(135deg, rgba(15, 118, 110, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%);
+    }
+
+    .role-option.selected {
+      border-color: #14b8a6;
+      background: linear-gradient(135deg, rgba(15, 118, 110, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
+      box-shadow: 0 15px 40px rgba(15, 118, 110, 0.2);
+    }
+
+    .role-icon {
+      font-size: 70px;
+    }
+
+    .role-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f766e;
+    }
+
+    .role-description {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* DIVIDER */
+    .divider {
+      height: 2px;
+      background: linear-gradient(to right, transparent, #14b8a6, transparent);
+      margin: 40px 0;
+    }
+
+    /* LANGUAGE & GREETING SECTION */
+    .language-greeting-section {
+      background: linear-gradient(135deg, rgba(15, 118, 110, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%);
+      padding: 35px;
+      border-radius: 20px;
+      margin-bottom: 40px;
+      animation: fadeIn 0.6s ease 0.3s backwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .language-section-title {
+      font-size: 20px;
+      color: #0f766e;
+      margin-bottom: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .language-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .lang-btn {
+      padding: 12px 20px;
+      border: 2px solid #14b8a6;
+      background: white;
+      color: #0f766e;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .lang-btn:hover {
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: white;
+      transform: translateY(-3px);
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: white;
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.2);
+    }
+
+    .lang-flag {
+      font-size: 20px;
+    }
+
+    .greeting-box {
+      padding: 25px;
+      background: white;
+      border-radius: 15px;
+      border-left: 5px solid #14b8a6;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #1f2937;
+      font-weight: 500;
+      margin-bottom: 20px;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .voice-btn {
+      padding: 10px 25px;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .voice-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(15, 118, 110, 0.2);
+    }
+
+    /* INFO SECTION */
+    .info-section {
+      background: linear-gradient(135deg, rgba(15, 118, 110, 0.08) 0%, rgba(20, 184, 166, 0.08) 100%);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: left;
+    }
+
+    .info-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f766e;
+      margin-bottom: 15px;
+    }
+
+    .info-list {
+      list-style: none;
+      font-size: 14px;
+      color: #555;
+      line-height: 2;
+    }
+
+    .info-list li:before {
+      content: "✓ ";
+      color: #14b8a6;
+      font-weight: 700;
+      margin-right: 10px;
+    }
+
+    /* CTA SECTION */
+    .cta-section {
+      text-align: center;
+      margin-top: 40px;
+      padding: 30px;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      border-radius: 15px;
+      color: white;
+      animation: fadeIn 0.6s ease 0.5s backwards;
+    }
+
+    .cta-text {
+      font-size: 16px;
+      margin-bottom: 20px;
+      opacity: 0.95;
+    }
+
+    .cta-button {
+      padding: 15px 40px;
+      background: white;
+      color: #0f766e;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .cta-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* MOBILE RESPONSIVE */
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 40px 25px;
+      }
+
+      .role-selection,
+      .language-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .role-option {
+        padding: 30px 20px;
+      }
+
+      .role-icon {
+        font-size: 50px;
+      }
+
+      .logo {
+        font-size: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="main-container">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">🏥</div>
+    <h1>Care Without Borders</h1>
+    <p class="tagline">Accessible Healthcare For Everyone, Everywhere</p>
+  </div>
+
+  <!-- ROLE SELECTION -->
+  <div class="section-title">Choose Your Role</div>
+  <div class="role-selection">
+    <div class="role-option" id="patientRole" onclick="selectRole('patient')">
+      <div class="role-icon">🏥</div>
+      <div class="role-title">Patient</div>
+      <div class="role-description">Get online consultation and healthcare services</div>
+    </div>
+
+    <div class="role-option" id="doctorRole" onclick="selectRole('doctor')">
+      <div class="role-icon">👨‍⚕️</div>
+      <div class="role-title">Doctor / Admin</div>
+      <div class="role-description">Manage patients and platform</div>
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="divider"></div>
+
+  <!-- LANGUAGE & GREETING -->
+  <div class="language-greeting-section">
+    <div class="language-section-title">
+      <span>🌍 Select Your Language</span>
+    </div>
+
+    <div class="language-buttons">
+      <button class="lang-btn active" id="langEN" onclick="selectLanguage('en')">
+        <span class="lang-flag">🇺🇸</span>
+        <span>English</span>
+      </button>
+      <button class="lang-btn" id="langTA" onclick="selectLanguage('ta')">
+        <span class="lang-flag">🇮🇳</span>
+        <span>Tamil</span>
+      </button>
+      <button class="lang-btn" id="langHI" onclick="selectLanguage('hi')">
+        <span class="lang-flag">🇮🇳</span>
+        <span>Hindi</span>
+      </button>
+    </div>
+
+    <!-- DYNAMIC GREETING -->
+    <div class="greeting-box" id="greetingBox">
+      🙏 Namaste! I am very concerned about your health and welfare. I am here to help you and understand your healthcare needs with warmth and care. Please choose your role so we can take care of you properly, okay?
+    </div>
+
+    <button class="voice-btn" onclick="playGreetingVoice()">🔊 Hear Greeting</button>
+  </div>
+
+  <!-- INFO SECTION -->
+  <div class="info-section">
+    <div class="info-title">Why Choose Care Without Borders?</div>
+    <ul class="info-list">
+      <li>24/7 Healthcare Access</li>
+      <li>Expert Medical Consultations</li>
+      <li>Secure & Confidential</li>
+      <li>Multilingual Support</li>
+    </ul>
+  </div>
+
+  <!-- CTA SECTION -->
+  <div class="cta-section" id="ctaSection" style="display: none;">
+    <div class="cta-text" id="ctaText">Ready to get started?</div>
+    <button class="cta-button" id="ctaButton" onclick="redirectUser()">Continue →</button>
+  </div>
+</div>
+
+<script src="js/i18n.js"></script>
+<script src="js/vilgax-voice-asian.js"></script>
+<script>
+  let selectedRole = null;
+  let selectedLanguage = 'en';
+
+  // Greeting messages in all languages
+  const greetings = {
+    en: {
+      main: "🙏 Namaste! I am very concerned about your health and welfare. I am here to help you and understand your healthcare needs with warmth and care. Please choose your role so we can take care of you properly, okay?",
+      voice: "Namaste! I am very concerned about your health and welfare. I am here to help you and understand your healthcare needs with warmth and care. Please choose your role so we can take care of you properly."
+    },
+    ta: {
+      main: "🙏 வணக்கம்! உங்கள் ஆரோக்கியம் பற்றி நான் மிக்க கவலை கொண்டுள்ளேன். நான் உங்களை கவனமாக கேட்க இருக்கிறேன் மற்றும் உங்கள் ஆரோக்கிய தேவைகளை பூர்த்தி செய்ய இருக்கிறேன். உங்கள் பாத்திரத்தைத் தேர்ந்தெடுக்கவும், சரியா?",
+      voice: "வணக்கம்! உங்கள் ஆரோக்கியம் பற்றி நான் மிக்க கவலை கொண்டுள்ளேன். நான் உங்களை கவனமாக கேட்க இருக்கிறேன் மற்றும் உங்கள் ஆரோக்கிய தேவைகளை பூர்த்தி செய்ய இருக்கிறேன்."
+    },
+    hi: {
+      main: "🙏 नमस्ते! आपके स्वास्थ्य के बारे में मुझे बहुत चिंता है। मैं आपकी सुनने के लिए यहाँ हूँ और आपकी स्वास्थ्य सेवा में मदद करने के लिए तैयार हूँ। अपनी भूमिका चुनें, ठीक है?",
+      voice: "नमस्ते! आपके स्वास्थ्य के बारे में मुझे बहुत चिंता है। मैं आपकी सुनने के लिए यहाँ हूँ और आपकी स्वास्थ्य सेवा में मदद करने के लिए तैयार हूँ।"
+    }
+  };
+
+  function selectRole(role) {
+    selectedRole = role;
+    
+    // Update UI to show selected role
+    document.getElementById('patientRole').classList.remove('selected');
+    document.getElementById('doctorRole').classList.remove('selected');
+    
+    if (role === 'patient') {
+      document.getElementById('patientRole').classList.add('selected');
+    } else {
+      document.getElementById('doctorRole').classList.add('selected');
+    }
+
+    // Show CTA section
+    showCTA();
+  }
+
+  function selectLanguage(lang) {
+    selectedLanguage = lang;
+
+    // Update active button
+    document.getElementById('langEN').classList.remove('active');
+    document.getElementById('langTA').classList.remove('active');
+    document.getElementById('langHI').classList.remove('active');
+    document.getElementById('lang' + lang.toUpperCase()).classList.add('active');
+
+    // Update greeting text
+    const greetingBox = document.getElementById('greetingBox');
+    greetingBox.textContent = greetings[lang].main;
+
+    // Save language preference
+    localStorage.setItem('selectedLanguage', lang);
+
+    // Auto-play greeting
+    setTimeout(() => {
+      playGreetingVoice();
+    }, 300);
+  }
+
+  function playGreetingVoice() {
+    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
+      try {
+        window.vilgaxVoice.speak(greetings[selectedLanguage].voice, selectedLanguage);
+        console.log('🔊 Greeting played in', selectedLanguage);
+      } catch (e) {
+        console.log('Voice error (normal if browser blocks autoplay):', e);
+      }
+    } else {
+      console.log('Voice module loading...');
+      setTimeout(playGreetingVoice, 500);
+    }
+  }
+
+  function showCTA() {
+    const ctaSection = document.getElementById('ctaSection');
+    const ctaButton = document.getElementById('ctaButton');
+
+    if (selectedRole) {
+      ctaSection.style.display = 'block';
+      
+      if (selectedRole === 'patient') {
+        document.getElementById('ctaText').textContent = 'Ready to get started? Sign in or create your account.';
+        ctaButton.textContent = 'Continue to Patient Portal →';
+      } else {
+        document.getElementById('ctaText').textContent = 'Ready to manage? Access the professional portal.';
+        ctaButton.textContent = 'Continue to Professional Portal →';
+      }
+    }
+  }
+
+  function redirectUser() {
+    if (selectedRole === 'patient') {
+      window.location.href = 'login.html';
+    } else {
+      window.location.href = 'doctor-landing.html';
+    }
+  }
+
+  // Initialize
+  window.addEventListener('load', () => {
+    const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+    selectLanguage(savedLanguage);
+  });
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Care Without Borders - Healthcare For Everyone</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #06b6d4 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       overflow: hidden;
     }
 
