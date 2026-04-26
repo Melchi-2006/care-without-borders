@@ -79,6 +79,7 @@ class AudioSystem {
     
     // Set language with fallback support
     let targetLang = settings.lang || 'en-US';
+    let isUsingFallback = false;
     
     // Try to find available voice for the language
     const voices = this.synth.getVoices();
@@ -86,8 +87,14 @@ class AudioSystem {
     
     // If target language voice not found, use English as fallback
     if (!voiceFound && targetLang !== 'en-US') {
-      console.warn(`Voice for ${targetLang} not available, using English`);
+      console.warn(`Voice for ${targetLang} not available, using English fallback`);
       targetLang = 'en-US';
+      isUsingFallback = true;
+      
+      // Dispatch event to notify UI about fallback
+      window.dispatchEvent(new CustomEvent('audioVoiceFallback', { 
+        detail: { originalLang: settings.lang, fallbackLang: targetLang } 
+      }));
     }
     
     this.currentUtterance.lang = targetLang;
@@ -95,7 +102,7 @@ class AudioSystem {
     // Event listeners
     this.currentUtterance.onstart = () => {
       this.isSpeaking = true;
-      window.dispatchEvent(new CustomEvent('audioSpeakStart', { detail: { text } }));
+      window.dispatchEvent(new CustomEvent('audioSpeakStart', { detail: { text, isUsingFallback } }));
       console.log('🔊 Speaking in', targetLang, ':', text.substring(0, 50) + '...');
     };
 
@@ -111,6 +118,51 @@ class AudioSystem {
 
     // Speak
     this.synth.speak(this.currentUtterance);
+  }
+
+  /**
+   * Check available voices for a specific language
+   * @param {string} lang - Language code (e.g., 'ta', 'en', 'hi')
+   * @returns {object} Voice availability info
+   */
+  checkVoiceAvailability(lang = 'ta') {
+    const voices = this.synth.getVoices();
+    const langMap = {
+      'ta': 'Tamil',
+      'en': 'English',
+      'hi': 'Hindi'
+    };
+    
+    const voiceList = voices.map(v => ({
+      name: v.name,
+      lang: v.lang,
+      default: v.default
+    }));
+    
+    const targetVoice = voices.find(v => v.lang.includes(lang));
+    const availableLanguages = [...new Set(voices.map(v => v.lang.split('-')[0]))];
+    
+    return {
+      requestedLanguage: lang,
+      languageName: langMap[lang] || lang,
+      voiceAvailable: !!targetVoice,
+      availableLanguages: availableLanguages,
+      totalVoices: voices.length,
+      voiceDetails: voiceList
+    };
+  }
+
+  /**
+   * Get diagnostic info about audio system
+   */
+  getDiagnostics() {
+    return {
+      tamil: this.checkVoiceAvailability('ta'),
+      english: this.checkVoiceAvailability('en'),
+      hindi: this.checkVoiceAvailability('hi'),
+      allVoices: this.synth.getVoices().length,
+      speechSynthesisSupported: !!window.speechSynthesis
+    };
   }
 
   /**
