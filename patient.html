@@ -376,6 +376,49 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* PROFESSIONAL DARK THEME NAVBAR OVERRIDE */
+    .navbar {
+      position: fixed !important;
+      top: 0 !important;
+      width: 100% !important;
+      background: rgba(15, 23, 42, 0.98) !important;
+      backdrop-filter: blur(10px) !important;
+      border-bottom: 1px solid rgba(20, 184, 166, 0.2) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+      z-index: 999 !important;
+    }
+
+    .navbar-brand {
+      color: #14b8a6 !important;
+      font-size: 20px !important;
+    }
+
+    .navbar-brand:hover {
+      color: #06b6d4 !important;
+      transform: translateY(-2px) !important;
+    }
+
+    .btn-logout {
+      background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+      border: none !important;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .btn-logout:hover {
+      transform: translateY(-3px) !important;
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4) !important;
+    }
+
+    /* Adjust page content to account for fixed navbar */
+    body {
+      padding-top: 70px !important;
+    }
+
+    .page-container {
+      margin-top: 10px !important;
+    }
   </style>
 </head>
 <body>
