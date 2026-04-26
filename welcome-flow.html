@@ -11,30 +11,209 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --primary-teal: #0f766e;
+      --primary-cyan: #14b8a6;
+      --light-cyan: #06b6d4;
+      --dark-bg: #0f172a;
+      --card-bg: #1e293b;
+      --text-white: #ffffff;
+      --text-light: #cbd5e1;
+      --accent-blue: #667eea;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #06b6d4 100%);
+      background: linear-gradient(135deg, var(--dark-bg) 0%, #1a3a40 50%, var(--primary-teal) 100%);
       min-height: 100vh;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      padding: 20px;
+      padding: 0;
+      color: var(--text-white);
+      overflow-x: hidden;
     }
 
-    .main-container {
-      background: white;
-      border-radius: 30px;
-      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.25);
-      max-width: 900px;
+    /* NAVBAR */
+    .navbar {
       width: 100%;
-      padding: 60px 50px;
-      animation: slideInDown 0.6s ease;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 20px 0;
+      position: fixed;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(20, 184, 166, 0.2);
     }
 
-    @keyframes slideInDown {
+    .navbar-content {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-logo {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary-cyan);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .navbar-logo-icon {
+      font-size: 36px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* MAIN LAYOUT */
+    .container {
+      width: 100%;
+      max-width: 1400px;
+      padding: 0 40px;
+      margin: 0 auto;
+      margin-top: 80px;
+    }
+
+    /* WELCOME SECTION */
+    .welcome-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      margin-bottom: 80px;
+      animation: slideInLeft 0.7s ease;
+    }
+
+    @keyframes slideInLeft {
       from {
         opacity: 0;
-        transform: translateY(-40px);
+        transform: translateX(-40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .welcome-content h1 {
+      font-size: 54px;
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .welcome-content p {
+      font-size: 18px;
+      color: var(--text-light);
+      line-height: 1.8;
+      margin-bottom: 30px;
+    }
+
+    .welcome-features {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 40px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 16px;
+      color: var(--text-light);
+    }
+
+    .feature-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .welcome-hero {
+      perspective: 1000px;
+      animation: slideInRight 0.7s ease;
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .hero-card {
+      background: linear-gradient(135deg, rgba(20, 184, 166, 0.2) 0%, rgba(6, 182, 212, 0.1) 100%);
+      padding: 60px 40px;
+      border-radius: 30px;
+      border: 2px solid rgba(20, 184, 166, 0.3);
+      text-align: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transition: all 0.5s ease;
+    }
+
+    .hero-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(20, 184, 166, 0.6);
+      box-shadow: 0 30px 80px rgba(20, 184, 166, 0.2);
+    }
+
+    .hero-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .hero-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 15px;
+      color: var(--primary-cyan);
+    }
+
+    .hero-text {
+      font-size: 16px;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    /* ROLE SELECTION SECTION */
+    .role-section {
+      margin-bottom: 100px;
+      animation: slideInUp 0.7s ease 0.3s backwards;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
       }
       to {
         opacity: 1;
@@ -42,276 +221,262 @@
       }
     }
 
-    /* HEADER SECTION */
-    .header {
+    .section-header {
       text-align: center;
-      margin-bottom: 50px;
+      margin-bottom: 60px;
     }
 
-    .logo {
-      font-size: 80px;
-      margin-bottom: 20px;
-      display: inline-block;
-      animation: bounce 2s infinite;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
-    }
-
-    h1 {
-      font-size: 48px;
-      color: #0f766e;
-      margin-bottom: 12px;
-      font-weight: 800;
-    }
-
-    .tagline {
-      font-size: 18px;
-      color: #14b8a6;
-      margin-bottom: 40px;
-      font-weight: 600;
-    }
-
-    /* ROLE SELECTION */
     .section-title {
-      font-size: 24px;
-      color: #0f766e;
-      margin-bottom: 25px;
-      font-weight: 700;
+      font-size: 42px;
+      font-weight: 900;
+      margin-bottom: 15px;
+      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .role-selection {
+    .section-subtitle {
+      font-size: 18px;
+      color: var(--text-light);
+    }
+
+    .role-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 25px;
-      margin-bottom: 50px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-bottom: 60px;
     }
 
-    .role-option {
-      padding: 40px 30px;
-      border: 3px solid #e0f2f1;
-      background: white;
+    .role-card {
+      background: linear-gradient(135deg, var(--card-bg) 0%, rgba(30, 41, 59, 0.8) 100%);
+      border: 2px solid rgba(20, 184, 166, 0.2);
+      border-radius: 25px;
+      padding: 50px 35px;
+      text-align: center;
       cursor: pointer;
-      border-radius: 20px;
       transition: all 0.4s ease;
-      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.08);
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .role-option:hover {
-      border-color: #14b8a6;
-      box-shadow: 0 20px 50px rgba(15, 118, 110, 0.2);
-      transform: translateY(-8px);
-      background: linear-gradient(135deg, rgba(15, 118, 110, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%);
+    .role-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(20, 184, 166, 0.1), transparent);
+      transition: left 0.6s ease;
+      z-index: 0;
     }
 
-    .role-option.selected {
-      border-color: #14b8a6;
-      background: linear-gradient(135deg, rgba(15, 118, 110, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
-      box-shadow: 0 15px 40px rgba(15, 118, 110, 0.2);
+    .role-card:hover::before {
+      left: 100%;
+    }
+
+    .role-card:hover {
+      border-color: var(--primary-cyan);
+      box-shadow: 0 20px 60px rgba(20, 184, 166, 0.3);
+      transform: translateY(-12px);
+      background: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
+    }
+
+    .role-card.selected {
+      border-color: var(--primary-cyan);
+      background: linear-gradient(135deg, rgba(20, 184, 166, 0.2) 0%, rgba(6, 182, 212, 0.1) 100%);
+      box-shadow: 0 15px 50px rgba(20, 184, 166, 0.4);
+    }
+
+    .role-card-content {
+      position: relative;
+      z-index: 1;
     }
 
     .role-icon {
       font-size: 70px;
+      margin-bottom: 20px;
+      display: inline-block;
     }
 
     .role-title {
-      font-size: 26px;
+      font-size: 28px;
       font-weight: 800;
-      color: #0f766e;
+      color: var(--primary-cyan);
+      margin-bottom: 12px;
     }
 
     .role-description {
-      font-size: 14px;
-      color: #666;
-      line-height: 1.5;
+      font-size: 15px;
+      color: var(--text-light);
+      line-height: 1.6;
+      margin-bottom: 20px;
     }
 
-    /* DIVIDER */
-    .divider {
-      height: 2px;
-      background: linear-gradient(to right, transparent, #14b8a6, transparent);
-      margin: 40px 0;
+    .role-features {
+      text-align: left;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 12px;
+      font-size: 13px;
+      color: var(--text-light);
+      line-height: 1.8;
+    }
+
+    .role-features li {
+      list-style: none;
+      padding-left: 20px;
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .role-features li:before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--primary-cyan);
+      font-weight: bold;
     }
 
     /* LANGUAGE & GREETING SECTION */
-    .language-greeting-section {
-      background: linear-gradient(135deg, rgba(15, 118, 110, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%);
-      padding: 35px;
-      border-radius: 20px;
-      margin-bottom: 40px;
-      animation: fadeIn 0.6s ease 0.3s backwards;
+    .language-section {
+      background: linear-gradient(135deg, var(--card-bg) 0%, rgba(30, 41, 59, 0.8) 100%);
+      border: 2px solid rgba(20, 184, 166, 0.2);
+      border-radius: 25px;
+      padding: 60px;
+      margin-bottom: 100px;
+      animation: slideInUp 0.7s ease 0.5s backwards;
     }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+    .language-header {
+      text-align: center;
+      margin-bottom: 50px;
     }
 
-    .language-section-title {
-      font-size: 20px;
-      color: #0f766e;
-      margin-bottom: 20px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+    .language-title {
+      font-size: 36px;
+      font-weight: 900;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .language-subtitle {
+      font-size: 16px;
+      color: var(--text-light);
     }
 
     .language-buttons {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin-bottom: 30px;
+      gap: 20px;
+      margin-bottom: 50px;
     }
 
     .lang-btn {
-      padding: 12px 20px;
-      border: 2px solid #14b8a6;
-      background: white;
-      color: #0f766e;
-      font-size: 14px;
+      padding: 25px 20px;
+      border: 2px solid rgba(20, 184, 166, 0.3);
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--text-light);
+      font-size: 16px;
       font-weight: 700;
       cursor: pointer;
-      border-radius: 12px;
+      border-radius: 15px;
       transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 12px;
     }
 
     .lang-btn:hover {
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      color: white;
-      transform: translateY(-3px);
+      background: rgba(20, 184, 166, 0.15);
+      border-color: var(--primary-cyan);
+      transform: translateY(-5px);
+      color: var(--primary-cyan);
     }
 
     .lang-btn.active {
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      color: white;
-      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.2);
+      background: linear-gradient(135deg, rgba(20, 184, 166, 0.3) 0%, rgba(6, 182, 212, 0.2) 100%);
+      color: var(--primary-cyan);
+      border-color: var(--primary-cyan);
+      box-shadow: 0 8px 25px rgba(20, 184, 166, 0.3);
     }
 
     .lang-flag {
-      font-size: 20px;
+      font-size: 32px;
     }
 
     .greeting-box {
-      padding: 25px;
-      background: white;
-      border-radius: 15px;
-      border-left: 5px solid #14b8a6;
-      font-size: 16px;
-      line-height: 1.7;
-      color: #1f2937;
+      background: rgba(20, 184, 166, 0.1);
+      border-left: 4px solid var(--primary-cyan);
+      padding: 30px;
+      border-radius: 12px;
+      font-size: 17px;
+      line-height: 1.8;
+      color: var(--text-light);
       font-weight: 500;
-      margin-bottom: 20px;
-      animation: slideUp 0.5s ease;
+      margin-bottom: 30px;
+      transition: all 0.3s ease;
     }
 
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .greeting-box:hover {
+      box-shadow: 0 10px 30px rgba(20, 184, 166, 0.2);
+      transform: translateX(5px);
+    }
+
+    .greeting-icon {
+      font-size: 24px;
+      margin-right: 10px;
     }
 
     .voice-btn {
-      padding: 10px 25px;
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      color: white;
+      padding: 14px 35px;
+      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
+      color: var(--dark-bg);
       border: none;
-      border-radius: 20px;
+      border-radius: 12px;
       cursor: pointer;
       font-weight: 700;
-      font-size: 14px;
+      font-size: 15px;
       transition: all 0.3s ease;
       display: inline-block;
+      margin-top: 10px;
     }
 
     .voice-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 25px rgba(15, 118, 110, 0.2);
-    }
-
-    /* INFO SECTION */
-    .info-section {
-      background: linear-gradient(135deg, rgba(15, 118, 110, 0.08) 0%, rgba(20, 184, 166, 0.08) 100%);
-      padding: 30px;
-      border-radius: 15px;
-      text-align: left;
-    }
-
-    .info-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #0f766e;
-      margin-bottom: 15px;
-    }
-
-    .info-list {
-      list-style: none;
-      font-size: 14px;
-      color: #555;
-      line-height: 2;
-    }
-
-    .info-list li:before {
-      content: "✓ ";
-      color: #14b8a6;
-      font-weight: 700;
-      margin-right: 10px;
+      transform: scale(1.08);
+      box-shadow: 0 12px 35px rgba(20, 184, 166, 0.4);
     }
 
     /* CTA SECTION */
     .cta-section {
       text-align: center;
-      margin-top: 40px;
-      padding: 30px;
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      border-radius: 15px;
-      color: white;
-      animation: fadeIn 0.6s ease 0.5s backwards;
-    }
-
-    .cta-text {
-      font-size: 16px;
-      margin-bottom: 20px;
-      opacity: 0.95;
+      margin-bottom: 80px;
+      animation: slideInUp 0.7s ease 0.7s backwards;
     }
 
     .cta-button {
-      padding: 15px 40px;
-      background: white;
-      color: #0f766e;
+      padding: 18px 50px;
+      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
+      color: var(--dark-bg);
       border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 700;
+      border-radius: 15px;
+      font-size: 18px;
+      font-weight: 800;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.4s ease;
       display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
-    .cta-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    .cta-button:hover:not(:disabled) {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 50px rgba(20, 184, 166, 0.4);
     }
 
     .cta-button:disabled {
@@ -320,30 +485,99 @@
       transform: none;
     }
 
+    /* FOOTER */
+    .footer {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      text-align: center;
+      border-top: 1px solid rgba(20, 184, 166, 0.2);
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    .footer a {
+      color: var(--primary-cyan);
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
     /* MOBILE RESPONSIVE */
-    @media (max-width: 768px) {
-      .main-container {
-        padding: 40px 25px;
+    @media (max-width: 1024px) {
+      .welcome-section {
+        grid-template-columns: 1fr;
+        gap: 40px;
       }
 
-      .role-selection,
+      .role-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .navbar-content {
+        padding: 0 20px;
+      }
+
+      .container {
+        padding: 0 20px;
+      }
+
+      .language-section {
+        padding: 40px;
+      }
+
+      .welcome-content h1 {
+        font-size: 42px;
+      }
+
+      .section-title {
+        font-size: 36px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .role-grid {
+        grid-template-columns: 1fr;
+      }
+
       .language-buttons {
         grid-template-columns: 1fr;
       }
 
-      h1 {
-        font-size: 36px;
+      .container {
+        padding: 0 20px;
+        margin-top: 100px;
       }
 
-      .role-option {
-        padding: 30px 20px;
+      .welcome-content h1 {
+        font-size: 32px;
+      }
+
+      .section-title {
+        font-size: 28px;
+      }
+
+      .role-card {
+        padding: 35px 25px;
       }
 
       .role-icon {
         font-size: 50px;
       }
 
-      .logo {
+      .role-title {
+        font-size: 22px;
+      }
+
+      .language-section {
+        padding: 30px 20px;
+      }
+
+      .hero-card {
+        padding: 40px 25px;
+      }
+
+      .hero-icon {
         font-size: 60px;
       }
     }
@@ -351,37 +585,120 @@
 </head>
 <body>
 
-<div class="main-container">
-  <!-- HEADER -->
-  <div class="header">
-    <div class="logo">🏥</div>
-    <h1>Care Without Borders</h1>
-    <p class="tagline">Accessible Healthcare For Everyone, Everywhere</p>
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="navbar-content">
+    <a href="index.html" class="navbar-logo">
+      <span class="navbar-logo-icon">🏥</span>
+      <span>Care Without Borders</span>
+    </a>
   </div>
+</div>
 
-  <!-- ROLE SELECTION -->
-  <div class="section-title">Choose Your Role</div>
-  <div class="role-selection">
-    <div class="role-option" id="patientRole" onclick="selectRole('patient')">
-      <div class="role-icon">🏥</div>
-      <div class="role-title">Patient</div>
-      <div class="role-description">Get online consultation and healthcare services</div>
+<!-- MAIN CONTENT -->
+<div class="container">
+  
+  <!-- WELCOME SECTION -->
+  <div class="welcome-section">
+    <div class="welcome-content">
+      <h1>Your Healthcare, Anywhere 🌍</h1>
+      <p>Get access to world-class medical consultation from the comfort of your home. Our AI-powered VILGAX system connects you with experienced doctors instantly.</p>
+      
+      <div class="welcome-features">
+        <div class="feature-item">
+          <span class="feature-icon">🤖</span>
+          <span>AI-Powered Medical Analysis with 99.999% Accuracy</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">👨‍⚕️</span>
+          <span>Connect with Verified Doctors & Specialists</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">📱</span>
+          <span>Video Consultations & Medical Records</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🌐</span>
+          <span>Available in Multiple Languages</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">⚡</span>
+          <span>Instant Appointment Booking</span>
+        </div>
+      </div>
     </div>
 
-    <div class="role-option" id="doctorRole" onclick="selectRole('doctor')">
-      <div class="role-icon">👨‍⚕️</div>
-      <div class="role-title">Doctor / Admin</div>
-      <div class="role-description">Manage patients and platform</div>
+    <div class="welcome-hero">
+      <div class="hero-card">
+        <div class="hero-icon">🤖</div>
+        <div class="hero-title">VILGAX AI Assistant</div>
+        <div class="hero-text">
+          Meet VILGAX - Your intelligent healthcare companion powered by advanced machine learning. Describe your symptoms and get professional medical guidance in seconds.
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- DIVIDER -->
-  <div class="divider"></div>
+  <!-- ROLE SELECTION SECTION -->
+  <div class="role-section">
+    <div class="section-header">
+      <div class="section-title">Choose Your Role</div>
+      <div class="section-subtitle">Begin your healthcare journey with us</div>
+    </div>
 
-  <!-- LANGUAGE & GREETING -->
-  <div class="language-greeting-section">
-    <div class="language-section-title">
-      <span>🌍 Select Your Language</span>
+    <div class="role-grid">
+      <!-- PATIENT ROLE -->
+      <div class="role-card" id="patientRole" onclick="selectRole('patient')">
+        <div class="role-card-content">
+          <div class="role-icon">🏥</div>
+          <div class="role-title">Patient</div>
+          <div class="role-description">Get healthcare services and consultations</div>
+          <ul class="role-features">
+            <li>AI symptom analysis</li>
+            <li>Doctor consultation</li>
+            <li>Medical records</li>
+            <li>Prescription access</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- DOCTOR ROLE -->
+      <div class="role-card" id="doctorRole" onclick="selectRole('doctor')">
+        <div class="role-card-content">
+          <div class="role-icon">👨‍⚕️</div>
+          <div class="role-title">Doctor</div>
+          <div class="role-description">Manage consultations and patients</div>
+          <ul class="role-features">
+            <li>Patient appointments</li>
+            <li>Video consultations</li>
+            <li>Medical records</li>
+            <li>Prescription management</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ADMIN ROLE -->
+      <div class="role-card" id="adminRole" onclick="selectRole('admin')">
+        <div class="role-card-content">
+          <div class="role-icon">⚙️</div>
+          <div class="role-title">Administrator</div>
+          <div class="role-description">Manage platform and users</div>
+          <ul class="role-features">
+            <li>User management</li>
+            <li>Platform analytics</li>
+            <li>System configuration</li>
+            <li>Reports & audits</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LANGUAGE & GREETING SECTION -->
+  <div class="language-section">
+    <div class="language-header">
+      <div class="language-title">🌍 Select Your Language</div>
+      <div class="language-subtitle">Choose your preferred language for a personalized experience</div>
     </div>
 
     <div class="language-buttons">
@@ -399,69 +716,59 @@
       </button>
     </div>
 
-    <!-- DYNAMIC GREETING -->
     <div class="greeting-box" id="greetingBox">
-      🙏 Namaste! I am very concerned about your health and welfare. I am here to help you and understand your healthcare needs with warmth and care. Please choose your role so we can take care of you properly, okay?
+      <span class="greeting-icon">👋</span>
+      <span id="greetingText">Welcome to Care Without Borders! I'm VILGAX, your AI healthcare assistant. I'm here to help you with medical consultation and healthcare services. Let's get started!</span>
+      <br>
+      <button class="voice-btn" onclick="speakGreeting()">🔊 Hear Greeting</button>
     </div>
-
-    <button class="voice-btn" onclick="playGreetingVoice()">🔊 Hear Greeting</button>
-  </div>
-
-  <!-- INFO SECTION -->
-  <div class="info-section">
-    <div class="info-title">Why Choose Care Without Borders?</div>
-    <ul class="info-list">
-      <li>24/7 Healthcare Access</li>
-      <li>Expert Medical Consultations</li>
-      <li>Secure & Confidential</li>
-      <li>Multilingual Support</li>
-    </ul>
   </div>
 
   <!-- CTA SECTION -->
-  <div class="cta-section" id="ctaSection" style="display: none;">
-    <div class="cta-text" id="ctaText">Ready to get started?</div>
-    <button class="cta-button" id="ctaButton" onclick="redirectUser()">Continue →</button>
+  <div class="cta-section">
+    <button class="cta-button" id="ctaButton" onclick="proceedWithRole()" disabled>
+      Get Started Now
+    </button>
   </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>&copy; 2025 Care Without Borders. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
 </div>
 
 <script src="js/i18n.js"></script>
-<script src="js/vilgax-voice-asian.js"></script>
 <script>
   let selectedRole = null;
   let selectedLanguage = 'en';
 
-  // Greeting messages in all languages
+  // Greeting messages
   const greetings = {
-    en: {
-      main: "🙏 Namaste! I am very concerned about your health and welfare. I am here to help you and understand your healthcare needs with warmth and care. Please choose your role so we can take care of you properly, okay?",
-      voice: "Namaste! I am very concerned about your health and welfare. I am here to help you and understand your healthcare needs with warmth and care. Please choose your role so we can take care of you properly."
-    },
-    ta: {
-      main: "🙏 வணக்கம்! உங்கள் ஆரோக்கியம் பற்றி நான் மிக்க கவலை கொண்டுள்ளேன். நான் உங்களை கவனமாக கேட்க இருக்கிறேன் மற்றும் உங்கள் ஆரோக்கிய தேவைகளை பூர்த்தி செய்ய இருக்கிறேன். உங்கள் பாத்திரத்தைத் தேர்ந்தெடுக்கவும், சரியா?",
-      voice: "வணக்கம்! உங்கள் ஆரோக்கியம் பற்றி நான் மிக்க கவலை கொண்டுள்ளேன். நான் உங்களை கவனமாக கேட்க இருக்கிறேன் மற்றும் உங்கள் ஆரோக்கிய தேவைகளை பூர்த்தி செய்ய இருக்கிறேன்."
-    },
-    hi: {
-      main: "🙏 नमस्ते! आपके स्वास्थ्य के बारे में मुझे बहुत चिंता है। मैं आपकी सुनने के लिए यहाँ हूँ और आपकी स्वास्थ्य सेवा में मदद करने के लिए तैयार हूँ। अपनी भूमिका चुनें, ठीक है?",
-      voice: "नमस्ते! आपके स्वास्थ्य के बारे में मुझे बहुत चिंता है। मैं आपकी सुनने के लिए यहाँ हूँ और आपकी स्वास्थ्य सेवा में मदद करने के लिए तैयार हूँ।"
-    }
+    en: "Welcome to Care Without Borders! I'm VILGAX, your AI healthcare assistant. I'm here to help you with medical consultation. Let's get started!",
+    ta: "நல்வரவு Care Without Borders க்கு! நான் விLGAX, உங்கள் AI சுகாதார உதவியாளர். நான் உங்களை மருத்துவ ஆலோசனையுடன் உதவ இங்கே இருக்கிறேன். தொடங்குவோம்!",
+    hi: "Care Without Borders में आपका स्वागत है! मैं VILGAX, आपका AI स्वास्थ्य सहायक हूँ। मैं आपको चिकित्सा परामर्श में मदद करने के लिए यहाँ हूँ। चलिए शुरू करें!"
   };
 
   function selectRole(role) {
     selectedRole = role;
     
-    // Update UI to show selected role
+    // Remove selected class from all roles
     document.getElementById('patientRole').classList.remove('selected');
     document.getElementById('doctorRole').classList.remove('selected');
+    document.getElementById('adminRole').classList.remove('selected');
     
+    // Add selected class to chosen role
     if (role === 'patient') {
       document.getElementById('patientRole').classList.add('selected');
-    } else {
+    } else if (role === 'doctor') {
       document.getElementById('doctorRole').classList.add('selected');
+    } else if (role === 'admin') {
+      document.getElementById('adminRole').classList.add('selected');
     }
 
-    // Show CTA section
-    showCTA();
+    // Enable CTA button
+    document.getElementById('ctaButton').disabled = false;
   }
 
   function selectLanguage(lang) {
@@ -474,1254 +781,48 @@
     document.getElementById('lang' + lang.toUpperCase()).classList.add('active');
 
     // Update greeting text
-    const greetingBox = document.getElementById('greetingBox');
-    greetingBox.textContent = greetings[lang].main;
+    document.getElementById('greetingText').textContent = greetings[lang];
 
     // Save language preference
     localStorage.setItem('selectedLanguage', lang);
-
-    // Auto-play greeting
-    setTimeout(() => {
-      playGreetingVoice();
-    }, 300);
   }
 
-  function playGreetingVoice() {
-    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-      try {
-        window.vilgaxVoice.speak(greetings[selectedLanguage].voice, selectedLanguage);
-        console.log('🔊 Greeting played in', selectedLanguage);
-      } catch (e) {
-        console.log('Voice error (normal if browser blocks autoplay):', e);
-      }
+  function speakGreeting() {
+    if (typeof i18n !== 'undefined' && i18n.speak) {
+      i18n.speak(greetings[selectedLanguage]);
     } else {
-      console.log('Voice module loading...');
-      setTimeout(playGreetingVoice, 500);
+      // Fallback: use native speech API
+      const utterance = new SpeechSynthesisUtterance(greetings[selectedLanguage]);
+      utterance.lang = selectedLanguage === 'en' ? 'en-US' : selectedLanguage === 'ta' ? 'ta-IN' : 'hi-IN';
+      speechSynthesis.speak(utterance);
     }
   }
 
-  function showCTA() {
-    const ctaSection = document.getElementById('ctaSection');
-    const ctaButton = document.getElementById('ctaButton');
-
-    if (selectedRole) {
-      ctaSection.style.display = 'block';
-      
-      if (selectedRole === 'patient') {
-        document.getElementById('ctaText').textContent = 'Ready to get started? Sign in or create your account.';
-        ctaButton.textContent = 'Continue to Patient Portal →';
-      } else {
-        document.getElementById('ctaText').textContent = 'Ready to manage? Access the professional portal.';
-        ctaButton.textContent = 'Continue to Professional Portal →';
-      }
+  function proceedWithRole() {
+    if (!selectedRole) {
+      alert('Please select a role first');
+      return;
     }
-  }
 
-  function redirectUser() {
+    // Save selections
+    localStorage.setItem('selectedRole', selectedRole);
+    localStorage.setItem('selectedLanguage', selectedLanguage);
+
+    // Redirect based on role
     if (selectedRole === 'patient') {
-      window.location.href = 'login.html';
-    } else {
-      window.location.href = 'doctor-landing.html';
-    }
-  }
-
-  // Initialize
-  window.addEventListener('load', () => {
-    const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
-    selectLanguage(savedLanguage);
-  });
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Care Without Borders - Healthcare For Everyone</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #06b6d4 100%);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    .main-container {
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .welcome-card {
-      background: white;
-      padding: 60px 50px;
-      text-align: center;
-      max-width: 700px;
-      width: 100%;
-      border-radius: 25px;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
-      animation: slideInDown 0.6s ease;
-    }
-
-    @keyframes slideInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .logo {
-      font-size: 80px;
-      margin-bottom: 20px;
-      animation: bounce 2s infinite;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-20px); }
-    }
-
-    h1 {
-      font-size: 48px;
-      color: #0f766e;
-      margin-bottom: 15px;
-      font-weight: 800;
-    }
-
-    .tagline {
-      font-size: 18px;
-      color: #14b8a6;
-      margin-bottom: 45px;
-      font-weight: 600;
-    }
-
-    .role-selection {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      margin-bottom: 30px;
-    }
-
-    .role-option {
-      padding: 50px 30px;
-      border: 2px solid #e0f2f1;
-      background: white;
-      cursor: pointer;
-      border-radius: 20px;
-      transition: all 0.4s ease;
-      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.08);
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    .role-option:hover {
-      border-color: #14b8a6;
-      box-shadow: 0 20px 50px rgba(15, 118, 110, 0.2);
-      transform: translateY(-10px);
-    }
-
-    .role-icon {
-      font-size: 80px;
-      display: block;
-    }
-
-    .role-title {
-      font-size: 28px;
-      font-weight: 800;
-      color: #0f766e;
-      margin-bottom: 10px;
-    }
-
-    .role-description {
-      font-size: 15px;
-      color: #666;
-      line-height: 1.5;
-    }
-
-    .divider {
-      text-align: center;
-      margin: 30px 0;
-      color: #14b8a6;
-      font-weight: 600;
-    }
-
-    .info-section {
-      background: linear-gradient(135deg, rgba(15, 118, 110, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%);
-      padding: 25px;
-      border-radius: 15px;
-      text-align: left;
-    }
-
-    .info-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #0f766e;
-      margin-bottom: 15px;
-    }
-
-    .info-list {
-      list-style: none;
-      font-size: 14px;
-      color: #555;
-      line-height: 2;
-    }
-
-    .info-list li:before {
-      content: "✓ ";
-      color: #14b8a6;
-      font-weight: 700;
-      margin-right: 8px;
-    }
-
-    @media (max-width: 768px) {
-      .welcome-card {
-        padding: 40px 25px;
-      }
-
-      .role-selection {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-
-      h1 {
-        font-size: 36px;
-      }
-
-      .role-option {
-        padding: 35px 20px;
-      }
-
-      .role-icon {
-        font-size: 60px;
-      }
-
-      .role-title {
-        font-size: 24px;
-      }
-    }
-  </style>
-</head>
-<body>
-
-<div class="main-container">
-  <div class="welcome-card">
-    <div class="logo">🏥</div>
-    <h1>Care Without Borders</h1>
-    <p class="tagline">Accessible Healthcare For Everyone, Everywhere</p>
-
-    <div class="role-selection">
-      <a href="#" class="role-option" onclick="selectRolePatient(); return false;">
-        <div class="role-icon">🏥</div>
-        <div class="role-title">Patient</div>
-        <div class="role-description">Get online consultation and healthcare services</div>
-      </a>
-
-      <a href="#" class="role-option" onclick="selectRoleDoctor(); return false;">
-        <div class="role-icon">👨‍⚕️</div>
-        <div class="role-title">Doctor / Admin</div>
-        <div class="role-description">Manage patients and platform</div>
-      </a>
-    </div>
-
-    <div class="divider">Or</div>
-
-    <div class="info-section">
-      <div class="info-title">Why Choose Us?</div>
-      <ul class="info-list">
-        <li>24/7 Healthcare Access</li>
-        <li>Expert Medical Consultations</li>
-        <li>Secure & Confidential</li>
-        <li>Multilingual Support</li>
-      </ul>
-    </div>
-  </div>
-</div>
-
-<script>
-  function selectRolePatient() {
-    // Redirect patient to login/signup page
-    window.location.href = 'login.html';
-  }
-
-  function selectRoleDoctor() {
-    // Redirect doctor/admin to doctor landing page (with options to choose doctor or admin)
-    window.location.href = 'doctor-landing.html';
-  }
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Care Without Borders</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #06b6d4 100%);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    .welcome-container {
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-
-    .step-screen {
-      display: none;
-      width: 100%;
-      max-width: 800px;
-      height: 100vh;
-      background: white;
-      padding: 60px 45px;
-      text-align: center;
-      animation: slideInRight 0.6s ease;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
-      border-radius: 25px;
-      overflow-y: auto;
-    }
-
-    .step-screen.active {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-
-    @keyframes slideInRight {
-      from {
-        opacity: 0;
-        transform: translateX(50px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    /* STEP 1: LANGUAGE SELECTION */
-    #step-language {
-      background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
-      color: #0f766e;
-    }
-
-    #step-language h1 {
-      color: #0f766e;
-      font-size: 42px;
-      margin-bottom: 15px;
-      font-weight: 800;
-    }
-
-    #step-language > p {
-      color: #14b8a6;
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 30px;
-    }
-
-    .greeting-box {
-      margin: 25px 0;
-      padding: 25px;
-      background: linear-gradient(135deg, rgba(15, 118, 110, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
-      border-radius: 15px;
-      border-left: 5px solid #14b8a6;
-      font-size: 17px;
-      line-height: 1.7;
-      color: #1f2937;
-      font-weight: 500;
-      animation: fadeIn 1s ease 0.5s backwards;
-    }
-
-    .language-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 20px;
-      margin-top: 35px;
-      width: 100%;
-    }
-
-    .language-btn {
-      padding: 40px 20px;
-      border: none;
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      color: white;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      border-radius: 18px;
-      transition: all 0.4s ease;
-      box-shadow: 0 12px 30px rgba(15, 118, 110, 0.2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .language-btn:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 18px 50px rgba(15, 118, 110, 0.35);
-      background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
-    }
-
-    .language-btn:active {
-      transform: translateY(-4px);
-    }
-
-    /* STEP 2: ROLE SELECTION */
-    #step-role {
-      background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
-    }
-
-    #step-role h1 {
-      color: #0f766e;
-    }
-
-    #step-role > p {
-      color: #14b8a6;
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 35px;
-    }
-
-    .role-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 20px;
-      margin-top: 35px;
-      width: 100%;
-    }
-
-    .role-card {
-      padding: 40px 25px;
-      border: 2px solid #e0f2f1;
-      background: white;
-      cursor: pointer;
-      border-radius: 18px;
-      transition: all 0.4s ease;
-      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.08);
-    }
-
-    .role-card:hover {
-      border-color: #14b8a6;
-      box-shadow: 0 15px 40px rgba(15, 118, 110, 0.2);
-      transform: translateY(-8px);
-    }
-
-    .role-icon {
-      font-size: 70px;
-      margin-bottom: 20px;
-      display: block;
-    }
-
-    .role-title {
-      font-size: 22px;
-      font-weight: 700;
-      color: #0f766e;
-      margin-bottom: 10px;
-    }
-
-    /* STEP 3: PATIENT AUTH */
-    #step-patient-auth {
-      background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
-    }
-
-    #step-patient-auth h1 {
-      color: #0f766e;
-    }
-
-    .auth-options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 25px;
-      margin-top: 40px;
-      width: 100%;
-    }
-
-    .auth-btn {
-      padding: 35px 25px;
-      border: 2px solid #e0f2f1;
-      background: white;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      border-radius: 18px;
-      transition: all 0.4s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.08);
-    }
-
-    .auth-btn:hover {
-      border-color: #14b8a6;
-      background: #f0fdfa;
-      box-shadow: 0 15px 40px rgba(15, 118, 110, 0.2);
-      transform: translateY(-5px);
-    }
-
-    /* STEP 4: VILGAX WELCOME */
-    #step-vilgax-welcome {
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      color: white;
-    }
-
-    .vilgax-avatar {
-      width: 150px;
-      height: 150px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 80px;
-      margin: 30px auto;
-      animation: bounce 2s infinite;
-      box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
-    }
-
-    .vilgax-message {
-      font-size: 18px;
-      font-weight: 600;
-      margin-top: 30px;
-      line-height: 1.7;
-      opacity: 0.98;
-    }
-
-    /* STEP 5: VILGAX TASK SELECTION */
-    #step-vilgax-task {
-      background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
-    }
-
-    #step-vilgax-task h2 {
-      color: #0f766e;
-    }
-
-    .task-btn {
-      padding: 25px;
-      border: 2px solid #e0f2f1;
-      background: white;
-      font-size: 18px;
-      font-weight: 600;
-      cursor: pointer;
-      border-radius: 14px;
-      transition: all 0.4s ease;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-      color: #1f2937;
-    }
-
-    .task-btn:hover {
-      border-color: #14b8a6;
-      background: #f0fdfa;
-      box-shadow: 0 15px 40px rgba(15, 118, 110, 0.2);
-      transform: translateX(10px);
-    }
-
-    .task-icon {
-      font-size: 28px;
-    }
-
-    /* STEP 7: THANK YOU */
-    #step-thank-you {
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      color: white;
-    }
-
-    .thank-you-icon {
-      font-size: 100px;
-      margin-bottom: 30px;
-      animation: scaleUp 0.6s ease;
-    }
-
-    @keyframes scaleUp {
-      from {
-        transform: scale(0);
-        opacity: 0;
-      }
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    .thank-you-message {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      line-height: 1.6;
-    }
-
-    .thank-you-continue {
-      margin-top: 30px;
-      font-size: 15px;
-      opacity: 0.85;
-    }
-
-    /* COMMON STYLES */
-    h1 {
-      font-size: 36px;
-      margin-bottom: 15px;
-      font-weight: 700;
-    }
-
-    h2 {
-      font-size: 28px;
-      margin-bottom: 12px;
-      font-weight: 700;
-    }
-
-    p {
-      font-size: 16px;
-      opacity: 0.75;
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
-
-    .btn {
-      padding: 15px 40px;
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.4s ease;
-      margin-top: 25px;
-      box-shadow: 0 10px 25px rgba(15, 118, 110, 0.2);
-    }
-
-    .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 40px rgba(15, 118, 110, 0.3);
-    }
-
-    .voice-indicator {
-      display: none;
-      margin-top: 25px;
-      font-size: 15px;
-      padding: 15px 25px;
-      background: rgba(15, 118, 110, 0.1);
-      border-radius: 12px;
-      color: #0f766e;
-      font-weight: 600;
-    }
-
-    .voice-indicator.active {
-      display: block;
-      animation: pulse 1s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-      .step-screen {
-        padding: 30px 20px;
-        max-width: 100%;
-        border-radius: 0;
-        height: 100vh;
-      }
-
-      .language-grid,
-      .role-grid,
-      .auth-options {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-
-      h1 {
-        font-size: 28px;
-      }
-
-      h2 {
-        font-size: 24px;
-      }
-
-      .vilgax-avatar {
-        width: 100px;
-        height: 100px;
-        font-size: 50px;
-      }
-
-      .thank-you-icon {
-        font-size: 70px;
-      }
-
-      .role-icon {
-        font-size: 45px;
-      }
-
-      .language-btn {
-        padding: 25px 15px;
-        font-size: 14px;
-      }
-    }
-  </style>
-</head>
-<body>
-
-<div class="welcome-container">
-  <!-- STEP 1: LANGUAGE SELECTION -->
-  <div id="step-language" class="step-screen active">
-    <h1>🤖 Care Without Borders</h1>
-    <p>Select Your Language | உங்கள் மொழியைத் தேர்ந்தெடுக்கவும் | अपनी भाषा चुनें</p>
-    
-    <div class="greeting-box" id="initial-greeting">
-      🙏 Namaste! I am very concerned about your health and welfare. I am here to help you and understand your healthcare needs with warmth and care. Please choose your language so we can take care of you properly, okay?
-    </div>
-
-    <div class="language-grid">
-      <button class="language-btn" onclick="selectLanguage('en')" style="animation: slideUp 0.6s ease 0.3s backwards;">
-        <span style="font-size: 32px;">🇺🇸</span>
-        <span>English</span>
-      </button>
-      <button class="language-btn" onclick="selectLanguage('ta')" style="animation: slideUp 0.6s ease 0.4s backwards;">
-        <span style="font-size: 32px;">🇮🇳</span>
-        <span>தமிழ்</span>
-      </button>
-      <button class="language-btn" onclick="selectLanguage('hi')" style="animation: slideUp 0.6s ease 0.5s backwards;">
-        <span style="font-size: 32px;">🇮🇳</span>
-        <span>हिंदी</span>
-      </button>
-    </div>
-
-    <button style="
-      margin: 25px auto;
-      padding: 12px 30px;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      border: 2px solid white;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 14px;
-      transition: all 0.3s ease;
-      display: inline-block;
-    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'" onclick="playGreetingManually()">
-      🔊 Hear Greeting
-    </button>
-  </div>
-
-  <!-- STEP 2: ROLE SELECTION WITH GREETING -->
-  <div id="step-role" class="step-screen">
-    <h1>👤 Who Are You?</h1>
-    <p id="role-greeting">Please select your role so we can help you better</p>
-    
-    <button style="
-      margin: 20px auto;
-      padding: 10px 25px;
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      color: white;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 14px;
-      transition: all 0.3s ease;
-      display: inline-block;
-    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="playRoleGreetingManually()">
-      🔊 Hear Greeting
-    </button>
-    
-    <div class="role-grid">
-      <div class="role-card" onclick="selectRole('patient')">
-        <div class="role-icon">🏥</div>
-        <div class="role-title">Patient</div>
-        <p style="margin-top: 10px; font-size: 13px; opacity: 0.6; color: #666;">Get online consultation</p>
-      </div>
-      <div class="role-card" onclick="selectRole('doctor')">
-        <div class="role-icon">👨‍⚕️</div>
-        <div class="role-title">Doctor</div>
-        <p style="margin-top: 10px; font-size: 13px; opacity: 0.6; color: #666;">Manage appointments</p>
-      </div>
-      <div class="role-card" onclick="selectRole('admin')">
-        <div class="role-icon">👨‍💼</div>
-        <div class="role-title">Admin</div>
-        <p style="margin-top: 10px; font-size: 13px; opacity: 0.6; color: #666;">Manage platform</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- STEP 3: PATIENT LOGIN/SIGNUP -->
-  <div id="step-patient-auth" class="step-screen">
-    <h1>👋 Welcome, Friend!</h1>
-    <p>Choose how you'd like to continue your healthcare journey</p>
-    <div class="auth-options">
-      <button class="auth-btn" onclick="goToPatientLogin()">
-        <span style="font-size: 32px;">🔐</span>
-        <div>
-          <div style="font-weight: 700; color: #0f766e;">Sign In</div>
-          <div style="font-size: 12px; opacity: 0.6; margin-top: 5px; color: #666;">Use your account</div>
-        </div>
-      </button>
-      <button class="auth-btn" onclick="goToPatientRegister()">
-        <span style="font-size: 32px;">✨</span>
-        <div>
-          <div style="font-weight: 700; color: #0f766e;">Sign Up</div>
-          <div style="font-size: 12px; opacity: 0.6; margin-top: 5px; color: #666;">Create new account</div>
-        </div>
-      </button>
-    </div>
-    <button class="btn" onclick="previousStep()" style="margin-top: 40px; background: white; color: #0f766e; border: 2px solid #0f766e;">← Back</button>
-  </div>
-
-  <!-- STEP 4: VILGAX WELCOME GREETING -->
-  <div id="step-vilgax-welcome" class="step-screen">
-    <div class="vilgax-avatar">🤖</div>
-    <h1 style="margin-bottom: 5px; font-size: 40px;">VILGAX</h1>
-    <p style="opacity: 0.95; font-size: 18px;">Your Personal Health Companion</p>
-    <div id="vilgax-greeting-message" class="vilgax-message"></div>
-    
-    <button style="
-      margin: 25px auto;
-      padding: 12px 30px;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      border: 2px solid white;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 14px;
-      transition: all 0.3s ease;
-      display: inline-block;
-    " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'" onclick="playVilgaxGreetingManually()">
-      🔊 Hear Greeting
-    </button>
-    
-    <button class="btn" onclick="nextStep()" style="margin-top: 30px; background: white; color: #0f766e; border: none;">Continue →</button>
-  </div>
-
-  <!-- STEP 5: VILGAX TASK SELECTION -->
-  <div id="step-vilgax-task" class="step-screen">
-    <h2>What would you like to do?</h2>
-    <p id="task-description"></p>
-    <div class="task-grid">
-      <button class="task-btn" onclick="selectTask('appointment')">
-        <span class="task-icon">📅</span>
-        <span>Book an Appointment</span>
-      </button>
-      <button class="task-btn" onclick="selectTask('symptoms')">
-        <span class="task-icon">🔍</span>
-        <span>Check Symptoms</span>
-      </button>
-      <button class="task-btn" onclick="selectTask('medicine')">
-        <span class="task-icon">💊</span>
-        <span>Search Medicine</span>
-      </button>
-      <button class="task-btn" onclick="selectTask('records')">
-        <span class="task-icon">📋</span>
-        <span>View Medical Records</span>
-      </button>
-    </div>
-    <div id="task-voice-indicator" class="voice-indicator">
-      🎤 Listening... Speak your request
-    </div>
-  </div>
-
-  <!-- STEP 7: THANK YOU -->
-  <div id="step-thank-you" class="step-screen">
-    <div class="thank-you-icon">🙏</div>
-    <h1>Thank You!</h1>
-    <p class="thank-you-message">Thank you for choosing<br>Care Without Borders</p>
-    <p style="font-size: 16px; margin-top: 20px;">We're here to help you 24/7<br>for all your healthcare needs</p>
-    <button class="btn" onclick="goToDashboard()" style="margin-top: 40px;">Go to Dashboard →</button>
-    <div class="thank-you-continue">Redirecting in 5 seconds...</div>
-  </div>
-</div>
-
-<script src="js/i18n.js"></script>
-<script src="js/audio.js"></script>
-<script src="js/vilgax-voice-asian.js"></script>
-<script>
-  let currentStep = 1;
-  let selectedLanguage = 'en';
-  let selectedRole = null;
-
-  // Translation texts for greeting - WARM, CONCERNING, WELCOMING, ASIAN ENGLISH TONE
-  const greetings = {
-    en: {
-      greeting: "Namaste! I am very concerned about your health and safety, sir or madam. I am here to listen to you carefully and help you with your healthcare needs. You are in good hands with us, okay? Let me understand what is troubling you so I can help you better.",
-      tasksDescription: "What would you like to do today?",
-      roleGreeting: "Thank you very much for choosing your role. Now, let me help you properly. We are always here for your wellness and care, okay?",
-      shortGreeting: "Hello, my dear friend! I am VILGAX, your health companion. I am very happy to meet you today. How can I be helping you with your health, sir? Please tell me what is your concern?"
-    },
-    ta: {
-      greeting: "வணக்கம்! உங்கள் ஆரோக்கியம் பற்றி நான் மிக்க கவலை கொண்டுள்ளேன், ஐயா. நான் உங்களை கவனமாக கேட்க இருக்கிறேன் மற்றும் உங்கள் ஆரோக்கிய தேவைகளை பூர்த்தி செய்ய நான் இருக்கிறேன். நீங்கள் நல்ல கைகளில் இருக்கிறீர்கள், சரியா?",
-      tasksDescription: "இன்று நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?",
-      roleGreeting: "உங்கள் பாத்திரத்தைத் தேர்ந்தெடுத்ததற்கு நன்றி. இப்போது, நான் உங்களுக்கு சரியாக உதவ முடியும். உங்கள் நலனுக்கு நாங்கள் எப்போதும் இருக்கிறோம்.",
-      shortGreeting: "வணக்கம், என் அன்பு நண்பா! நான் VILGAX, உங்கள் ஆரோக்கிய உதவியாளி. உங்களை இன்று சந்திக்க நான் மிக்க மகிழ்ச்சி. உங்கள் ஆரோக்கியத்தில் நான் உங்களுக்கு எவ்வாறு உதவ முடியும்?"
-    },
-    hi: {
-      greeting: "नमस्ते! आपके स्वास्थ्य के बारे में मुझे बहुत चिंता है, जी। मैं आपकी सुनने के लिए यहाँ हूँ और आपकी स्वास्थ्य सेवा में मदद करने के लिए तैयार हूँ। आप सही हाथों में हैं, ठीक है? मुझे बताइए आप क्या सोच रहे हैं।",
-      tasksDescription: "आप आज क्या करना चाहते हैं?",
-      roleGreeting: "अपनी भूमिका चुनने के लिए धन्यवाद। अब, मैं आपको सही तरीके से मदद दे सकता हूँ। आपकी भलाई के लिए हम हमेशा यहाँ हैं।",
-      shortGreeting: "नमस्ते, मेरे प्रिय मित्र! मैं VILGAX हूँ, आपका स्वास्थ्य सहायक। आपसे मिलकर मुझे बहुत खुशी हुई। आपके स्वास्थ्य में मैं आपकी कितनी मदद कर सकता हूँ? कृपया मुझे बताइए।"
-    }
-  };
-
-  // Role translations
-  const roleTexts = {
-    en: { patient: 'Patient', doctor: 'Doctor', admin: 'Admin' },
-    ta: { patient: 'நோயாளி', doctor: 'மருத்துவர்', admin: 'நிர்வாகி' },
-    hi: { patient: 'रोगी', doctor: 'डॉक्टर', admin: 'व्यवस्थापक' }
-  };
-
-  // Task translations
-  const taskTexts = {
-    en: {
-      appointment: 'Book an Appointment',
-      symptoms: 'Check Symptoms',
-      medicine: 'Search Medicine',
-      records: 'View Medical Records',
-      description: 'Please select what you want to do or speak your request'
-    },
-    ta: {
-      appointment: 'ஒரு நியமனத்தை முன்பதிவு செய்யுங்கள்',
-      symptoms: 'அறிகுறிகளை சரிபார்க்கவும்',
-      medicine: 'மருந்து தேடுங்கள்',
-      records: 'மருத்துவ பதிவுகளைக் காண்க',
-      description: 'நீங்கள் என்ன செய்ய விரும்புகிறீர்கள் என்பதைத் தேர்ந்தெடுக்கவும்'
-    },
-    hi: {
-      appointment: 'एक नियुक्ति बुक करें',
-      symptoms: 'लक्षण जांचें',
-      medicine: 'दवा खोजें',
-      records: 'मेडिकल रिकॉर्ड देखें',
-      description: 'कृपया चुनें कि आप क्या करना चाहते हैं'
-    }
-  };
-
-  function selectLanguage(lang) {
-    selectedLanguage = lang;
-    localStorage.setItem('selectedLanguage', lang);
-    if (window.i18n) {
-      window.i18n.setLanguage(lang);
-    }
-    
-    // Speak improved greeting when language selected
-    setTimeout(() => {
-      try {
-        if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-          window.vilgaxVoice.speak(greetings[lang].greeting, lang);
-          console.log('🔊 Greeting played in', lang);
-        }
-      } catch (e) {
-        console.log('Auto-play blocked (normal behavior):', e);
-      }
-    }, 300);
-    
-    nextStep();
-  }
-
-  function selectRole(role) {
-    selectedRole = role;
-    
-    if (role === 'patient') {
-      currentStep = 3; // Go to auth step
-      showStep(3);
-    } else if (role === 'doctor') {
+      window.location.href = 'login.html?role=patient';
+    } else if (selectedRole === 'doctor') {
       window.location.href = 'doctor-login.html';
-    } else if (role === 'admin') {
+    } else if (selectedRole === 'admin') {
       window.location.href = 'admin.html';
     }
   }
 
-  function selectTask(task) {
-    if (task === 'appointment') {
-      window.location.href = 'patient.html?task=appointment';
-    } else if (task === 'symptoms') {
-      window.location.href = 'patient.html?task=symptoms';
-    } else if (task === 'medicine') {
-      window.location.href = 'medicine-finder.html';
-    } else if (task === 'records') {
-      window.location.href = 'medical-records.html';
-    }
-  }
-
-  function goToPatientLogin() {
-    window.location.href = 'login.html';
-  }
-
-  function goToPatientRegister() {
-    window.location.href = 'register.html';
-  }
-
-  function goToDashboard() {
-    window.location.href = 'patient.html';
-  }
-
-  function nextStep() {
-    currentStep++;
-    
-    if (currentStep === 2) {
-      showStep(2);
-      updateRoleGreeting();
-      speakGreeting();
-    } else if (currentStep === 4) {
-      showStep(4);
-      updateVilgaxGreeting();
-      setTimeout(() => {
-        speakVilgaxWelcome();
-      }, 500);
-    } else if (currentStep === 5) {
-      showStep(5);
-      updateTaskDescription();
-      startVoiceListening();
-    } else if (currentStep === 7) {
-      showStep(7);
-      speakThankYou();
-      setTimeout(() => {
-        goToDashboard();
-      }, 5000);
-    } else {
-      showStep(currentStep);
-    }
-  }
-
-  function previousStep() {
-    if (currentStep > 1) {
-      currentStep--;
-      showStep(currentStep);
-    }
-  }
-
-  function showStep(stepNum) {
-    document.querySelectorAll('.step-screen').forEach(screen => {
-      screen.classList.remove('active');
-    });
-
-    const stepMap = {
-      1: 'step-language',
-      2: 'step-role',
-      3: 'step-patient-auth',
-      4: 'step-vilgax-welcome',
-      5: 'step-vilgax-task',
-      7: 'step-thank-you'
-    };
-
-    const screenId = stepMap[stepNum];
-    if (screenId) {
-      document.getElementById(screenId).classList.add('active');
-    }
-  }
-
-  function updateRoleGreeting() {
-    const text = greetings[selectedLanguage]?.roleGreeting || greetings.en.roleGreeting;
-    document.querySelector('#step-role h1').textContent = '👤 Choose Your Role';
-    const greetingEl = document.querySelector('#role-greeting');
-    if (greetingEl) {
-      greetingEl.textContent = text;
-    }
-    
-    // Try to speak greeting
-    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-      try {
-        window.vilgaxVoice.speak(text, selectedLanguage);
-      } catch (e) {
-        console.log('Voice greeting error:', e);
-      }
-    }
-  }
-
-  // Play role greeting on button click
-  function playRoleGreetingManually() {
-    const text = greetings[selectedLanguage]?.roleGreeting || greetings.en.roleGreeting;
-    
-    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-      try {
-        window.vilgaxVoice.speak(text, selectedLanguage);
-        console.log('🔊 Playing role greeting in', selectedLanguage);
-      } catch (e) {
-        console.error('Error playing role greeting:', e);
-      }
-    } else {
-      console.log('VILGAX voice not loaded. Retrying...');
-      setTimeout(playRoleGreetingManually, 500);
-    }
-  }
-
-  function updateVilgaxGreeting() {
-    const text = greetings[selectedLanguage]?.shortGreeting || greetings.en.shortGreeting;
-    document.getElementById('vilgax-greeting-message').textContent = text;
-  }
-
-  function updateTaskDescription() {
-    const text = taskTexts[selectedLanguage]?.description || taskTexts.en.description;
-    document.getElementById('task-description').textContent = text;
-  }
-
-  function speakGreeting() {
-    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-      const text = greetings[selectedLanguage]?.greeting || greetings.en.greeting;
-      window.vilgaxVoice.speak(text, selectedLanguage);
-    }
-  }
-
-  function speakVilgaxWelcome() {
-    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-      const text = greetings[selectedLanguage]?.greeting || greetings.en.greeting;
-      window.vilgaxVoice.speak(text, selectedLanguage);
-    }
-  }
-
-  // Play VILGAX greeting on button click
-  function playVilgaxGreetingManually() {
-    const text = greetings[selectedLanguage]?.shortGreeting || greetings.en.shortGreeting;
-    
-    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-      try {
-        window.vilgaxVoice.speak(text, selectedLanguage);
-        console.log('🔊 Playing VILGAX greeting in', selectedLanguage);
-      } catch (e) {
-        console.error('Error playing VILGAX greeting:', e);
-      }
-    } else {
-      console.log('VILGAX voice not loaded. Retrying...');
-      setTimeout(playVilgaxGreetingManually, 500);
-    }
-  }
-
-  function speakThankYou() {
-    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-      const thankYouTexts = {
-        en: "Thank you for choosing Care Without Borders. We are here to help you 24/7.",
-        ta: "Care Without Borders ஐத் தேர்ந்தெடுத்தமைக்கு நன்றி. நாங்கள் உங்களுக்கு 24/7 உதவ இருக்கிறோம்.",
-        hi: "Care Without Borders को चुनने के लिए धन्यवाद। हम आपकी मदद के लिए 24/7 यहाँ हैं।"
-      };
-      window.vilgaxVoice.speak(thankYouTexts[selectedLanguage], selectedLanguage);
-    }
-  }
-
-  function startVoiceListening() {
-    const indicator = document.getElementById('task-voice-indicator');
-    indicator.classList.add('active');
-    // Voice listening would be implemented with Web Speech API
-  }
-
-  // Initialize on page load
+  // Load saved preferences on page load
   window.addEventListener('load', () => {
-    // ALWAYS show language selection first, even if saved
-    selectedLanguage = localStorage.getItem('selectedLanguage') || 'en';
-    
-    // Set UI language
-    if (window.i18n) {
-      window.i18n.setLanguage(selectedLanguage);
-    }
-
-    // Always start at language selection screen
-    currentStep = 1;
-    showStep(1);
-
-    // Play initial greeting after a delay
-    setTimeout(() => {
-      try {
-        if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-          window.vilgaxVoice.speak(greetings[selectedLanguage].greeting, selectedLanguage);
-        }
-      } catch (e) {
-        console.log('Voice greeting error (normal if browser blocks autoplay):', e);
-      }
-    }, 800);
+    const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+    selectLanguage(savedLanguage);
   });
-
-  // No longer needed - greeting is handled in window load event
-  // speakInitialWelcome moved to window.addEventListener('load')
-
-  // Manual play button for greeting
-  function playGreetingManually() {
-    const text = greetings[selectedLanguage]?.greeting || greetings.en.greeting;
-    
-    if (window.vilgaxVoice && window.vilgaxVoice.speak) {
-      try {
-        window.vilgaxVoice.speak(text, selectedLanguage);
-        console.log('🔊 Playing greeting in', selectedLanguage);
-      } catch (e) {
-        console.error('Error playing greeting:', e);
-      }
-    } else {
-      console.log('VILGAX voice not loaded yet. Trying again...');
-      setTimeout(playGreetingManually, 500);
-    }
-  }
 </script>
 
 </body>
