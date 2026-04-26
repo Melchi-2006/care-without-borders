@@ -615,44 +615,34 @@
 <!-- MAIN CONTENT -->
 <div class="container">
   
-  <!-- WELCOME SECTION -->
-  <div class="welcome-section">
-    <div class="welcome-content">
-      <h1>Your Healthcare, Anywhere 🌍</h1>
-      <p>Get access to world-class medical consultation from the comfort of your home. Our AI-powered VILGAX system connects you with experienced doctors instantly.</p>
-      
-      <div class="welcome-features">
-        <div class="feature-item">
-          <span class="feature-icon">🤖</span>
-          <span>AI-Powered Medical Analysis with 99.999% Accuracy</span>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">👨‍⚕️</span>
-          <span>Connect with Verified Doctors & Specialists</span>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">📱</span>
-          <span>Video Consultations & Medical Records</span>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">🌐</span>
-          <span>Available in Multiple Languages</span>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">⚡</span>
-          <span>Instant Appointment Booking</span>
-        </div>
-      </div>
+  <!-- LANGUAGE & GREETING SECTION -->
+  <div class="language-section">
+    <div class="language-header">
+      <div class="language-title">🌍 Select Your Language</div>
+      <div class="language-subtitle">Choose your preferred language for a personalized experience</div>
     </div>
 
-    <div class="welcome-hero">
-      <div class="hero-card">
-        <div class="hero-icon">🤖</div>
-        <div class="hero-title">VILGAX AI Assistant</div>
-        <div class="hero-text">
-          Meet VILGAX - Your intelligent healthcare companion powered by advanced machine learning. Describe your symptoms and get professional medical guidance in seconds.
-        </div>
-      </div>
+    <div class="language-buttons">
+      <button class="lang-btn active" id="langEN" onclick="selectLanguage('en')">
+        <span class="lang-flag">🇺🇸</span>
+        <span>English</span>
+      </button>
+      <button class="lang-btn" id="langTA" onclick="selectLanguage('ta')">
+        <span class="lang-flag">🇮🇳</span>
+        <span>Tamil</span>
+      </button>
+      <button class="lang-btn" id="langHI" onclick="selectLanguage('hi')">
+        <span class="lang-flag">🇮🇳</span>
+        <span>Hindi</span>
+      </button>
+    </div>
+
+    <div class="greeting-box" id="greetingBox">
+      <span class="greeting-icon">👋</span>
+      <span id="greetingText">Welcome to Care Without Borders! I'm VILGAX, your AI healthcare assistant. I'm here to help you with medical consultation and healthcare services. Let's get started!</span>
+      <br>
+      <button class="voice-btn" onclick="speakGreeting()">🔊 Hear Greeting</button>
+      <div id="voiceNotification" class="voice-notification" style="display: none; margin-top: 15px; padding: 12px 15px; background: rgba(251, 146, 60, 0.2); border-left: 3px solid #fb923c; color: #fed7aa; font-size: 13px; border-radius: 4px;"></div>
     </div>
   </div>
 
@@ -711,34 +701,44 @@
     </div>
   </div>
 
-  <!-- LANGUAGE & GREETING SECTION -->
-  <div class="language-section">
-    <div class="language-header">
-      <div class="language-title">🌍 Select Your Language</div>
-      <div class="language-subtitle">Choose your preferred language for a personalized experience</div>
+  <!-- WELCOME SECTION -->
+  <div class="welcome-section">
+    <div class="welcome-content">
+      <h1>Your Healthcare, Anywhere 🌍</h1>
+      <p>Get access to world-class medical consultation from the comfort of your home. Our AI-powered VILGAX system connects you with experienced doctors instantly.</p>
+      
+      <div class="welcome-features">
+        <div class="feature-item">
+          <span class="feature-icon">🤖</span>
+          <span>AI-Powered Medical Analysis with 99.999% Accuracy</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">👨‍⚕️</span>
+          <span>Connect with Verified Doctors & Specialists</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">📱</span>
+          <span>Video Consultations & Medical Records</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🌐</span>
+          <span>Available in Multiple Languages</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">⚡</span>
+          <span>Instant Appointment Booking</span>
+        </div>
+      </div>
     </div>
 
-    <div class="language-buttons">
-      <button class="lang-btn active" id="langEN" onclick="selectLanguage('en')">
-        <span class="lang-flag">🇺🇸</span>
-        <span>English</span>
-      </button>
-      <button class="lang-btn" id="langTA" onclick="selectLanguage('ta')">
-        <span class="lang-flag">🇮🇳</span>
-        <span>Tamil</span>
-      </button>
-      <button class="lang-btn" id="langHI" onclick="selectLanguage('hi')">
-        <span class="lang-flag">🇮🇳</span>
-        <span>Hindi</span>
-      </button>
-    </div>
-
-    <div class="greeting-box" id="greetingBox">
-      <span class="greeting-icon">👋</span>
-      <span id="greetingText">Welcome to Care Without Borders! I'm VILGAX, your AI healthcare assistant. I'm here to help you with medical consultation and healthcare services. Let's get started!</span>
-      <br>
-      <button class="voice-btn" onclick="speakGreeting()">🔊 Hear Greeting</button>
-      <div id="voiceNotification" class="voice-notification" style="display: none; margin-top: 15px; padding: 12px 15px; background: rgba(251, 146, 60, 0.2); border-left: 3px solid #fb923c; color: #fed7aa; font-size: 13px; border-radius: 4px;"></div>
+    <div class="welcome-hero">
+      <div class="hero-card">
+        <div class="hero-icon">🤖</div>
+        <div class="hero-title">VILGAX AI Assistant</div>
+        <div class="hero-text">
+          Meet VILGAX - Your intelligent healthcare companion powered by advanced machine learning. Describe your symptoms and get professional medical guidance in seconds.
+        </div>
+      </div>
     </div>
   </div>
 
