@@ -73,16 +73,30 @@ class AudioSystem {
 
     // Create utterance
     this.currentUtterance = new SpeechSynthesisUtterance(text);
-    this.currentUtterance.rate = settings.rate;
-    this.currentUtterance.pitch = settings.pitch;
-    this.currentUtterance.volume = settings.volume;
-    this.currentUtterance.lang = settings.lang;
+    this.currentUtterance.rate = settings.rate || 1.0;
+    this.currentUtterance.pitch = settings.pitch || 1.0;
+    this.currentUtterance.volume = settings.volume || 1.0;
+    
+    // Set language with fallback support
+    let targetLang = settings.lang || 'en-US';
+    
+    // Try to find available voice for the language
+    const voices = this.synth.getVoices();
+    let voiceFound = voices.find(v => v.lang.includes(targetLang.split('-')[0]));
+    
+    // If target language voice not found, use English as fallback
+    if (!voiceFound && targetLang !== 'en-US') {
+      console.warn(`Voice for ${targetLang} not available, using English`);
+      targetLang = 'en-US';
+    }
+    
+    this.currentUtterance.lang = targetLang;
 
     // Event listeners
     this.currentUtterance.onstart = () => {
       this.isSpeaking = true;
       window.dispatchEvent(new CustomEvent('audioSpeakStart', { detail: { text } }));
-      console.log('🔊 Speaking:', text.substring(0, 50) + '...');
+      console.log('🔊 Speaking in', targetLang, ':', text.substring(0, 50) + '...');
     };
 
     this.currentUtterance.onend = () => {
