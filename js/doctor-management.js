@@ -35,9 +35,76 @@ class DoctorManagementSystem {
 
   getMockPatients() {
     return [
-      { id: 'P001', name: 'Rajesh Kumar', age: 45, gender: 'M', lastVisit: '2026-04-25', status: 'healthy', conditions: ['Hypertension'], phone: '9876543210' },
-      { id: 'P002', name: 'Priya Singh', age: 38, gender: 'F', lastVisit: '2026-04-20', status: 'monitoring', conditions: ['Diabetes'], phone: '9876543211' },
-      { id: 'P003', name: 'Amit Patel', age: 52, gender: 'M', lastVisit: '2026-04-15', status: 'healthy', conditions: [], phone: '9876543212' }
+      { 
+        id: 'P001', 
+        name: 'Rajesh Kumar', 
+        age: 45, 
+        gender: 'M', 
+        lastVisit: '2026-04-25', 
+        status: 'healthy', 
+        conditions: ['Hypertension'], 
+        phone: '+91-9876543210',
+        email: 'rajesh.kumar@email.com',
+        bloodGroup: 'O+',
+        consultations: 12,
+        prescriptions: 8
+      },
+      { 
+        id: 'P002', 
+        name: 'Priya Singh', 
+        age: 38, 
+        gender: 'F', 
+        lastVisit: '2026-04-20', 
+        status: 'monitoring', 
+        conditions: ['Diabetes'], 
+        phone: '+91-9876543211',
+        email: 'priya.singh@email.com',
+        bloodGroup: 'A+',
+        consultations: 8,
+        prescriptions: 15
+      },
+      { 
+        id: 'P003', 
+        name: 'Amit Patel', 
+        age: 52, 
+        gender: 'M', 
+        lastVisit: '2026-04-15', 
+        status: 'healthy', 
+        conditions: [], 
+        phone: '+91-9876543212',
+        email: 'amit.patel@email.com',
+        bloodGroup: 'B+',
+        consultations: 5,
+        prescriptions: 6
+      },
+      { 
+        id: 'P004', 
+        name: 'Neha Sharma', 
+        age: 29, 
+        gender: 'F', 
+        lastVisit: '2026-04-23', 
+        status: 'healthy', 
+        conditions: ['Allergies'], 
+        phone: '+91-9876543213',
+        email: 'neha.sharma@email.com',
+        bloodGroup: 'AB+',
+        consultations: 6,
+        prescriptions: 9
+      },
+      { 
+        id: 'P005', 
+        name: 'Vikram Singh', 
+        age: 55, 
+        gender: 'M', 
+        lastVisit: '2026-04-18', 
+        status: 'monitoring', 
+        conditions: ['Cholesterol', 'Hypertension'], 
+        phone: '+91-9876543214',
+        email: 'vikram.singh@email.com',
+        bloodGroup: 'O-',
+        consultations: 14,
+        prescriptions: 18
+      }
     ];
   }
 
@@ -524,27 +591,53 @@ function getPrescriptionsHTML() {
 function getPatientListHTML() {
   const patients = window.doctorSystem.getPatients();
 
+  // Function to generate avatar color based on name
+  function generateAvatarColor(name) {
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#FF8C42'];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  // Function to get initials from name
+  function getInitials(name) {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+  }
+
   return `
     <div class="card">
       <h2 style="color: var(--primary-cyan);">👥 My Patients (${patients.length})</h2>
-      <div class="data-table">
+      <div class="data-table" style="overflow-x: auto;">
         <table>
           <thead>
             <tr>
+              <th>Profile</th>
               <th>Patient Name</th>
               <th>Age</th>
               <th>Gender</th>
+              <th>Phone</th>
               <th>Last Visit</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            ${patients.map(p => `
+            ${patients.map(p => {
+              const avatarColor = generateAvatarColor(p.name);
+              const initials = getInitials(p.name);
+              return `
               <tr>
+                <td style="text-align: center;">
+                  <div style="width: 45px; height: 45px; border-radius: 50%; background: ${avatarColor}; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); margin: 0 auto;">
+                    ${initials}
+                  </div>
+                </td>
                 <td><strong>${p.name}</strong></td>
                 <td>${p.age}</td>
-                <td>${p.gender === 'M' ? '👨' : '👩'}</td>
+                <td>${p.gender === 'M' ? '👨 Male' : p.gender === 'F' ? '👩 Female' : p.gender}</td>
+                <td style="font-size: 12px;">${p.phone || 'Not provided'}</td>
                 <td>${new Date(p.lastVisit).toLocaleDateString()}</td>
                 <td>
                   <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;
@@ -553,7 +646,8 @@ function getPatientListHTML() {
                 </td>
                 <td><button onclick="viewDoctorPatientDetails('${p.id}')" style="padding: 4px 8px; background: var(--primary-cyan); color: var(--dark-bg); border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">View</button></td>
               </tr>
-            `).join('')}
+            `;
+            }).join('')}
           </tbody>
         </table>
       </div>
@@ -679,20 +773,113 @@ function issuePrescriptionHandler() {
 function viewDoctorPatientDetails(patientId) {
   const patient = window.doctorSystem.getPatientDetails(patientId);
   if (patient) {
+    // Generate avatar color
+    function generateAvatarColor(name) {
+      const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE'];
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return colors[Math.abs(hash) % colors.length];
+    }
+
+    const avatarColor = generateAvatarColor(patient.name);
+    const initials = patient.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+
+    const profileHTML = `
+      <div style="background: linear-gradient(135deg, rgba(20,184,166,0.1), rgba(30,41,59,0.9)); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); max-width: 500px; margin: 0 auto;">
+        
+        <!-- Header with Avatar -->
+        <div style="text-align: center; margin-bottom: 25px;">
+          <div style="width: 100px; height: 100px; border-radius: 50%; background: ${avatarColor}; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 44px; color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.4); margin: 0 auto 15px;">
+            ${initials}
+          </div>
+          <h2 style="color: var(--primary-cyan); margin: 0 0 5px 0; font-size: 22px;">${patient.name}</h2>
+          <p style="color: var(--text-light); margin: 0; font-size: 14px;">Patient ID: ${patientId}</p>
+        </div>
+
+        <!-- Personal Information -->
+        <div style="background: rgba(30,41,59,0.7); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+          <h3 style="color: var(--primary-cyan); margin: 0 0 12px 0; font-size: 14px;">👤 Personal Information</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <p style="color: var(--text-light); margin: 0 0 3px 0; font-size: 12px;">Age</p>
+              <p style="color: var(--primary-cyan); margin: 0; font-weight: 600;">${patient.age} years</p>
+            </div>
+            <div>
+              <p style="color: var(--text-light); margin: 0 0 3px 0; font-size: 12px;">Gender</p>
+              <p style="color: var(--primary-cyan); margin: 0; font-weight: 600;">${patient.gender === 'M' ? 'Male' : patient.gender === 'F' ? 'Female' : patient.gender}</p>
+            </div>
+            <div>
+              <p style="color: var(--text-light); margin: 0 0 3px 0; font-size: 12px;">Blood Group</p>
+              <p style="color: var(--primary-cyan); margin: 0; font-weight: 600;">${patient.bloodGroup || 'Not provided'}</p>
+            </div>
+            <div>
+              <p style="color: var(--text-light); margin: 0 0 3px 0; font-size: 12px;">Status</p>
+              <p style="color: ${patient.status === 'healthy' ? 'var(--success)' : 'var(--warning)'}; margin: 0; font-weight: 600;">${patient.status.toUpperCase()}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div style="background: rgba(30,41,59,0.7); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+          <h3 style="color: var(--primary-cyan); margin: 0 0 12px 0; font-size: 14px;">📞 Contact Information</h3>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div>
+              <p style="color: var(--text-light); margin: 0 0 3px 0; font-size: 12px;">Phone</p>
+              <p style="color: var(--primary-cyan); margin: 0; font-weight: 600; word-break: break-all;">${patient.phone || 'Not provided'}</p>
+            </div>
+            <div>
+              <p style="color: var(--text-light); margin: 0 0 3px 0; font-size: 12px;">Email</p>
+              <p style="color: var(--primary-cyan); margin: 0; font-weight: 600; word-break: break-all;">${patient.email || 'Not provided'}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medical History -->
+        <div style="background: rgba(30,41,59,0.7); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+          <h3 style="color: var(--primary-cyan); margin: 0 0 12px 0; font-size: 14px;">📋 Medical History</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div>
+              <p style="color: var(--text-light); margin: 0 0 3px 0; font-size: 12px;">Consultations</p>
+              <p style="color: var(--primary-cyan); margin: 0; font-weight: 600; font-size: 18px;">${patient.consultations || 0}</p>
+            </div>
+            <div>
+              <p style="color: var(--text-light); margin: 0 0 3px 0; font-size: 12px;">Prescriptions</p>
+              <p style="color: var(--primary-cyan); margin: 0; font-weight: 600; font-size: 18px;">${patient.prescriptions || 0}</p>
+            </div>
+          </div>
+          <div>
+            <p style="color: var(--text-light); margin: 0 0 3px 0; font-size: 12px;">Medical Conditions</p>
+            <p style="color: var(--primary-cyan); margin: 0; font-weight: 600;">${patient.conditions && patient.conditions.length > 0 ? patient.conditions.join(', ') : 'None'}</p>
+          </div>
+        </div>
+
+        <!-- Last Visit -->
+        <div style="background: rgba(20,184,166,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-cyan);">
+          <p style="color: var(--text-light); margin: 0 0 5px 0; font-size: 12px;">Last Visit</p>
+          <p style="color: var(--primary-cyan); margin: 0; font-weight: 600; font-size: 16px;">${new Date(patient.lastVisit).toLocaleDateString()}</p>
+        </div>
+      </div>
+    `;
+
+    // Show in a formatted way (using alert as fallback since we don't have a modal system in doctor.html)
     alert(`
-📋 PATIENT DETAILS
-
-Name: ${patient.name}
-Age: ${patient.age} | Gender: ${patient.gender}
-Phone: ${patient.phone}
-Status: ${patient.status.toUpperCase()}
-
-📊 HISTORY
-Consultations: ${patient.consultations}
-Prescriptions: ${patient.prescriptions}
-Conditions: ${patient.conditions.join(', ') || 'None'}
-Last Visit: ${new Date(patient.lastVisit).toLocaleDateString()}
+👤 ${patient.name} (ID: ${patientId})
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Age: ${patient.age} | Gender: ${patient.gender === 'M' ? 'Male' : 'Female'}
+💉 Blood Group: ${patient.bloodGroup || 'N/A'}
+📞 Phone: ${patient.phone}
+📧 Email: ${patient.email || 'N/A'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 Consultations: ${patient.consultations || 0}
+💊 Prescriptions: ${patient.prescriptions || 0}
+🏥 Conditions: ${patient.conditions.join(', ') || 'None'}
+✅ Status: ${patient.status.toUpperCase()}
+🗓️ Last Visit: ${new Date(patient.lastVisit).toLocaleDateString()}
     `);
+
+    console.log('👁️ Patient Profile:', patient);
   }
 }
 

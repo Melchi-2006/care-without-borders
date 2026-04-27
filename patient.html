@@ -939,26 +939,108 @@
       return;
     }
 
-    // Mock doctors list
+    // Mock doctors list with profile data
     const mockDoctors = [
-      { id: 1, name: 'Dr. Rajesh Kumar', specialty: 'General', experience: '12 years', rating: 4.8 },
-      { id: 2, name: 'Dr. Priya Singh', specialty: 'General', experience: '8 years', rating: 4.9 },
-      { id: 3, name: 'Dr. Amit Patel', specialty: 'Cardiology', experience: '15 years', rating: 4.7 },
-      { id: 4, name: 'Dr. Neha Sharma', specialty: 'Pediatrics', experience: '10 years', rating: 4.6 },
-      { id: 5, name: 'Dr. Vikram Singh', specialty: 'Orthopedics', experience: '11 years', rating: 4.8 }
+      { 
+        id: 1, 
+        name: 'Dr. Rajesh Kumar', 
+        specialty: 'General', 
+        experience: '12 years', 
+        rating: 4.8,
+        initials: 'RK',
+        email: 'rajesh.kumar@hospital.com',
+        phone: '+91-9876543210',
+        qualifications: 'MD, MBBS'
+      },
+      { 
+        id: 2, 
+        name: 'Dr. Priya Singh', 
+        specialty: 'General', 
+        experience: '8 years', 
+        rating: 4.9,
+        initials: 'PS',
+        email: 'priya.singh@hospital.com',
+        phone: '+91-9876543211',
+        qualifications: 'MD, MBBS'
+      },
+      { 
+        id: 3, 
+        name: 'Dr. Amit Patel', 
+        specialty: 'Cardiology', 
+        experience: '15 years', 
+        rating: 4.7,
+        initials: 'AP',
+        email: 'amit.patel@hospital.com',
+        phone: '+91-9876543212',
+        qualifications: 'DM Cardiology, MD'
+      },
+      { 
+        id: 4, 
+        name: 'Dr. Neha Sharma', 
+        specialty: 'Pediatrics', 
+        experience: '10 years', 
+        rating: 4.6,
+        initials: 'NS',
+        email: 'neha.sharma@hospital.com',
+        phone: '+91-9876543213',
+        qualifications: 'DCH, MD Pediatrics'
+      },
+      { 
+        id: 5, 
+        name: 'Dr. Vikram Singh', 
+        specialty: 'Orthopedics', 
+        experience: '11 years', 
+        rating: 4.8,
+        initials: 'VS',
+        email: 'vikram.singh@hospital.com',
+        phone: '+91-9876543214',
+        qualifications: 'DNB Orthopedics, MS'
+      }
     ];
 
     const resultDiv = document.getElementById('appointmentResult') || createAppointmentResultDiv();
-    let html = '<div style="background: rgba(20,184,166,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-cyan);">';
-    html += `<h3 style="color: var(--primary-cyan); margin-top: 0;">Available Doctors</h3>`;
+    let html = '<div style="background: rgba(20,184,166,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-cyan); margin-top: 15px;">';
+    html += `<h3 style="color: var(--primary-cyan); margin-top: 0;">👨‍⚕️ Available Doctors (${mockDoctors.length})</h3>`;
+    
+    // Generate color based on initials
+    function generateAvatarColor(initials) {
+      const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE'];
+      let hash = 0;
+      for (let i = 0; i < initials.length; i++) {
+        hash = initials.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return colors[Math.abs(hash) % colors.length];
+    }
 
     mockDoctors.forEach((doctor, idx) => {
-      html += `<div style="background: rgba(10,40,60,0.7); padding: 12px; margin: 10px 0; border-radius: 6px; cursor: pointer;" onclick="confirmBooking('${doctor.name}', '${appointmentDate}', '${appointmentTime}')">
-        <p style="margin: 0 0 5px 0; color: var(--primary-cyan); font-weight: bold;">${idx + 1}. ${doctor.name}</p>
-        <p style="margin: 0 0 3px 0; color: var(--text-light); font-size: 12px;">📚 Experience: ${doctor.experience}</p>
-        <p style="margin: 0 0 3px 0; color: var(--text-light); font-size: 12px;">⭐ Rating: ${doctor.rating}/5</p>
-        <p style="margin: 0; color: var(--light-cyan); font-size: 12px; cursor: pointer; padding: 8px; background: rgba(20,184,166,0.2); border-radius: 4px; text-align: center;">✓ Click to Book</p>
-      </div>`;
+      const avatarColor = generateAvatarColor(doctor.initials);
+      html += `
+        <div style="background: rgba(10,40,60,0.9); padding: 15px; margin: 12px 0; border-radius: 10px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.3s ease; display: flex; gap: 15px; align-items: flex-start;" 
+             onmouseover="this.style.borderColor='var(--primary-cyan)'; this.style.boxShadow='0 0 15px rgba(20,184,166,0.2)';" 
+             onmouseout="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none';"
+             onclick="confirmBooking('${doctor.name}', '${appointmentDate}', '${appointmentTime}')">
+          
+          <!-- Profile Avatar -->
+          <div style="min-width: 70px; width: 70px; height: 70px; border-radius: 50%; background: ${avatarColor}; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+            ${doctor.initials}
+          </div>
+
+          <!-- Doctor Details -->
+          <div style="flex: 1;">
+            <p style="margin: 0 0 5px 0; color: var(--primary-cyan); font-weight: bold; font-size: 16px;">${doctor.name}</p>
+            <p style="margin: 0 0 3px 0; color: var(--text-light); font-size: 12px;">📋 ${doctor.specialty} Specialist | ${doctor.qualifications}</p>
+            <p style="margin: 0 0 3px 0; color: var(--text-light); font-size: 12px;">📚 Experience: ${doctor.experience}</p>
+            <p style="margin: 0 0 3px 0; color: var(--text-light); font-size: 12px;">📧 ${doctor.email}</p>
+            <p style="margin: 0 0 8px 0; color: var(--text-light); font-size: 12px;">📞 ${doctor.phone}</p>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <span style="color: #FFD700; font-weight: bold;">⭐ ${doctor.rating}/5.0</span>
+              <button style="padding: 6px 12px; background: linear-gradient(135deg, var(--primary-cyan), #06b6d4); color: var(--dark-bg); border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.3s ease;" 
+                      onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 10px rgba(20,184,166,0.3)';" 
+                      onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">✓ Book Now</button>
+            </div>
+          </div>
+        </div>
+      `;
     });
 
     html += '</div>';
