@@ -786,7 +786,40 @@
   <!-- VILGAX AI GREETING & LANGUAGE SELECTION -->
   <div class="vilgax-container">
     <div class="vilgax-greeting">
-      <div class="vilgax-avatar">🤖</div>
+      <svg width="120" height="120" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 15px; display: block;">
+        <!-- Face -->
+        <circle cx="100" cy="100" r="95" fill="#14b8a6" stroke="#06b6d4" stroke-width="2"/>
+        
+        <!-- Head glow -->
+        <circle cx="100" cy="100" r="105" fill="none" stroke="#06b6d4" stroke-width="1" opacity="0.3"/>
+        
+        <!-- Left Eye -->
+        <circle cx="75" cy="85" r="12" fill="#0f172a"/>
+        <circle cx="75" cy="85" r="7" fill="#06b6d4"/>
+        <circle cx="77" cy="83" r="3" fill="#ffffff"/>
+        
+        <!-- Right Eye -->
+        <circle cx="125" cy="85" r="12" fill="#0f172a"/>
+        <circle cx="125" cy="85" r="7" fill="#06b6d4"/>
+        <circle cx="127" cy="83" r="3" fill="#ffffff"/>
+        
+        <!-- Smile mouth -->
+        <path d="M 80 130 Q 100 145 120 130" stroke="#0f172a" stroke-width="3" fill="none" stroke-linecap="round"/>
+        
+        <!-- Left antenna -->
+        <line x1="60" y1="20" x2="45" y2="5" stroke="#06b6d4" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="45" cy="5" r="5" fill="#06b6d4"/>
+        
+        <!-- Right antenna -->
+        <line x1="140" y1="20" x2="155" y2="5" stroke="#06b6d4" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="155" cy="5" r="5" fill="#06b6d4"/>
+        
+        <!-- Chest plate -->
+        <rect x="70" y="160" width="60" height="30" rx="5" fill="#06b6d4" opacity="0.8"/>
+        <line x1="85" y1="160" x2="85" y2="190" stroke="#0f172a" stroke-width="1"/>
+        <line x1="100" y1="160" x2="100" y2="190" stroke="#0f172a" stroke-width="1"/>
+        <line x1="115" y1="160" x2="115" y2="190" stroke="#0f172a" stroke-width="1"/>
+      </svg>
       <div class="vilgax-name">VILGAX AI Assistant</div>
       <div id="vilgaxGreeting" class="vilgax-greeting-text">
         <span class="loading-dot"></span>
@@ -856,7 +889,23 @@
       <!-- PATIENT ROLE -->
       <div class="role-card" id="patientRole" onclick="vilgaxSelectRole('patient')">
         <div class="role-card-content">
-          <div class="role-icon">🏥</div>
+          <svg width="70" height="70" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 12px; display: block;">
+            <!-- Head -->
+            <circle cx="50" cy="30" r="15" fill="#14b8a6" stroke="#06b6d4" stroke-width="1.5"/>
+            <!-- Body -->
+            <rect x="40" y="47" width="20" height="25" rx="3" fill="#14b8a6" stroke="#06b6d4" stroke-width="1.5"/>
+            <!-- Left Arm -->
+            <line x1="40" y1="55" x2="25" y2="65" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+            <!-- Right Arm -->
+            <line x1="60" y1="55" x2="75" y2="65" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+            <!-- Left Leg -->
+            <line x1="43" y1="72" x2="38" y2="92" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+            <!-- Right Leg -->
+            <line x1="57" y1="72" x2="62" y2="92" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+            <!-- Heart symbol -->
+            <path d="M 50 38 Q 52 35 55 35 Q 58 35 58 38 Q 58 40 50 48 Q 42 40 42 38 Q 42 35 45 35 Q 48 35 50 38" fill="#ef4444"/>
+          </svg>
+          <div class="role-icon" style="font-size: 0;">👤</div>
           <div class="role-title">Patient</div>
           <div class="role-description">Get AI-powered healthcare consultation</div>
           <ul class="role-features">
@@ -871,7 +920,26 @@
       <!-- DOCTOR ROLE -->
       <div class="role-card" id="doctorRole" onclick="vilgaxSelectRole('doctor')">
         <div class="role-card-content">
-          <div class="role-icon">👨‍⚕️</div>
+          <svg width="70" height="70" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 12px; display: block;">
+            <!-- Head -->
+            <circle cx="50" cy="25" r="12" fill="#14b8a6" stroke="#06b6d4" stroke-width="1.5"/>
+            <!-- Body -->
+            <rect x="42" y="39" width="16" height="22" rx="2" fill="#06b6d4" stroke="#14b8a6" stroke-width="1.5"/>
+            <!-- Stethoscope circle -->
+            <circle cx="50" cy="48" r="10" fill="none" stroke="#ef4444" stroke-width="2"/>
+            <!-- Left Arm -->
+            <line x1="42" y1="45" x2="28" y2="52" stroke="#14b8a6" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Right Arm -->
+            <line x1="58" y1="45" x2="72" y2="52" stroke="#14b8a6" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Left Leg -->
+            <line x1="45" y1="61" x2="42" y2="80" stroke="#06b6d4" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Right Leg -->
+            <line x1="55" y1="61" x2="58" y2="80" stroke="#06b6d4" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Medical cross -->
+            <line x1="50" y1="38" x2="50" y2="50" stroke="#fff" stroke-width="1.5"/>
+            <line x1="44" y1="44" x2="56" y2="44" stroke="#fff" stroke-width="1.5"/>
+          </svg>
+          <div class="role-icon" style="font-size: 0;">👨‍⚕️</div>
           <div class="role-title">Doctor</div>
           <div class="role-description">Manage patients with AI insights</div>
           <ul class="role-features">
@@ -886,7 +954,24 @@
       <!-- ADMIN ROLE -->
       <div class="role-card" id="adminRole" onclick="vilgaxSelectRole('admin')">
         <div class="role-card-content">
-          <div class="role-icon">⚙️</div>
+          <svg width="70" height="70" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 12px; display: block;">
+            <!-- Monitor -->
+            <rect x="20" y="20" width="60" height="40" rx="3" fill="none" stroke="#14b8a6" stroke-width="2"/>
+            <!-- Screen -->
+            <rect x="24" y="24" width="52" height="32" fill="rgba(20,184,166,0.1)" stroke="#06b6d4" stroke-width="1"/>
+            <!-- Bezels -->
+            <circle cx="35" cy="33" r="3" fill="#06b6d4"/>
+            <circle cx="50" cy="33" r="3" fill="#06b6d4"/>
+            <circle cx="65" cy="33" r="3" fill="#06b6d4"/>
+            <!-- Stand -->
+            <rect x="42" y="60" width="16" height="12" rx="2" fill="#14b8a6" stroke="#06b6d4" stroke-width="1.5"/>
+            <!-- Base -->
+            <rect x="35" y="72" width="30" height="4" rx="2" fill="#06b6d4" opacity="0.6"/>
+            <!-- Settings icon (gear) -->
+            <circle cx="50" cy="42" r="5" fill="none" stroke="#ef4444" stroke-width="1.5"/>
+            <path d="M 50 36 L 50 30 M 50 54 L 50 60 M 44 42 L 38 42 M 56 42 L 62 42" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <div class="role-icon" style="font-size: 0;">⚙️</div>
           <div class="role-title">Administrator</div>
           <div class="role-description">Control platform with ML analytics</div>
           <ul class="role-features">
@@ -932,7 +1017,29 @@
 
     <div class="welcome-hero">
       <div class="hero-card">
-        <div class="hero-icon">🧠</div>
+        <svg width="100" height="100" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 15px; display: block;">
+          <!-- Brain outline -->
+          <circle cx="100" cy="80" r="50" fill="none" stroke="#14b8a6" stroke-width="2"/>
+          <!-- Left brain hemisphere -->
+          <path d="M 60 80 Q 60 50 80 50 Q 85 50 85 80 Z" fill="rgba(20,184,166,0.2)" stroke="#06b6d4" stroke-width="1.5"/>
+          <!-- Right brain hemisphere -->
+          <path d="M 140 80 Q 140 50 120 50 Q 115 50 115 80 Z" fill="rgba(20,184,166,0.2)" stroke="#06b6d4" stroke-width="1.5"/>
+          <!-- Neural connections -->
+          <line x1="70" y1="60" x2="100" y2="90" stroke="#06b6d4" stroke-width="1.5" opacity="0.7"/>
+          <line x1="130" y1="60" x2="100" y2="90" stroke="#06b6d4" stroke-width="1.5" opacity="0.7"/>
+          <line x1="80" y1="45" x2="100" y2="80" stroke="#06b6d4" stroke-width="1.5" opacity="0.7"/>
+          <line x1="120" y1="45" x2="100" y2="80" stroke="#06b6d4" stroke-width="1.5" opacity="0.7"/>
+          <!-- Node points -->
+          <circle cx="70" cy="60" r="3" fill="#ef4444"/>
+          <circle cx="130" cy="60" r="3" fill="#ef4444"/>
+          <circle cx="80" cy="45" r="3" fill="#ef4444"/>
+          <circle cx="120" cy="45" r="3" fill="#ef4444"/>
+          <circle cx="100" cy="90" r="4" fill="#10b981"/>
+          <!-- Pulse rings -->
+          <circle cx="100" cy="80" r="55" fill="none" stroke="#06b6d4" stroke-width="1" opacity="0.3"/>
+          <!-- Learning indicator -->
+          <text x="100" y="160" text-anchor="middle" font-size="14" font-weight="bold" fill="#14b8a6">Learning</text>
+        </svg>
         <div class="hero-title">Advanced AI Engine</div>
         <div class="hero-text">
           VILGAX processes medical data with deep learning algorithms, continuously learns from interactions, and adapts to provide increasingly accurate personalized healthcare guidance.
