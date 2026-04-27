@@ -1118,6 +1118,33 @@
   function getVilgaxResponse(userMessage) {
     const msg = userMessage.toLowerCase();
     
+    // Try to analyze as medical symptoms using advanced analyzer
+    if (window.vilgaxAnalyzer) {
+      const analysis = window.vilgaxAnalyzer.analyzeSymptoms(userMessage);
+      
+      if (analysis.success && analysis.matches.length > 0) {
+        const topMatch = analysis.matches[0];
+        let response = `Based on your symptoms of <strong>${analysis.extractedSymptoms.join(', ')}</strong>, `;
+        
+        if (analysis.vitals && analysis.vitals.temperature) {
+          response += `I detected a body temperature of <strong>${analysis.vitals.temperature}°C</strong>, which is concerning. `;
+        }
+        
+        response += `the most likely condition is <strong>${topMatch.disease}</strong> (${topMatch.severity} severity). `;
+        response += `I recommend <strong>${topMatch.medicines[0].name}</strong> ${topMatch.medicines[0].dosage} `;
+        response += `${topMatch.medicines[0].frequency}. `;
+        
+        if (topMatch.consultDoctor) {
+          response += `<strong>⚠️ Please consult a doctor immediately</strong>, as this condition requires professional evaluation.`;
+        } else {
+          response += `If symptoms persist for more than ${topMatch.duration || '3-5'} days, please consult a doctor.`;
+        }
+        
+        return response;
+      }
+    }
+    
+    // Fall back to keyword-based responses for non-medical queries
     const responses = {
       // Health-related
       'fever': 'Fever can be a sign of infection. Stay hydrated and rest. If fever persists above 103°F or 39°C for more than 3 days, please consult a doctor.',
