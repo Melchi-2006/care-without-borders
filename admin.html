@@ -6,6 +6,7 @@
   <title>Admin Dashboard | Care Without Borders</title>
   <script src="js/i18n.js"></script>
   <script src="js/vilgax-voice-system.js"></script>
+  <script src="js/admin-consultation-manager.js"></script>
   
   <style>
     * {
@@ -526,6 +527,7 @@
 
       <div class="menu-items">
         <div class="menu-item active" onclick="switchPage('dashboard')">📊 Dashboard</div>
+        <div class="menu-item" onclick="switchPage('consultations')">💬 Consultations</div>
         <div class="menu-item" onclick="switchPage('doctors')">👨‍⚕️ Doctors</div>
         <div class="menu-item" onclick="switchPage('patients')">👥 Patients</div>
         <div class="menu-item" onclick="switchPage('appointments')">📅 Appointments</div>
@@ -561,10 +563,12 @@
               <div class="stat-label">Total Appointments</div>
             </div>
             <div class="stat-card">
-              <div class="stat-number">$342,500</div>
+              <div class="stat-number">$342.5K</div>
               <div class="stat-label">Monthly Revenue</div>
             </div>
           </div>
+
+          <div id="dashboardContent"></div>
 
           <div class="card">
             <h2>👨‍⚕️ Top Doctors</h2>
@@ -598,7 +602,7 @@
                   <tr>
                     <td>Dr. Amit Patel</td>
                     <td>Pediatrician</td>
-                    <td>98</td>
+                    <td>128</td>
                     <td>4.7 ⭐</td>
                     <td><span class="status-badge status-active">Active</span></td>
                   </tr>
@@ -606,6 +610,11 @@
               </table>
             </div>
           </div>
+        </div>
+
+        <!-- CONSULTATIONS PAGE -->
+        <div id="consultations" class="page-section">
+          <div id="consultationsContent"></div>
         </div>
 
         <!-- DOCTORS PAGE -->
@@ -828,6 +837,7 @@
 
       const headers = {
         dashboard: ['Dashboard Overview 📊', 'System-wide statistics and management'],
+        consultations: ['💬 Consultation Management', 'Monitor and manage all system consultations'],
         doctors: ['👨‍⚕️ Manage Doctors', 'Add, edit, and manage doctor profiles'],
         patients: ['👥 Manage Patients', 'View and manage patient accounts'],
         appointments: ['📅 All Appointments', 'Monitor and manage system appointments'],
@@ -839,6 +849,13 @@
       const header = headers[pageName] || ['Dashboard', ''];
       document.getElementById('pageTitle').textContent = header[0];
       document.getElementById('pageSubtitle').textContent = header[1];
+
+      // Load dynamic content based on page
+      if (pageName === 'dashboard') {
+        document.getElementById('dashboardContent').innerHTML = window.getAdminDashboardHTML ? window.getAdminDashboardHTML() : '';
+      } else if (pageName === 'consultations') {
+        document.getElementById('consultationsContent').innerHTML = window.getConsultationRequestsHTML ? window.getConsultationRequestsHTML() : '';
+      }
     }
 
     function switchLanguage() {
@@ -860,6 +877,10 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       console.log('✓ Admin Dashboard loaded');
+      // Load initial dashboard content
+      if (window.getAdminDashboardHTML) {
+        document.getElementById('dashboardContent').innerHTML = window.getAdminDashboardHTML();
+      }
     });
   </script>
 </body>
