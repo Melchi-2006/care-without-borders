@@ -7,6 +7,7 @@
   <script src="js/i18n.js"></script>
   <script src="js/vilgax-voice-system.js"></script>
   <script src="js/doctor-consultation-panel.js"></script>
+  <script src="js/doctor-management.js"></script>
   
   <style>
     * {
@@ -517,10 +518,10 @@
 
       <div class="menu-items">
         <div class="menu-item active" onclick="switchPage('dashboard')">📊 Dashboard</div>
-        <div class="menu-item" onclick="switchPage('appointments')">📅 Appointments</div>
+        <div class="menu-item" onclick="switchPage('consultations')">💬 Consultations</div>
         <div class="menu-item" onclick="switchPage('patients')">👥 Patients</div>
         <div class="menu-item" onclick="switchPage('prescriptions')">💊 Prescriptions</div>
-        <div class="menu-item" onclick="switchPage('reports')">📈 Reports</div>
+        <div class="menu-item" onclick="switchPage('earnings')">💰 Earnings</div>
         <div class="menu-item" onclick="switchPage('settings')">⚙️ Settings</div>
       </div>
     </div>
@@ -537,196 +538,27 @@
       <div class="content-body">
         <!-- DASHBOARD PAGE -->
         <div id="dashboard" class="page-section active">
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-number">24</div>
-              <div class="stat-label">Total Appointments</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-number">156</div>
-              <div class="stat-label">Patients Under Care</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-number">98</div>
-              <div class="stat-label">Consultations Done</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-number">4.9</div>
-              <div class="stat-label">Patient Rating</div>
-            </div>
-          </div>
-
-          <div class="card">
-            <h2>📋 Today's Schedule</h2>
-            <p>Your upcoming appointments for today</p>
-            <div class="appointments-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Patient Name</th>
-                    <th>Time</th>
-                    <th>Type</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Rajesh Kumar</td>
-                    <td>10:00 AM</td>
-                    <td>Consultation</td>
-                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
-                  </tr>
-                  <tr>
-                    <td>Priya Singh</td>
-                    <td>11:30 AM</td>
-                    <td>Follow-up</td>
-                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
-                  </tr>
-                  <tr>
-                    <td>Amit Patel</td>
-                    <td>2:00 PM</td>
-                    <td>Consultation</td>
-                    <td><span class="status-badge status-pending">Pending</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <div id="dashboardContent"></div>
         </div>
 
-        <!-- APPOINTMENTS PAGE -->
-        <div id="appointments" class="page-section">
-          <!-- VILGAX CONSULTATION REQUESTS -->
-          <div id="consultationRequests"></div>
-
-          <!-- REGULAR APPOINTMENTS -->
-          <div class="card">
-            <h2>📅 Your Scheduled Appointments</h2>
-            <p>All your confirmed and upcoming appointments</p>
-            <div class="appointments-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Patient</th>
-                    <th>Date & Time</th>
-                    <th>Type</th>
-                    <th>Duration</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Rajesh Kumar</td>
-                    <td>2026-04-27 10:00 AM</td>
-                    <td>Consultation</td>
-                    <td>30 min</td>
-                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
-                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Complete</button></td>
-                  </tr>
-                  <tr>
-                    <td>Priya Singh</td>
-                    <td>2026-04-28 2:00 PM</td>
-                    <td>Follow-up</td>
-                    <td>20 min</td>
-                    <td><span class="status-badge status-pending">Pending</span></td>
-                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Confirm</button></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <!-- CONSULTATIONS PAGE -->
+        <div id="consultations" class="page-section">
+          <div id="consultationsContent"></div>
         </div>
 
         <!-- PATIENTS PAGE -->
         <div id="patients" class="page-section">
-          <div class="card">
-            <h2>👥 My Patients</h2>
-            <p>Manage your patient database and medical records</p>
-            <div class="appointments-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Patient Name</th>
-                    <th>Age</th>
-                    <th>Last Visit</th>
-                    <th>Health Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Rajesh Kumar</td>
-                    <td>45</td>
-                    <td>2026-04-25</td>
-                    <td><span class="status-badge status-completed">Healthy</span></td>
-                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">View</button></td>
-                  </tr>
-                  <tr>
-                    <td>Priya Singh</td>
-                    <td>38</td>
-                    <td>2026-04-20</td>
-                    <td><span class="status-badge status-pending">Monitoring</span></td>
-                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">View</button></td>
-                  </tr>
-                  <tr>
-                    <td>Amit Patel</td>
-                    <td>52</td>
-                    <td>2026-04-15</td>
-                    <td><span class="status-badge status-completed">Healthy</span></td>
-                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">View</button></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <div id="patientsContent"></div>
         </div>
 
         <!-- PRESCRIPTIONS PAGE -->
         <div id="prescriptions" class="page-section">
-          <div class="card">
-            <h2>💊 Issue Prescriptions</h2>
-            <p>Create and manage patient prescriptions</p>
-            <div class="form-group">
-              <label>Patient Name</label>
-              <input type="text" placeholder="Select or type patient name">
-            </div>
-            <div class="form-group">
-              <label>Medicine Name</label>
-              <input type="text" placeholder="Enter medicine name">
-            </div>
-            <div class="form-group">
-              <label>Dosage</label>
-              <input type="text" placeholder="e.g., 500mg">
-            </div>
-            <div class="form-group">
-              <label>Duration</label>
-              <input type="text" placeholder="e.g., 7 days">
-            </div>
-            <button class="btn btn-primary">📝 Issue Prescription</button>
-          </div>
+          <div id="prescriptionsContent"></div>
         </div>
 
-        <!-- REPORTS PAGE -->
-        <div id="reports" class="page-section">
-          <div class="card">
-            <h2>📈 Performance Reports</h2>
-            <p>View your practice statistics and analytics</p>
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-number">98%</div>
-                <div class="stat-label">Patient Satisfaction</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number">92%</div>
-                <div class="stat-label">Appointment Completion</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-number">156</div>
-                <div class="stat-label">Active Patients</div>
-              </div>
-            </div>
-          </div>
+        <!-- EARNINGS PAGE -->
+        <div id="earnings" class="page-section">
+          <div id="earningsContent"></div>
         </div>
 
         <!-- SETTINGS PAGE -->
@@ -777,9 +609,10 @@
 
       const headers = {
         dashboard: ['Welcome Back! 👋', 'Here\'s your medical practice overview'],
-        appointments: ['📅 Manage Appointments', 'View and manage all your patient appointments & consultation requests'],
-        patients: ['👥 My Patients', 'Manage your patient database and records'],
+        consultations: ['💬 Consultation Management', 'Manage patient consultation requests and provide diagnosis'],
+        patients: ['👥 My Patients', 'Manage your patient database and medical records'],
         prescriptions: ['💊 Issue Prescriptions', 'Create and manage patient prescriptions'],
+        earnings: ['💰 Earnings & Revenue', 'Track your earnings and consultation revenue'],
         reports: ['📈 Performance Reports', 'View your practice statistics and analytics'],
         settings: ['⚙️ Practice Settings', 'Update your profile and preferences']
       };
@@ -788,8 +621,18 @@
       document.getElementById('pageTitle').textContent = header[0];
       document.getElementById('pageSubtitle').textContent = header[1];
 
-      // Load consultation requests if viewing appointments
-      if (pageName === 'appointments' && window.doctorPanel) {
+      // Load dynamic content based on page
+      if (pageName === 'dashboard' && window.getDoctorDashboardHTML) {
+        document.getElementById('dashboardContent').innerHTML = window.getDoctorDashboardHTML();
+      } else if (pageName === 'consultations' && window.getConsultationsHTML) {
+        document.getElementById('consultationsContent').innerHTML = window.getConsultationsHTML();
+      } else if (pageName === 'patients' && window.getPatientListHTML) {
+        document.getElementById('patientsContent').innerHTML = window.getPatientListHTML();
+      } else if (pageName === 'prescriptions' && window.getPrescriptionsHTML) {
+        document.getElementById('prescriptionsContent').innerHTML = window.getPrescriptionsHTML();
+      } else if (pageName === 'earnings' && window.getEarningsHTML) {
+        document.getElementById('earningsContent').innerHTML = window.getEarningsHTML();
+      } else if (pageName === 'appointments' && window.doctorPanel) {
         const requestsDiv = document.getElementById('consultationRequests');
         if (requestsDiv) {
           requestsDiv.innerHTML = showDoctorConsultationRequests('General');
@@ -816,6 +659,10 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       console.log('✓ Doctor Dashboard loaded');
+      // Load initial dashboard content
+      if (window.getDoctorDashboardHTML) {
+        document.getElementById('dashboardContent').innerHTML = window.getDoctorDashboardHTML();
+      }
     });
   </script>
 </body>
