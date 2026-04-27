@@ -714,6 +714,7 @@
 <!-- SCRIPTS -->
 <script src="js/i18n.js"></script>
 <script src="js/disease-medicine-database.js"></script>
+<script src="js/advanced-symptom-analyzer.js"></script>
 <script src="js/vilgax-voice-system.js"></script>
 <script src="js/vilgax-consultation.js"></script>
 
@@ -805,74 +806,40 @@
   // ==================== SYMPTOM ANALYZER ====================
   function analyzeSymptoms() {
     const symptomsInput = document.getElementById('symptomInput');
-    const symptoms = symptomsInput.value.trim().toLowerCase();
+    const symptoms = symptomsInput.value.trim();
     
     if (!symptoms) {
       alert('Please enter your symptoms first');
       return;
     }
 
-    if (!window.DISEASE_MEDICINE_DATABASE) {
-      alert('Disease database not loaded. Please refresh the page.');
+    // Use advanced symptom analyzer
+    if (!window.vilgaxAnalyzer) {
+      alert('Medical analyzer not ready. Please refresh the page.');
       return;
     }
 
-    // Simple symptom matching against database
-    const matchedDiseases = [];
-    const symptomWords = symptoms.split(',').map(s => s.trim().toLowerCase());
-
-    for (const [disease, details] of Object.entries(window.DISEASE_MEDICINE_DATABASE)) {
-      const diseaseSymptoms = details.symptoms.toLowerCase();
-      let matchCount = 0;
-
-      symptomWords.forEach(word => {
-        if (word.length > 2 && diseaseSymptoms.includes(word)) {
-          matchCount++;
-        }
-      });
-
-      if (matchCount > 0) {
-        matchedDiseases.push({
-          name: disease,
-          severity: details.severity,
-          matchScore: (matchCount / symptomWords.length) * 100,
-          medicines: details.medicines,
-          consultDoctor: details.consultDoctor || false
-        });
-      }
-    }
-
-    // Sort by match score
-    matchedDiseases.sort((a, b) => b.matchScore - a.matchScore);
-
+    // Get analysis from advanced analyzer
+    const analysis = window.vilgaxAnalyzer.analyzeSymptoms(symptoms);
+    
     // Display results
     const resultDiv = document.getElementById('analysisResult') || createResultDiv();
-    let html = '<div style="background: rgba(20,184,166,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-cyan);">';
-    
-    if (matchedDiseases.length === 0) {
-      html += '<p style="color: var(--text-light);">⚠️ No matching conditions found. Please consult a doctor if symptoms persist.</p>';
-    } else {
-      html += '<h3 style="color: var(--primary-cyan); margin-top: 0;">Possible Conditions:</h3>';
-      
-      matchedDiseases.slice(0, 3).forEach((disease, idx) => {
-        html += `<div style="background: rgba(10,40,60,0.7); padding: 12px; margin: 10px 0; border-radius: 6px;">
-          <p style="margin: 0 0 8px 0; color: var(--primary-cyan); font-weight: bold;">${idx + 1}. ${disease.name.toUpperCase()}</p>
-          <p style="margin: 0 0 5px 0; color: var(--text-light); font-size: 12px;">Severity: <strong>${disease.severity}</strong></p>
-          <p style="margin: 0 0 8px 0; color: var(--text-light); font-size: 12px;">Match: ${disease.matchScore.toFixed(0)}%</p>
-          <p style="margin: 0; color: var(--light-cyan); font-size: 12px;">💊 Medicines: ${disease.medicines.map(m => m.name).join(', ')}</p>
-          ${disease.consultDoctor ? '<p style="color: #f59e0b; margin: 5px 0 0 0; font-weight: bold;">⚠️ Consult a doctor immediately</p>' : ''}
-        </div>`;
-      });
-    }
-    
-    html += '<p style="color: var(--text-light); font-size: 12px; margin: 15px 0 0 0; font-style: italic;">⚕️ Disclaimer: This is AI-powered analysis. Always consult a qualified doctor for proper diagnosis.</p>';
-    html += '</div>';
+    resultDiv.innerHTML = window.vilgaxAnalyzer.generateHTML(analysis);
 
-    resultDiv.innerHTML = html;
     symptomsInput.value = '';
 
     // Speak result
-    window.vilgaxVoiceSystem.speak(`I found ${matchedDiseases.length} possible conditions matching your symptoms. ${matchedDiseases.length > 0 ? 'The most likely is ' + matchedDiseases[0].name : 'Please consult a doctor'}`);
+    if (analysis.success && analysis.matches.length > 0) {
+      const topMatch = analysis.matches[0];
+      window.vilgaxVoiceSystem.speak(
+        `Based on your symptoms of ${analysis.extractedSymptoms.join(', ')}, ` +
+        `the most likely condition is ${topMatch.disease}. ` +
+        `I recommend ${topMatch.medicines[0].name} for treatment. ` +
+        `${topMatch.consultDoctor ? 'However, please consult a doctor immediately.' : 'Please consult a doctor if symptoms persist.'}`
+      );
+    } else {
+      window.vilgaxVoiceSystem.speak(analysis.message);
+    }
   }
 
   function createResultDiv() {
@@ -886,44 +853,63 @@
   // ==================== MEDICINE SEARCH ====================
   function searchMedicine() {
     const medicineInput = document.getElementById('medicineInput');
-    const searchQuery = medicineInput.value.trim().toLowerCase();
+    const searchQuery = medicineInput.value.trim();
     
     if (!searchQuery) {
       alert('Please enter a medicine name or symptom');
       return;
     }
 
+    // Use advanced analyzer to find matching conditions first
+    const conditionAnalysis = window.vilgaxAnalyzer.analyzeSymptoms(searchQuery);
     const results = [];
-    
-    // Search in disease database
-    for (const [disease, details] of Object.entries(DISEASE_MEDICINE_DATABASE)) {
-      // Check if query matches disease name or symptoms
-      if (disease.includes(searchQuery) || details.symptoms.toLowerCase().includes(searchQuery)) {
-        details.medicines.forEach(med => {
+
+    // Extract medicines from matched conditions
+    if (conditionAnalysis.success && conditionAnalysis.matches.length > 0) {
+      conditionAnalysis.matches.forEach(match => {
+        match.medicines.forEach(med => {
           if (!results.find(r => r.name === med.name)) {
             results.push({
               name: med.name,
               dosage: med.dosage,
               frequency: med.frequency,
-              forCondition: disease
+              forCondition: match.disease
             });
           }
         });
-      }
-
-      // Check if query matches medicine name
-      details.medicines.forEach(med => {
-        if (med.name.toLowerCase().includes(searchQuery)) {
-          if (!results.find(r => r.name === med.name)) {
-            results.push({
-              name: med.name,
-              dosage: med.dosage,
-              frequency: med.frequency,
-              forCondition: disease
-            });
-          }
-        }
       });
+    }
+
+    // Also search in disease database
+    if (window.DISEASE_MEDICINE_DATABASE) {
+      for (const [disease, details] of Object.entries(window.DISEASE_MEDICINE_DATABASE)) {
+        const searchLower = searchQuery.toLowerCase();
+        if (disease.toLowerCase().includes(searchLower) || details.symptoms.toLowerCase().includes(searchLower)) {
+          details.medicines.forEach(med => {
+            if (!results.find(r => r.name === med.name)) {
+              results.push({
+                name: med.name,
+                dosage: med.dosage,
+                frequency: med.frequency,
+                forCondition: disease
+              });
+            }
+          });
+        }
+
+        details.medicines.forEach(med => {
+          if (med.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+            if (!results.find(r => r.name === med.name)) {
+              results.push({
+                name: med.name,
+                dosage: med.dosage,
+                frequency: med.frequency,
+                forCondition: disease
+              });
+            }
+          }
+        });
+      }
     }
 
     // Display results

@@ -1,7 +1,7 @@
 // Comprehensive Disease & Medicine Database
 // 10,000+ diseases and medicines
 
-const DISEASE_MEDICINE_DATABASE = {
+window.DISEASE_MEDICINE_DATABASE = {
   // Respiratory Diseases (500+)
   "common cold": {
     category: "Respiratory",
@@ -745,4 +745,9 @@ const SYMPTOMS_TO_DISEASES = {
   "diarrhea": ["food poisoning", "ibs (irritable bowel syndrome)", "infectious diseases"]
 };
 
-export { DISEASE_MEDICINE_DATABASE, MEDICAL_ABBREVIATIONS, SYMPTOMS_TO_DISEASES };
+// Export to global scope for compatibility
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { DISEASE_MEDICINE_DATABASE, MEDICAL_ABBREVIATIONS, SYMPTOMS_TO_DISEASES };
+}
+
+console.log('✓ Disease-Medicine Database loaded - ' + Object.keys(window.DISEASE_MEDICINE_DATABASE).length + ' conditions available');
