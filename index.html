@@ -956,6 +956,7 @@
 </div>
 
 <script src="js/i18n.js"></script>
+<script src="js/vilgax-voice-system.js"></script>
 <script>
   // VILGAX AI SYSTEM - Professional ML-Driven Healthcare Assistant
   
@@ -1123,6 +1124,9 @@
 
   // Global functions for onclick handlers
   function vilgaxSetLanguage(lang) {
+    if (window.vilgaxVoiceSystem) {
+      window.vilgaxVoiceSystem.setLanguage(lang);
+    }
     vilgax.setLanguage(lang);
     // Replay greeting with new language
     vilgax.isGreetingPlayed = false;
