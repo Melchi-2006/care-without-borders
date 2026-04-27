@@ -679,6 +679,7 @@
 
 <!-- SCRIPTS -->
 <script src="js/i18n.js"></script>
+<script src="js/disease-medicine-database.js"></script>
 <script src="js/vilgax-voice-system.js"></script>
 
 <script>
@@ -766,30 +767,285 @@
     voiceInputMode = mode === 'voice';
   }
 
+  // ==================== SYMPTOM ANALYZER ====================
   function analyzeSymptoms() {
-    alert('Symptom analysis feature coming soon with VILGAX');
+    const symptomsInput = document.getElementById('symptomInput');
+    const symptoms = symptomsInput.value.trim().toLowerCase();
+    
+    if (!symptoms) {
+      alert('Please enter your symptoms first');
+      return;
+    }
+
+    if (!window.DISEASE_MEDICINE_DATABASE) {
+      alert('Disease database not loaded. Please refresh the page.');
+      return;
+    }
+
+    // Simple symptom matching against database
+    const matchedDiseases = [];
+    const symptomWords = symptoms.split(',').map(s => s.trim().toLowerCase());
+
+    for (const [disease, details] of Object.entries(window.DISEASE_MEDICINE_DATABASE)) {
+      const diseaseSymptoms = details.symptoms.toLowerCase();
+      let matchCount = 0;
+
+      symptomWords.forEach(word => {
+        if (word.length > 2 && diseaseSymptoms.includes(word)) {
+          matchCount++;
+        }
+      });
+
+      if (matchCount > 0) {
+        matchedDiseases.push({
+          name: disease,
+          severity: details.severity,
+          matchScore: (matchCount / symptomWords.length) * 100,
+          medicines: details.medicines,
+          consultDoctor: details.consultDoctor || false
+        });
+      }
+    }
+
+    // Sort by match score
+    matchedDiseases.sort((a, b) => b.matchScore - a.matchScore);
+
+    // Display results
+    const resultDiv = document.getElementById('analysisResult') || createResultDiv();
+    let html = '<div style="background: rgba(20,184,166,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-cyan);">';
+    
+    if (matchedDiseases.length === 0) {
+      html += '<p style="color: var(--text-light);">⚠️ No matching conditions found. Please consult a doctor if symptoms persist.</p>';
+    } else {
+      html += '<h3 style="color: var(--primary-cyan); margin-top: 0;">Possible Conditions:</h3>';
+      
+      matchedDiseases.slice(0, 3).forEach((disease, idx) => {
+        html += `<div style="background: rgba(10,40,60,0.7); padding: 12px; margin: 10px 0; border-radius: 6px;">
+          <p style="margin: 0 0 8px 0; color: var(--primary-cyan); font-weight: bold;">${idx + 1}. ${disease.name.toUpperCase()}</p>
+          <p style="margin: 0 0 5px 0; color: var(--text-light); font-size: 12px;">Severity: <strong>${disease.severity}</strong></p>
+          <p style="margin: 0 0 8px 0; color: var(--text-light); font-size: 12px;">Match: ${disease.matchScore.toFixed(0)}%</p>
+          <p style="margin: 0; color: var(--light-cyan); font-size: 12px;">💊 Medicines: ${disease.medicines.map(m => m.name).join(', ')}</p>
+          ${disease.consultDoctor ? '<p style="color: #f59e0b; margin: 5px 0 0 0; font-weight: bold;">⚠️ Consult a doctor immediately</p>' : ''}
+        </div>`;
+      });
+    }
+    
+    html += '<p style="color: var(--text-light); font-size: 12px; margin: 15px 0 0 0; font-style: italic;">⚕️ Disclaimer: This is AI-powered analysis. Always consult a qualified doctor for proper diagnosis.</p>';
+    html += '</div>';
+
+    resultDiv.innerHTML = html;
+    symptomsInput.value = '';
+
+    // Speak result
+    window.vilgaxVoiceSystem.speak(`I found ${matchedDiseases.length} possible conditions matching your symptoms. ${matchedDiseases.length > 0 ? 'The most likely is ' + matchedDiseases[0].name : 'Please consult a doctor'}`);
   }
 
+  function createResultDiv() {
+    const div = document.createElement('div');
+    div.id = 'analysisResult';
+    div.style.cssText = 'margin-top: 15px;';
+    document.getElementById('symptoms').appendChild(div);
+    return div;
+  }
+
+  // ==================== MEDICINE SEARCH ====================
   function searchMedicine() {
-    alert('Medicine search feature coming soon with VILGAX');
+    const medicineInput = document.getElementById('medicineInput');
+    const searchQuery = medicineInput.value.trim().toLowerCase();
+    
+    if (!searchQuery) {
+      alert('Please enter a medicine name or symptom');
+      return;
+    }
+
+    const results = [];
+    
+    // Search in disease database
+    for (const [disease, details] of Object.entries(DISEASE_MEDICINE_DATABASE)) {
+      // Check if query matches disease name or symptoms
+      if (disease.includes(searchQuery) || details.symptoms.toLowerCase().includes(searchQuery)) {
+        details.medicines.forEach(med => {
+          if (!results.find(r => r.name === med.name)) {
+            results.push({
+              name: med.name,
+              dosage: med.dosage,
+              frequency: med.frequency,
+              forCondition: disease
+            });
+          }
+        });
+      }
+
+      // Check if query matches medicine name
+      details.medicines.forEach(med => {
+        if (med.name.toLowerCase().includes(searchQuery)) {
+          if (!results.find(r => r.name === med.name)) {
+            results.push({
+              name: med.name,
+              dosage: med.dosage,
+              frequency: med.frequency,
+              forCondition: disease
+            });
+          }
+        }
+      });
+    }
+
+    // Display results
+    const resultDiv = document.getElementById('medicineResult') || createMedicineResultDiv();
+    let html = '<div style="background: rgba(20,184,166,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-cyan);">';
+    
+    if (results.length === 0) {
+      html += '<p style="color: var(--text-light);">❌ No medicines found matching your search.</p>';
+    } else {
+      html += `<h3 style="color: var(--primary-cyan); margin-top: 0;">${results.length} Medicine(s) Found:</h3>`;
+      
+      results.slice(0, 5).forEach((med, idx) => {
+        html += `<div style="background: rgba(10,40,60,0.7); padding: 12px; margin: 10px 0; border-radius: 6px;">
+          <p style="margin: 0 0 5px 0; color: var(--primary-cyan); font-weight: bold;">${idx + 1}. ${med.name}</p>
+          <p style="margin: 0 0 3px 0; color: var(--text-light); font-size: 12px;">💊 Dosage: <strong>${med.dosage}</strong></p>
+          <p style="margin: 0 0 3px 0; color: var(--text-light); font-size: 12px;">⏱️ Frequency: <strong>${med.frequency}</strong></p>
+          <p style="margin: 0; color: var(--light-cyan); font-size: 11px;">Used for: ${med.forCondition}</p>
+        </div>`;
+      });
+    }
+    
+    html += '<p style="color: var(--text-light); font-size: 12px; margin: 15px 0 0 0; font-style: italic;">⚕️ Take medicines only as prescribed by your doctor.</p>';
+    html += '</div>';
+
+    resultDiv.innerHTML = html;
+    medicineInput.value = '';
+
+    window.vilgaxVoiceSystem.speak(`Found ${results.length} medicines matching your search. ${results.length > 0 ? results[0].name + ' is commonly used' : 'No results found'}`);
   }
 
+  function createMedicineResultDiv() {
+    const div = document.createElement('div');
+    div.id = 'medicineResult';
+    div.style.cssText = 'margin-top: 15px;';
+    document.getElementById('medicine').appendChild(div);
+    return div;
+  }
+
+  // ==================== DOCTOR APPOINTMENT ====================
   function bookAppointment() {
-    alert('Appointment booking feature coming soon');
+    const specialty = document.getElementById('specialty')?.value || 'General';
+    const appointmentDate = document.getElementById('appointmentDate')?.value || '';
+    const appointmentTime = document.getElementById('appointmentTime')?.value || '';
+
+    if (!appointmentDate || !appointmentTime) {
+      alert('Please select date and time');
+      return;
+    }
+
+    // Mock doctors list
+    const mockDoctors = [
+      { id: 1, name: 'Dr. Rajesh Kumar', specialty: 'General', experience: '12 years', rating: 4.8 },
+      { id: 2, name: 'Dr. Priya Singh', specialty: 'General', experience: '8 years', rating: 4.9 },
+      { id: 3, name: 'Dr. Amit Patel', specialty: 'Cardiology', experience: '15 years', rating: 4.7 },
+      { id: 4, name: 'Dr. Neha Sharma', specialty: 'Pediatrics', experience: '10 years', rating: 4.6 },
+      { id: 5, name: 'Dr. Vikram Singh', specialty: 'Orthopedics', experience: '11 years', rating: 4.8 }
+    ];
+
+    const resultDiv = document.getElementById('appointmentResult') || createAppointmentResultDiv();
+    let html = '<div style="background: rgba(20,184,166,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-cyan);">';
+    html += `<h3 style="color: var(--primary-cyan); margin-top: 0;">Available Doctors</h3>`;
+
+    mockDoctors.forEach((doctor, idx) => {
+      html += `<div style="background: rgba(10,40,60,0.7); padding: 12px; margin: 10px 0; border-radius: 6px; cursor: pointer;" onclick="confirmBooking('${doctor.name}', '${appointmentDate}', '${appointmentTime}')">
+        <p style="margin: 0 0 5px 0; color: var(--primary-cyan); font-weight: bold;">${idx + 1}. ${doctor.name}</p>
+        <p style="margin: 0 0 3px 0; color: var(--text-light); font-size: 12px;">📚 Experience: ${doctor.experience}</p>
+        <p style="margin: 0 0 3px 0; color: var(--text-light); font-size: 12px;">⭐ Rating: ${doctor.rating}/5</p>
+        <p style="margin: 0; color: var(--light-cyan); font-size: 12px; cursor: pointer; padding: 8px; background: rgba(20,184,166,0.2); border-radius: 4px; text-align: center;">✓ Click to Book</p>
+      </div>`;
+    });
+
+    html += '</div>';
+    resultDiv.innerHTML = html;
+
+    window.vilgaxVoiceSystem.speak(`I found ${mockDoctors.length} available doctors. Click on any doctor to confirm your appointment.`);
   }
 
+  function confirmBooking(doctorName, date, time) {
+    alert(`✓ Appointment booked with ${doctorName}\nDate: ${date}\nTime: ${time}\n\nYou will receive a confirmation email shortly.`);
+    window.vilgaxVoiceSystem.speak(`Your appointment with ${doctorName} on ${date} at ${time} has been booked. You will receive a confirmation email.`);
+  }
+
+  function createAppointmentResultDiv() {
+    const div = document.createElement('div');
+    div.id = 'appointmentResult';
+    div.style.cssText = 'margin-top: 15px;';
+    document.getElementById('appointments').appendChild(div);
+    return div;
+  }
+
+  // ==================== CHAT WITH VILGAX ====================
   function sendChat() {
     const input = document.getElementById('chatInput');
     const message = input.value.trim();
     if (!message) return;
 
     const chatBox = document.getElementById('chatBox');
-    const msgEl = document.createElement('div');
-    msgEl.style.cssText = 'background: var(--primary-cyan); color: var(--dark-bg); padding: 10px; border-radius: 8px; text-align: right; max-width: 70%; margin-left: auto;';
-    msgEl.textContent = message;
-    chatBox.appendChild(msgEl);
+    
+    // Display user message
+    const userMsgEl = document.createElement('div');
+    userMsgEl.style.cssText = 'background: var(--primary-cyan); color: var(--dark-bg); padding: 10px 12px; border-radius: 8px; text-align: right; max-width: 70%; margin-left: auto; margin-bottom: 10px; word-wrap: break-word;';
+    userMsgEl.textContent = message;
+    chatBox.appendChild(userMsgEl);
+
+    // Generate VILGAX response based on keywords
+    let response = getVilgaxResponse(message);
+
+    // Display VILGAX response
+    setTimeout(() => {
+      const vilgaxMsgEl = document.createElement('div');
+      vilgaxMsgEl.style.cssText = 'background: rgba(20,184,166,0.2); color: var(--text-light); padding: 10px 12px; border-radius: 8px; text-align: left; max-width: 70%; margin-bottom: 10px; border-left: 3px solid var(--primary-cyan); word-wrap: break-word;';
+      vilgaxMsgEl.innerHTML = '<strong style="color: var(--primary-cyan);">VILGAX:</strong> ' + response;
+      chatBox.appendChild(vilgaxMsgEl);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Speak response
+      window.vilgaxVoiceSystem.speak(response);
+    }, 500);
+
     input.value = '';
     chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function getVilgaxResponse(userMessage) {
+    const msg = userMessage.toLowerCase();
+    
+    const responses = {
+      // Health-related
+      'fever': 'Fever can be a sign of infection. Stay hydrated and rest. If fever persists above 103°F or 39°C for more than 3 days, please consult a doctor.',
+      'pain': 'Pain can indicate various conditions. Can you describe where the pain is located and its intensity? This will help me provide better guidance.',
+      'cough': 'Cough can be caused by cold, allergies, or infections. If the cough persists for more than a week, please see a doctor.',
+      'headache': 'Headaches can be due to dehydration, stress, or underlying conditions. Try resting in a dark room and staying hydrated.',
+      'nausea': 'Nausea can be caused by food poisoning, infection, or medication. If accompanied by vomiting, please see a doctor soon.',
+      
+      // General queries
+      'help': 'I can help you with symptom analysis, medicine search, doctor appointments, and general health information. What would you like assistance with?',
+      'doctor': 'I can help you book an appointment with available doctors. Would you like to schedule a consultation?',
+      'medicine': 'I can search our medicine database and provide information about medicines and dosages. What medicine are you looking for?',
+      'appointment': 'I can help you book an appointment. Please select your preferred date and time.',
+      'symptoms': 'I can analyze your symptoms and suggest possible conditions. Please describe your symptoms in detail.',
+      
+      // Professional responses
+      'thanks': 'You are welcome! Feel free to ask if you need any other medical assistance.',
+      'ok': 'Great! Is there anything else I can help you with?',
+      'yes': 'Wonderful! Please proceed with your query.',
+      'no': 'I understand. Let me know if you need help with anything else.',
+    };
+
+    // Find matching response
+    for (const [keyword, response] of Object.entries(responses)) {
+      if (msg.includes(keyword)) {
+        return response;
+      }
+    }
+
+    // Default response
+    return 'I understand your concern. Could you please provide more details? You can also use the Symptom Analyzer or Medicine Finder for specific information.';
   }
 
   function logout() {

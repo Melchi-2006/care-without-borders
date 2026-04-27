@@ -1,392 +1,310 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Doctor Dashboard | Care Without Borders</title>
-  <!-- Multilingual Support - Load First! -->
   <script src="js/i18n.js"></script>
-  <!-- Modern UI Redesign -->
-  <link rel="stylesheet" href="css/theme-redesign.css">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="css/style.css">
-  <script src="config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/vilgax-voice-system.js"></script>
+  
   <style>
-    .doctor-header {
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      color: white;
-      padding: 30px 60px;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-cyan: #14b8a6;
+      --light-cyan: #06b6d4;
+      --dark-bg: #0f172a;
+      --card-bg: #1e293b;
+      --text-white: #ffffff;
+      --text-light: #cbd5e1;
+      --border-color: #334155;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--dark-bg) 0%, #1a2332 100%);
+      color: var(--text-light);
+      min-height: 100vh;
+    }
+
+    /* ==================== NAVBAR ==================== */
+    .navbar {
+      background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.95));
+      border-bottom: 1px solid var(--border-color);
+      padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      sticky: top;
+      z-index: 100;
+      backdrop-filter: blur(10px);
     }
 
-    .doctor-header h1 {
-      margin: 0;
-      font-size: 28px;
-    }
-
-    .doctor-header p {
-      margin: 5px 0 0 0;
-      opacity: 0.9;
-    }
-
-    .doctor-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 25px;
-      margin-bottom: 30px;
-    }
-
-    .dashboard-card {
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      border-left: 5px solid #0f766e;
-    }
-
-    .dashboard-card h2 {
-      color: #0f766e;
-      margin-top: 0;
+    .navbar-brand {
       font-size: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      color: #333;
-      font-weight: 500;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-      box-sizing: border-box;
-      font-family: inherit;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: #0f766e;
-      box-shadow: 0 0 0 3px rgba(15,118,110,0.1);
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-
-    .btn-primary {
-      background: #0f766e;
-      color: white;
-      padding: 12px 25px;
-      border: none;
-      border-radius: 8px;
+      font-weight: 700;
+      color: var(--primary-cyan);
       cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      transition: all 0.3s ease;
     }
 
-    .btn-primary:hover {
-      background: #0d5c56;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(15,118,110,0.3);
-    }
-
-    .btn-secondary {
-      background: #6c757d;
-      color: white;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: all 0.3s ease;
-    }
-
-    .btn-secondary:hover {
-      background: #5a6268;
-    }
-
-    .btn-danger {
-      background: #dc3545;
-      color: white;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: all 0.3s ease;
-    }
-
-    .btn-danger:hover {
-      background: #c82333;
-    }
-
-    /* Sidebar Styles */
-    .doctor-wrapper {
+    .navbar-menu {
       display: flex;
-      min-height: calc(100vh - 100px);
-      background: #f5f5f5;
+      gap: 20px;
+      align-items: center;
     }
 
-    .doctor-sidebar {
-      width: 250px;
-      background: white;
-      box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    .navbar-menu button {
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-menu button:hover {
+      background: rgba(20,184,166,0.1);
+      color: var(--primary-cyan);
+    }
+
+    .logout-btn {
+      background: linear-gradient(135deg, var(--danger), #dc2626) !important;
+      color: white !important;
+      padding: 8px 16px !important;
+    }
+
+    .logout-btn:hover {
+      background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+    }
+
+    /* ==================== MAIN LAYOUT ==================== */
+    .dashboard-wrapper {
+      display: flex;
+      min-height: calc(100vh - 60px);
+    }
+
+    .sidebar {
+      width: 280px;
+      background: rgba(30,41,59,0.5);
+      border-right: 1px solid var(--border-color);
+      padding: 20px;
       overflow-y: auto;
       position: sticky;
-      top: 100px;
-      height: calc(100vh - 100px);
+      top: 60px;
+      height: calc(100vh - 60px);
     }
 
-    .sidebar-menu {
-      list-style: none;
-      margin: 0;
-      padding: 20px 0;
-    }
-
-    .sidebar-menu li {
-      margin: 0;
-    }
-
-    .sidebar-menu a {
+    .sidebar-header {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 15px 20px;
-      color: #333;
-      text-decoration: none;
-      border-left: 4px solid transparent;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      font-size: 14px;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
     }
 
-    .sidebar-menu a:hover {
-      background: #f0f0f0;
-      border-left-color: #0f766e;
-    }
-
-    .sidebar-menu a.active {
-      background: #e8f5f4;
-      border-left-color: #0f766e;
-      color: #0f766e;
-      font-weight: 600;
-    }
-
-    .dashboard-wrapper {
-      flex: 1;
-      padding: 40px;
-      overflow-y: auto;
-    }
-
-    .panel-content {
-      display: none;
-    }
-
-    .panel-content.active {
-      display: block;
-    }
-
-    /* Profile Panel Styles */
-    .profile-header {
-      display: flex;
-      gap: 30px;
-      align-items: flex-start;
-      margin-bottom: 30px;
-    }
-
-    .profile-picture-section {
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .profile-picture {
-      width: 150px;
-      height: 150px;
+    .sidebar-avatar {
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
-      background: #e0e0e0;
+      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 60px;
-      margin-bottom: 15px;
-      border: 4px solid #0f766e;
-      overflow: hidden;
-      object-fit: cover;
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--dark-bg);
     }
 
-    .profile-picture-input {
-      display: none;
+    .sidebar-info h3 {
+      color: var(--text-white);
+      font-size: 14px;
+      margin-bottom: 2px;
     }
 
-    .upload-btn {
-      background: #0f766e;
-      color: white;
-      padding: 10px 20px;
-      border: none;
+    .sidebar-info p {
+      color: var(--text-light);
+      font-size: 12px;
+    }
+
+    .menu-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .menu-item {
+      padding: 12px 15px;
+      background: rgba(20,184,166,0.05);
+      border: 1.5px solid transparent;
       border-radius: 8px;
+      color: var(--text-light);
       cursor: pointer;
-      font-size: 13px;
-      margin-top: 10px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      font-size: 14px;
     }
 
-    .upload-btn:hover {
-      background: #0d5c56;
+    .menu-item:hover {
+      background: rgba(20,184,166,0.1);
+      border-color: var(--primary-cyan);
+      color: var(--primary-cyan);
     }
 
-    .profile-info-section {
+    .menu-item.active {
+      background: linear-gradient(135deg, rgba(20,184,166,0.2), rgba(6,182,212,0.1));
+      border-color: var(--primary-cyan);
+      color: var(--primary-cyan);
+    }
+
+    /* ==================== CONTENT AREA ==================== */
+    .content-area {
       flex: 1;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    .form-row.full {
-      grid-template-columns: 1fr;
-    }
-
-    /* Bank Account Styles */
-    .bank-section {
-      background: #f9f9f9;
-      padding: 20px;
-      border-radius: 10px;
-      margin-top: 30px;
-      border: 2px solid #e0e0e0;
-    }
-
-    .bank-section h3 {
-      color: #0f766e;
-      margin-top: 0;
-    }
-
-    .panel-title {
-      font-size: 24px;
-      color: #0f766e;
-      margin-bottom: 25px;
-      border-bottom: 2px solid #0f766e;
-      padding-bottom: 15px;
-    }
-
-    .appointments-list {
-      max-height: 500px;
+      display: flex;
+      flex-direction: column;
       overflow-y: auto;
     }
 
-    .appointment-item {
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      background: #f9f9f9;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+    .content-header {
+      background: rgba(30,41,59,0.5);
+      padding: 30px;
+      border-bottom: 1px solid var(--border-color);
     }
 
-    .appointment-info {
+    .content-header h1 {
+      color: var(--text-white);
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .content-header p {
+      color: var(--text-light);
+      font-size: 15px;
+    }
+
+    .content-body {
+      padding: 30px;
       flex: 1;
     }
 
-    .appointment-info strong {
-      color: #0f766e;
+    /* ==================== PAGE SECTIONS ==================== */
+    .page-section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .page-section.active {
       display: block;
-      margin-bottom: 5px;
     }
 
-    .appointment-info p {
-      margin: 3px 0;
-      color: #666;
-      font-size: 13px;
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    .appointment-actions {
-      display: flex;
-      gap: 8px;
+    /* ==================== CARDS ==================== */
+    .card {
+      background: rgba(30,41,59,0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
     }
 
-    .patient-records {
-      max-height: 400px;
-      overflow-y: auto;
+    .card:hover {
+      border-color: var(--primary-cyan);
+      box-shadow: 0 0 20px rgba(20,184,166,0.1);
     }
 
-    .record-item {
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      background: #f9f9f9;
+    .card h2 {
+      color: var(--primary-cyan);
+      font-size: 20px;
+      margin-bottom: 12px;
     }
 
-    .record-item strong {
-      color: #0f766e;
+    .card p {
+      color: var(--text-light);
+      font-size: 14px;
+      margin-bottom: 15px;
     }
 
-    .record-item p {
-      margin: 5px 0;
-      color: #666;
-      font-size: 13px;
-    }
-
-    .stats-row {
+    /* ==================== STATS GRID ==================== */
+    .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
       margin-bottom: 30px;
     }
 
-    .stat-box {
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      color: white;
+    .stat-card {
+      background: linear-gradient(135deg, rgba(20,184,166,0.1), rgba(6,182,212,0.05));
+      border: 1px solid var(--border-color);
       padding: 20px;
       border-radius: 12px;
       text-align: center;
     }
 
-    .stat-box h3 {
-      margin: 0;
-      font-size: 12px;
-      text-transform: uppercase;
-      opacity: 0.9;
-    }
-
-    .stat-box .number {
+    .stat-number {
       font-size: 28px;
-      font-weight: bold;
-      margin: 10px 0 0 0;
+      color: var(--primary-cyan);
+      font-weight: 700;
+      margin-bottom: 8px;
     }
 
-    .full-width {
-      grid-column: 1 / -1;
+    .stat-label {
+      color: var(--text-light);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* ==================== APPOINTMENTS TABLE ==================== */
+    .appointments-table {
+      background: rgba(30,41,59,0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: rgba(20,184,166,0.1);
+      color: var(--primary-cyan);
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-light);
+    }
+
+    tr:hover {
+      background: rgba(20,184,166,0.05);
     }
 
     .status-badge {
-      display: inline-block;
       padding: 4px 12px;
       border-radius: 20px;
       font-size: 12px;
@@ -394,1333 +312,498 @@
     }
 
     .status-pending {
-      background: #fff3cd;
-      color: #856404;
+      background: rgba(245,158,11,0.2);
+      color: #fbbf24;
     }
 
     .status-confirmed {
-      background: #d4edda;
-      color: #155724;
+      background: rgba(16,185,129,0.2);
+      color: #6ee7b7;
     }
 
-    /* Form Styles */
+    .status-completed {
+      background: rgba(20,184,166,0.2);
+      color: var(--light-cyan);
+    }
+
+    /* ==================== FORMS ==================== */
     .form-group {
-      display: flex;
-      flex-direction: column;
+      margin-bottom: 20px;
     }
 
     .form-group label {
-      color: #0f766e;
-      font-weight: 600;
+      display: block;
+      color: var(--primary-cyan);
       margin-bottom: 8px;
+      font-weight: 600;
       font-size: 14px;
     }
 
     .form-group input,
-    .form-group select,
-    .form-group textarea {
-      padding: 12px 14px;
-      border: 1px solid #ddd;
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      background: rgba(15,23,42,0.5);
+      border: 1px solid var(--border-color);
       border-radius: 8px;
-      font-size: 14px;
+      color: var(--text-light);
       font-family: inherit;
+      font-size: 14px;
       transition: all 0.3s ease;
     }
 
     .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
+    .form-group textarea:focus,
+    .form-group select:focus {
       outline: none;
-      border-color: #0f766e;
-      box-shadow: 0 0 0 3px rgba(15,118,110,0.1);
+      border-color: var(--primary-cyan);
+      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+      background: rgba(20, 184, 166, 0.05);
     }
 
-    #profileForm {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0;
-    }
-
-    .status-completed {
-      background: #cfe2ff;
-      color: #084298;
-    }
-
-    .status-cancelled {
-      background: #f8d7da;
-      color: #842029;
-    }
-
-    .schedule-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      margin-top: 15px;
-    }
-
-    .schedule-slot {
-      padding: 10px;
-      background: #e0f2f1;
-      border: 1px solid #0f766e;
-      border-radius: 6px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 12px;
-    }
-
-    .schedule-slot:hover {
-      background: #0f766e;
-      color: white;
-    }
-
-    .schedule-slot.occupied {
-      background: #f8d7da;
-      color: #842029;
-      cursor: not-allowed;
-    }
-
-    /* Prescription Tab Styles */
-    .call-interface-container {
-      display: flex;
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    .video-container {
-      flex: 1;
-    }
-
-    .prescription-panel {
-      width: 350px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      max-height: 600px;
-      border: 2px solid #0f766e;
-    }
-
-    .prescription-header {
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      color: white;
-      padding: 15px;
-      border-radius: 10px 10px 0 0;
-      font-weight: 600;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .prescription-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 15px;
-    }
-
-    .prescription-form-group {
-      margin-bottom: 12px;
-    }
-
-    .prescription-form-group label {
-      display: block;
-      color: #0f766e;
-      font-weight: 600;
-      font-size: 12px;
-      margin-bottom: 5px;
-    }
-
-    .prescription-form-group input,
-    .prescription-form-group textarea,
-    .prescription-form-group select {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 12px;
-      font-family: inherit;
-      box-sizing: border-box;
-    }
-
-    .prescription-form-group textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    .prescription-form-group input:focus,
-    .prescription-form-group textarea:focus,
-    .prescription-form-group select:focus {
-      outline: none;
-      border-color: #0f766e;
-      box-shadow: 0 0 0 3px rgba(15,118,110,0.1);
-    }
-
-    .prescription-actions {
-      display: flex;
-      gap: 10px;
-      padding: 15px;
-      border-top: 1px solid #eee;
-      background: #f9f9f9;
-    }
-
-    .btn-send-prescription {
-      flex: 1;
-      background: #0f766e;
-      color: white;
-      padding: 10px;
+    /* ==================== BUTTONS ==================== */
+    .btn {
+      padding: 12px 24px;
       border: none;
-      border-radius: 6px;
-      cursor: pointer;
+      border-radius: 8px;
       font-weight: 600;
-      font-size: 13px;
-      transition: all 0.3s ease;
-    }
-
-    .btn-send-prescription:hover {
-      background: #0d5c56;
-    }
-
-    .btn-save-eehr {
-      flex: 1;
-      background: #6c99a3;
-      color: white;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 13px;
       transition: all 0.3s ease;
-    }
-
-    .btn-save-eehr:hover {
-      background: #5a8190;
-    }
-
-    .call-status {
-      background: #e8f5e9;
-      color: #2e7d32;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      margin-bottom: 10px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-    }
-
-    .call-status.active::before {
-      content: "●";
-      color: #4caf50;
       font-size: 14px;
-      animation: pulse 2s infinite;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
+      color: var(--dark-bg);
     }
 
-    .prescription-field {
-      background: #f5f5f5;
-      padding: 8px;
-      border-radius: 6px;
-      margin-bottom: 8px;
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(20, 184, 166, 0.3);
     }
 
-    .medicine-suggestion {
-      background: #e0f2f1;
-      padding: 8px;
-      border-left: 3px solid #0f766e;
-      border-radius: 4px;
-      font-size: 12px;
-      color: #0f766e;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin-bottom: 5px;
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary-cyan);
+      border: 1.5px solid var(--primary-cyan);
     }
 
-    .medicine-suggestion:hover {
-      background: #0f766e;
-      color: white;
+    .btn-secondary:hover {
+      background: rgba(20, 184, 166, 0.1);
     }
 
+    /* ==================== RESPONSIVE ==================== */
     @media (max-width: 1024px) {
-      .call-interface-container {
+      .sidebar {
+        width: 240px;
+        padding: 15px;
+      }
+
+      .menu-item {
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+
+      .content-body {
+        padding: 20px;
+      }
+
+      .content-header {
+        padding: 20px;
+      }
+
+      .content-header h1 {
+        font-size: 26px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-wrapper {
         flex-direction: column;
       }
 
-      .prescription-panel {
+      .sidebar {
         width: 100%;
-        max-height: 400px;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        position: static;
+        padding: 15px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .sidebar-header {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+
+      .menu-items {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 10px 0;
+      }
+
+      .content-header h1 {
+        font-size: 22px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        font-size: 12px;
+      }
+
+      th, td {
+        padding: 10px;
       }
     }
 
-    .hidden {
-      display: none;
-    }
+    @media (max-width: 480px) {
+      .navbar {
+        padding: 12px 15px;
+      }
 
-    /* PROFESSIONAL DARK THEME OVERRIDE */
-    .doctor-header {
-      background: linear-gradient(135deg, #0f172a 0%, #1a3a40 50%, #0f766e 100%) !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-      border-bottom: 1px solid rgba(20, 184, 166, 0.2) !important;
-    }
+      .navbar-brand {
+        font-size: 16px;
+      }
 
-    .doctor-header h1 {
-      color: #14b8a6 !important;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-    }
+      .navbar-menu {
+        gap: 10px;
+      }
 
-    .doctor-container {
-      background: linear-gradient(135deg, #0f172a 0%, #1a3a40 50%, #0f766e 100%);
-      min-height: 100vh;
-      padding-top: 40px !important;
-    }
+      .content-body {
+        padding: 15px;
+      }
 
-    .dashboard-card {
-      background: linear-gradient(135deg, #1e293b 0%, rgba(30, 41, 59, 0.8) 100%) !important;
-      border: 1px solid rgba(20, 184, 166, 0.2) !important;
-      color: white !important;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-      transition: all 0.3s ease !important;
-    }
-
-    .dashboard-card:hover {
-      border-color: rgba(20, 184, 166, 0.4) !important;
-      transform: translateY(-4px) !important;
-      box-shadow: 0 12px 30px rgba(20, 184, 166, 0.15) !important;
-    }
-
-    .dashboard-card h3 {
-      color: #14b8a6 !important;
+      .card {
+        padding: 15px;
+      }
     }
   </style>
 </head>
 <body>
-
-<div class="doctor-header">
-  <div>
-    <h1 data-i18n="pages.doctor.doctorDashboard">👨⚕️ Doctor Dashboard</h1>
-    <p data-i18n="pages.doctor.appointmentTime">Welcome Dr. Smith! Manage your appointments and patient care</p>
-  </div>
-  <button class="btn-primary" onclick="logout()" style="background: rgba(255,255,255,0.2);" data-i18n="navigation.logout">Logout</button>
-</div>
-
-<div class="doctor-wrapper">
-
-  <!-- Sidebar Navigation -->
-  <div class="doctor-sidebar">
-    <ul class="sidebar-menu">
-      <li><a class="nav-link active" onclick="switchPanel('dashboard')" data-i18n="sections.hero.title">📊 Dashboard</a></li>
-      <li><a class="nav-link" onclick="switchPanel('incoming-requests')" data-i18n="appointment.newRequest">🔔 Incoming Requests</a></li>
-      <li><a class="nav-link" onclick="switchPanel('appointments')" data-i18n="navigation.appointments">📅 Appointments</a></li>
-      <li><a class="nav-link" onclick="switchPanel('profile')" data-i18n="navigation.profile">👤 My Profile</a></li>
-      <li><a class="nav-link" onclick="switchPanel('patients')" data-i18n="pages.doctor.myPatients">👥 Patients</a></li>
-      <li><a class="nav-link" onclick="switchPanel('earnings')" data-i18n="pages.doctor.consultationFee">💰 Earnings</a></li>
-      <li><a class="nav-link" onclick="switchPanel('settings')" data-i18n="settings.language">⚙️ Settings</a></li>
-    </ul>
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="navbar-brand" onclick="window.location.href='index.html'">🏥 CARE WITHOUT BORDERS</div>
+    <div class="navbar-menu">
+      <button onclick="switchLanguage()">🌍 Language</button>
+      <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
   </div>
 
-  <!-- Main Dashboard Content -->
+  <!-- MAIN WRAPPER -->
   <div class="dashboard-wrapper">
-
-    <!-- Dashboard Panel -->
-    <div id="dashboard" class="panel-content active">
-      <div class="doctor-container">
-
-  <!-- Quick Stats -->
-  <div class="stats-row">
-    <div class="stat-box">
-      <h3 data-i18n="pages.patient.upcomingAppointments">Today's Appointments</h3>
-      <div class="number" id="todayAppointments">0</div>
-    </div>
-    <div class="stat-box">
-      <h3 data-i18n="pages.doctor.upcomingConsultations">Pending Appointments</h3>
-      <div class="number" id="pendingAppointments">0</div>
-    </div>
-    <div class="stat-box">
-      <h3 data-i18n="pages.doctor.myPatients">Total Patients</h3>
-      <div class="number" id="totalPatients">0</div>
-    </div>
-    <div class="stat-box">
-      <h3 data-i18n="navigation.medicalRecords">EHR Records</h3>
-      <div class="number" id="totalRecords">0</div>
-    </div>
-  </div>
-
-  <!-- Main Dashboard Grid -->
-  <div class="dashboard-grid">
-
-    <!-- Manage Schedule -->
-    <div class="dashboard-card">
-      <h2 data-i18n="pages.doctor.availability">📅 My Schedule</h2>
-      <p style="color: #666; font-size: 14px;" data-i18n="appointment.preferredTime">Available time slots for today</p>
-      <div class="schedule-grid">
-        <div class="schedule-slot">09:00</div>
-        <div class="schedule-slot">10:00</div>
-        <div class="schedule-slot occupied">11:00</div>
-        <div class="schedule-slot">12:00</div>
-        <div class="schedule-slot occupied">13:00</div>
-        <div class="schedule-slot">14:00</div>
-        <div class="schedule-slot">15:00</div>
-      </div>
-    </div>
-
-    <!-- Appointments List -->
-    <div class="dashboard-card full-width">
-      <h2 data-i18n="pages.doctor.upcomingConsultations">📋 Patient Appointments</h2>
-      <p style="color: #666; font-size: 14px;" data-i18n="pages.doctor.patientName">Manage and view all your appointments</p>
-      <div class="appointments-list" id="appointmentsList">
-        <p style="color: #999; text-align: center;" data-i18n="messages.loading">Loading appointments...</p>
-      </div>
-    </div>
-
-    <!-- Add/Update EHR -->
-    <div class="dashboard-card">
-      <h2 data-i18n="navigation.medicalRecords">📝 Add Patient Record</h2>
-      <p style="color: #666; font-size: 14px;" data-i18n="pages.doctor.viewPatientHistory">Create or update patient EHR</p>
-      <form id="ehrForm">
-        <div class="form-group">
-          <label data-i18n="auth.email">Patient ID / Email</label>
-          <input type="text" id="patientId" data-i18n-attr="placeholder:auth.email" placeholder="patient@email.com" required>
-        </div>
-        <div class="form-group">
-          <label>Diagnosis</label>
-          <input type="text" id="diagnosis" placeholder="e.g., Hypertension" required>
-        </div>
-        <div class="form-group">
-          <label>Prescription</label>
-          <textarea id="prescription" placeholder="Detailed prescription..." required></textarea>
-        </div>
-        <div class="form-group">
-          <label>Dosage</label>
-          <input type="text" id="dosage" placeholder="e.g., 2 tablets daily">
-        </div>
-        <div class="form-group">
-          <label>Follow-up Date</label>
-          <input type="date" id="followUpDate">
-        </div>
-        <button type="button" class="btn-primary" onclick="saveEHR()" style="width: 100%;">Save Patient Record</button>
-      </form>
-    </div>
-
-    <!-- Video Consultation -->
-    <div class="dashboard-card" style="border-left: 5px solid #2196F3;">
-      <h2 style="color: #2196F3;">📹 Video Consultation</h2>
-      
-      <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2196F3;">
-        <p style="margin: 0; color: #1565c0; font-size: 14px;">
-          <strong>ℹ️ How to Start:</strong> First accept an appointment from the list above. A unique consultation room will be generated automatically. Then use this room code to start the video call.
-        </p>
-      </div>
-
-      <div class="form-group">
-        <label style="font-weight: 600; color: #2196F3;">🔑 Consultation Room Code</label>
-        <input type="text" id="roomName" placeholder="Room code will appear here after confirming appointment" readonly style="background: #f5f5f5; cursor: not-allowed;">
-        <small style="color: #666; display: block; margin-top: 5px;">✓ This is automatically generated when you confirm a patient appointment</small>
-      </div>
-
-      <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ff9800;">
-        <p style="margin: 0; color: #e65100; font-size: 13px;">
-          <strong>⚠️ Important:</strong> Make sure the room code is set before starting the video call. If it's empty, go back and confirm a patient appointment first.
-        </p>
-      </div>
-
-      <button class="btn-primary" onclick="startCall()" style="width: 100%; background: #2196F3; padding: 15px; font-size: 16px; font-weight: 600;" onmouseover="this.style.background='#1976d2'" onmouseout="this.style.background='#2196F3'">🎥 Start Video Call Now</button>
-      
-      <!-- Video Call Container -->
-      <div id="jitsiContainer" style="border-radius: 12px; overflow: hidden; background: #000; min-height: 500px; margin-top: 20px; display: none;"></div>
-      <script>
-        // Show video container when Jitsi is initialized
-        const originalStartCall = window.startCall;
-        window.startCall = function() {
-          const container = document.getElementById('jitsiContainer');
-          container.style.display = 'block';
-          originalStartCall();
-        };
-      </script>
-    </div>
-
-    <!-- Prescription Panel (Alternative) -->
-    <div class="dashboard-card" style="margin-top: 20px; border-left: 5px solid #4CAF50;">
-      <h2 style="color: #4CAF50;">💊 Quick Prescription</h2>
-      <p style="color: #666; font-size: 14px;">Create and send prescriptions during consultation</p>
-      
-      <div class="form-group">
-        <label>Patient Email</label>
-        <input type="email" id="consultationPatientEmail" placeholder="patient@example.com">
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-        <div class="form-group">
-          <label>Diagnosis</label>
-          <input type="text" id="consultationDiagnosis" placeholder="e.g., Hypertension">
-        </div>
-        <div class="form-group">
-          <label>Medicine Name</label>
-          <input type="text" id="consultationMedicine" placeholder="e.g., Aspirin">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-avatar">👨‍⚕️</div>
+        <div class="sidebar-info">
+          <h3>Doctor Profile</h3>
+          <p>Verified Physician</p>
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Dosage & Duration</label>
-        <input type="text" id="consultationDosage" placeholder="e.g., 1 tablet twice daily for 5 days">
-      </div>
-
-      <button class="btn-primary" onclick="sendQuickPrescription()" style="width: 100%; background: #4CAF50;" onmouseover="this.style.background='#45a049'" onmouseout="this.style.background='#4CAF50'">📧 Send Prescription</button>
-    </div>
-
-    <!-- Patient Records -->
-    <div class="dashboard-card full-width" style="margin-top: 20px;">
-      <h2>📚 Patient Medical Records</h2>
-      <p style="color: #666; font-size: 14px;">All patient consultations and EHR data</p>
-      <div class="patient-records" id="ehrList">
-        <p style="color: #999; text-align: center;">📭 No patient records yet</p>
+      <div class="menu-items">
+        <div class="menu-item active" onclick="switchPage('dashboard')">📊 Dashboard</div>
+        <div class="menu-item" onclick="switchPage('appointments')">📅 Appointments</div>
+        <div class="menu-item" onclick="switchPage('patients')">👥 Patients</div>
+        <div class="menu-item" onclick="switchPage('prescriptions')">💊 Prescriptions</div>
+        <div class="menu-item" onclick="switchPage('reports')">📈 Reports</div>
+        <div class="menu-item" onclick="switchPage('settings')">⚙️ Settings</div>
       </div>
     </div>
 
-    <!-- Patient Search -->
-    <div class="dashboard-card" style="margin-top: 20px;">
-      <h2>🔍 Search Patient</h2>
-      <p style="color: #666; font-size: 14px;">Find and manage patient records</p>
-      <div class="form-group">
-        <input type="text" id="patientSearchInput" placeholder="Search by name or ID...">
+    <!-- CONTENT AREA -->
+    <div class="content-area">
+      <!-- HEADER -->
+      <div class="content-header">
+        <h1 id="pageTitle">Welcome Back! 👋</h1>
+        <p id="pageSubtitle">Here's your medical practice overview</p>
       </div>
-      <button class="btn-primary" onclick="searchPatient()" style="width: 100%;">Search</button>
-      <div id="searchResults" style="margin-top: 15px;"></div>
-    </div>
 
-    <!-- Consultation Analytics -->
-    <div class="dashboard-card">
-      <h2>📊 Analytics</h2>
-      <p style="color: #666; font-size: 14px;">Your consultation statistics</p>
-      <div style="margin-top: 15px;">
-        <canvas id="consultationChart"></canvas>
-      </div>
-    </div>
-
-      </div>
-    </div>
-
-    <!-- Incoming Appointment Requests Panel -->
-    <div id="incoming-requests" class="panel-content">
-      <div class="panel-title">🔔 Incoming Appointment Requests</div>
-      <div class="doctor-container">
-        <!-- Doctor Availability Status -->
-        <div class="availability-section">
-          <div class="availability-status-container">
-            <div id="doctor-availability-status" class="availability-status available">
-              🟢 Available
+      <!-- BODY -->
+      <div class="content-body">
+        <!-- DASHBOARD PAGE -->
+        <div id="dashboard" class="page-section active">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number">24</div>
+              <div class="stat-label">Total Appointments</div>
             </div>
-            <p class="availability-text">You will receive notifications for incoming requests</p>
+            <div class="stat-card">
+              <div class="stat-number">156</div>
+              <div class="stat-label">Patients Under Care</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">98</div>
+              <div class="stat-label">Consultations Done</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">4.9</div>
+              <div class="stat-label">Patient Rating</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>📋 Today's Schedule</h2>
+            <p>Your upcoming appointments for today</p>
+            <div class="appointments-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Patient Name</th>
+                    <th>Time</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Rajesh Kumar</td>
+                    <td>10:00 AM</td>
+                    <td>Consultation</td>
+                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                  </tr>
+                  <tr>
+                    <td>Priya Singh</td>
+                    <td>11:30 AM</td>
+                    <td>Follow-up</td>
+                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                  </tr>
+                  <tr>
+                    <td>Amit Patel</td>
+                    <td>2:00 PM</td>
+                    <td>Consultation</td>
+                    <td><span class="status-badge status-pending">Pending</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        <!-- Incoming Requests List -->
-        <div id="incoming-requests-list" class="incoming-requests-section">
-          <div class="empty-state">
-            <p>No incoming appointment requests</p>
+        <!-- APPOINTMENTS PAGE -->
+        <div id="appointments" class="page-section">
+          <div class="card">
+            <h2>📅 Manage Appointments</h2>
+            <p>View and manage all your patient appointments</p>
+            <div class="appointments-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Patient</th>
+                    <th>Date & Time</th>
+                    <th>Type</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Rajesh Kumar</td>
+                    <td>2026-04-27 10:00 AM</td>
+                    <td>Consultation</td>
+                    <td>30 min</td>
+                    <td><span class="status-badge status-confirmed">Confirmed</span></td>
+                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Complete</button></td>
+                  </tr>
+                  <tr>
+                    <td>Priya Singh</td>
+                    <td>2026-04-28 2:00 PM</td>
+                    <td>Follow-up</td>
+                    <td>20 min</td>
+                    <td><span class="status-badge status-pending">Pending</span></td>
+                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Confirm</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Profile Panel -->
-    <div id="profile" class="panel-content">
-      <div class="panel-title">👤 My Profile</div>
-      
-      <div class="dashboard-card">
-        <!-- Profile Header with Picture -->
-        <div class="profile-header">
-          <div class="profile-picture-section">
-            <img id="profilePictureDisplay" class="profile-picture" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='35' r='20' fill='%230f766e'/%3E%3Cpath d='M 10 100 Q 50 70 90 100' fill='%230f766e'/%3E%3C/svg%3E" alt="Profile">
-            <input type="file" id="profilePictureInput" class="profile-picture-input" accept="image/*" onchange="uploadProfilePicture()">
-            <button class="upload-btn" onclick="document.getElementById('profilePictureInput').click()">Upload Picture</button>
+        <!-- PATIENTS PAGE -->
+        <div id="patients" class="page-section">
+          <div class="card">
+            <h2>👥 My Patients</h2>
+            <p>Manage your patient database and medical records</p>
+            <div class="appointments-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Patient Name</th>
+                    <th>Age</th>
+                    <th>Last Visit</th>
+                    <th>Health Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Rajesh Kumar</td>
+                    <td>45</td>
+                    <td>2026-04-25</td>
+                    <td><span class="status-badge status-completed">Healthy</span></td>
+                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">View</button></td>
+                  </tr>
+                  <tr>
+                    <td>Priya Singh</td>
+                    <td>38</td>
+                    <td>2026-04-20</td>
+                    <td><span class="status-badge status-pending">Monitoring</span></td>
+                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">View</button></td>
+                  </tr>
+                  <tr>
+                    <td>Amit Patel</td>
+                    <td>52</td>
+                    <td>2026-04-15</td>
+                    <td><span class="status-badge status-completed">Healthy</span></td>
+                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">View</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
+        </div>
 
-          <!-- Profile Info Form -->
-          <div class="profile-info-section">
-            <form id="profileForm" onsubmit="saveProfile(event)">
-              <!-- Name and License -->
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Full Name</label>
-                  <input type="text" id="doctorName" placeholder="Dr. John Doe" required>
-                </div>
-                <div class="form-group">
-                  <label>Medical License Number</label>
-                  <input type="text" id="licenseNumber" placeholder="Your medical license number" required>
-                </div>
+        <!-- PRESCRIPTIONS PAGE -->
+        <div id="prescriptions" class="page-section">
+          <div class="card">
+            <h2>💊 Issue Prescriptions</h2>
+            <p>Create and manage patient prescriptions</p>
+            <div class="form-group">
+              <label>Patient Name</label>
+              <input type="text" placeholder="Select or type patient name">
+            </div>
+            <div class="form-group">
+              <label>Medicine Name</label>
+              <input type="text" placeholder="Enter medicine name">
+            </div>
+            <div class="form-group">
+              <label>Dosage</label>
+              <input type="text" placeholder="e.g., 500mg">
+            </div>
+            <div class="form-group">
+              <label>Duration</label>
+              <input type="text" placeholder="e.g., 7 days">
+            </div>
+            <button class="btn btn-primary">📝 Issue Prescription</button>
+          </div>
+        </div>
+
+        <!-- REPORTS PAGE -->
+        <div id="reports" class="page-section">
+          <div class="card">
+            <h2>📈 Performance Reports</h2>
+            <p>View your practice statistics and analytics</p>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number">98%</div>
+                <div class="stat-label">Patient Satisfaction</div>
               </div>
-
-              <!-- Email and Phone -->
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Email Address</label>
-                  <input type="email" id="doctorEmail" placeholder="doctor@example.com" required>
-                </div>
-                <div class="form-group">
-                  <label>Phone Number</label>
-                  <input type="tel" id="doctorPhone" placeholder="+91 XXXXX XXXXX" required>
-                </div>
+              <div class="stat-card">
+                <div class="stat-number">92%</div>
+                <div class="stat-label">Appointment Completion</div>
               </div>
-
-              <!-- Date of Birth and Gender -->
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Date of Birth</label>
-                  <input type="date" id="doctorDob" required>
-                </div>
-                <div class="form-group">
-                  <label>Gender</label>
-                  <select id="doctorGender" required>
-                    <option value="">-- Select Gender --</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Specialization and Degree -->
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Specialization</label>
-                  <select id="doctorSpecialization" required>
-                    <option value="">-- Select Specialization --</option>
-                    <option value="cardiology">Cardiology</option>
-                    <option value="neurology">Neurology</option>
-                    <option value="orthopedics">Orthopedics</option>
-                    <option value="pediatrics">Pediatrics</option>
-                    <option value="general-practice">General Practice</option>
-                    <option value="dentistry">Dentistry</option>
-                    <option value="dermatology">Dermatology</option>
-                    <option value="psychiatry">Psychiatry</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Medical Degree</label>
-                  <input type="text" id="doctorDegree" placeholder="e.g., MBBS, MD, BDS" required>
-                </div>
-              </div>
-
-              <!-- Years of Experience and Clinic -->
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Years of Experience</label>
-                  <input type="number" id="yearsOfExperience" placeholder="Enter years" min="0" required>
-                </div>
-                <div class="form-group">
-                  <label>Associated Clinic/Hospital</label>
-                  <input type="text" id="clinicName" placeholder="Enter clinic or hospital name" required>
-                </div>
-              </div>
-
-              <!-- Bio -->
-              <div class="form-row full">
-                <div class="form-group">
-                  <label>Professional Bio</label>
-                  <textarea id="doctorBio" placeholder="Write a brief professional bio..." style="min-height: 100px;"></textarea>
-                </div>
-              </div>
-
-              <!-- Bank Account Details -->
-              <div class="bank-section">
-                <h3>🏦 Bank Account Details (For Earnings)</h3>
-                <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Your consultation earnings will be transferred to this account</p>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label>Account Holder Name</label>
-                    <input type="text" id="accountHolderName" placeholder="Name as per bank records" required>
-                  </div>
-                  <div class="form-group">
-                    <label>Bank Name</label>
-                    <input type="text" id="bankName" placeholder="e.g., HDFC Bank, ICICI Bank" required>
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label>Account Number</label>
-                    <input type="text" id="accountNumber" placeholder="Your account number" required>
-                  </div>
-                  <div class="form-group">
-                    <label>IFSC Code</label>
-                    <input type="text" id="ifscCode" placeholder="e.g., HDFC0000001" required>
-                  </div>
-                </div>
-
-                <div class="form-row full">
-                  <div class="form-group">
-                    <label>Account Type</label>
-                    <select id="accountType" required>
-                      <option value="">-- Select Account Type --</option>
-                      <option value="savings">Savings Account</option>
-                      <option value="current">Current Account</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div style="background: #fff3cd; padding: 12px; border-radius: 8px; font-size: 13px; color: #856404; margin-top: 15px;">
-                  🔒 Your bank details are encrypted and secure. We never share this information.
-                </div>
-              </div>
-
-              <!-- Save Button -->
-              <button type="submit" class="btn-primary" style="width: 100%; margin-top: 25px; padding: 15px;">Save Profile</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Appointments Panel -->
-    <div id="appointments" class="panel-content">
-      <div class="panel-title">📅 My Appointments</div>
-      <div class="dashboard-card">
-        <h2>Pending Consultations</h2>
-        <div class="appointments-list" id="appointmentsList">
-          <p style="color: #999; text-align: center;">Loading appointments...</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Patients Panel -->
-    <div id="patients" class="panel-content">
-      <div class="panel-title">👥 My Patients</div>
-      <div class="dashboard-card">
-        <p style="color: #666;">Your patient list will appear here</p>
-        <div id="patientsList" style="margin-top: 15px;"></div>
-      </div>
-    </div>
-
-    <!-- Earnings Panel -->
-    <div id="earnings" class="panel-content">
-      <div class="panel-title">💰 My Earnings</div>
-      <div class="dashboard-grid">
-        <div class="dashboard-card">
-          <h2>Total Earnings</h2>
-          <p style="font-size: 28px; color: #0f766e; margin: 10px 0; font-weight: bold;">₹0</p>
-        </div>
-        <div class="dashboard-card">
-          <h2>This Month</h2>
-          <p style="font-size: 28px; color: #0f766e; margin: 10px 0; font-weight: bold;">₹0</p>
-        </div>
-        <div class="dashboard-card">
-          <h2>Pending Payment</h2>
-          <p style="font-size: 28px; color: #0f766e; margin: 10px 0; font-weight: bold;">₹0</p>
-        </div>
-      </div>
-      <div class="dashboard-card" style="margin-top: 25px;">
-        <h2>Recent Transactions</h2>
-        <p style="color: #999; text-align: center;">No transactions yet</p>
-      </div>
-    </div>
-
-    <!-- Settings Panel -->
-    <div id="settings" class="panel-content">
-      <div class="panel-title">⚙️ Settings</div>
-      <div class="dashboard-card">
-        <h2>Account Settings</h2>
-        <div class="form-group">
-          <label>Change Password</label>
-          <input type="password" placeholder="New password" id="newPassword">
-        </div>
-        <button class="btn-primary" onclick="changePassword()" style="width: 100%;">Update Password</button>
-      </div>
-      <div class="dashboard-card" style="margin-top: 25px;">
-        <h2>Danger Zone</h2>
-        <p style="color: #666; font-size: 14px;">Once you delete your account, there is no going back.</p>
-        <button class="btn-danger" onclick="deleteAccount()" style="width: 100%; margin-top: 15px;">Delete Account</button>
-      </div>
-    </div>
-
-  </div>
-
-</div>
-
-<script>
-  // Initialize - show dashboard by default
-  document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('dashboard').classList.add('active');
-    document.querySelector('.nav-link').classList.add('active');
-    loadProfileData();
-  });
-
-  // Panel Switching with data loading
-  function switchPanel(panelId) {
-    // Hide all panels
-    const panels = document.querySelectorAll('.panel-content');
-    panels.forEach(p => p.classList.remove('active'));
-    
-    // Remove active class from all nav links
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => link.classList.remove('active'));
-    
-    // Show selected panel
-    const selectedPanel = document.getElementById(panelId);
-    if (selectedPanel) {
-      selectedPanel.classList.add('active');
-    }
-    
-    // Activate nav link
-    const activeLink = document.querySelector(`[onclick="switchPanel('${panelId}')"]`);
-    if (activeLink) {
-      activeLink.classList.add('active');
-    }
-
-    // Load data for specific panels
-    if (panelId === 'appointments') {
-      loadAppointments();
-    }
-  }
-
-  // Send Quick Prescription
-  function sendQuickPrescription() {
-    const email = document.getElementById('consultationPatientEmail').value;
-    const diagnosis = document.getElementById('consultationDiagnosis').value;
-    const medicine = document.getElementById('consultationMedicine').value;
-    const dosage = document.getElementById('consultationDosage').value;
-
-    if (!email || !diagnosis || !medicine || !dosage) {
-      alert('❌ Please fill in all fields');
-      return;
-    }
-
-    alert(`✅ Prescription sent!\n\nTo: ${email}\nDiagnosis: ${diagnosis}\nMedicine: ${medicine}\nDosage: ${dosage}\n\nThe patient will receive this via email.`);
-    
-    // Clear form
-    document.getElementById('consultationPatientEmail').value = '';
-    document.getElementById('consultationDiagnosis').value = '';
-    document.getElementById('consultationMedicine').value = '';
-    document.getElementById('consultationDosage').value = '';
-  }
-
-  // Load profile data from localStorage
-  function loadProfileData() {
-    const profileData = localStorage.getItem('doctorProfile');
-    if (profileData) {
-      const data = JSON.parse(profileData);
-      document.getElementById('doctorName').value = data.name || '';
-      document.getElementById('licenseNumber').value = data.license || '';
-      document.getElementById('doctorEmail').value = data.email || '';
-      document.getElementById('doctorPhone').value = data.phone || '';
-      document.getElementById('doctorDob').value = data.dob || '';
-      document.getElementById('doctorGender').value = data.gender || '';
-      document.getElementById('doctorSpecialization').value = data.specialization || '';
-      document.getElementById('doctorDegree').value = data.degree || '';
-      document.getElementById('yearsOfExperience').value = data.experience || '';
-      document.getElementById('clinicName').value = data.clinic || '';
-      document.getElementById('doctorBio').value = data.bio || '';
-      
-      if (data.profilePicture) {
-        document.getElementById('profilePictureDisplay').src = data.profilePicture;
-      }
-      
-      if (data.bankAccount) {
-        document.getElementById('accountHolderName').value = data.bankAccount.holderName || '';
-        document.getElementById('bankName').value = data.bankAccount.bankName || '';
-        document.getElementById('accountNumber').value = data.bankAccount.accountNumber || '';
-        document.getElementById('ifscCode').value = data.bankAccount.ifscCode || '';
-        document.getElementById('accountType').value = data.bankAccount.accountType || '';
-      }
-    }
-  }
-
-  // Profile Functions
-  function uploadProfilePicture() {
-    const input = document.getElementById('profilePictureInput');
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      if (file.size > 5 * 1024 * 1024) {
-        alert('⚠️ File size must be less than 5MB');
-        return;
-      }
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        document.getElementById('profilePictureDisplay').src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  function saveProfile(event) {
-    event.preventDefault();
-    
-    // Validate required fields
-    const name = document.getElementById('doctorName').value.trim();
-    const email = document.getElementById('doctorEmail').value.trim();
-    const phone = document.getElementById('doctorPhone').value.trim();
-    const dob = document.getElementById('doctorDob').value;
-    const specialization = document.getElementById('doctorSpecialization').value;
-    const degree = document.getElementById('doctorDegree').value.trim();
-    const license = document.getElementById('licenseNumber').value.trim();
-    const experience = document.getElementById('yearsOfExperience').value;
-    const clinic = document.getElementById('clinicName').value.trim();
-    
-    if (!name || !email || !phone || !dob || !specialization || !degree || !license || !experience || !clinic) {
-      alert('⚠️ Please fill in all required fields in Personal & Professional section');
-      return;
-    }
-    
-    // Validate bank details
-    const accountHolder = document.getElementById('accountHolderName').value.trim();
-    const bankName = document.getElementById('bankName').value.trim();
-    const accountNumber = document.getElementById('accountNumber').value.trim();
-    const ifscCode = document.getElementById('ifscCode').value.trim();
-    const accountType = document.getElementById('accountType').value;
-    
-    if (!accountHolder || !bankName || !accountNumber || !ifscCode || !accountType) {
-      alert('⚠️ Please fill in all bank account details');
-      return;
-    }
-    
-    // Validate account number (should be numeric)
-    if (!/^\d{9,18}$/.test(accountNumber)) {
-      alert('⚠️ Account number should be 9-18 digits');
-      return;
-    }
-    
-    // Validate IFSC code format
-    if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifscCode)) {
-      alert('⚠️ IFSC code format invalid (e.g., HDFC0000001)');
-      return;
-    }
-    
-    // Prepare profile data
-    const profileData = {
-      name,
-      email,
-      phone,
-      dob,
-      gender: document.getElementById('doctorGender').value,
-      specialization,
-      degree,
-      license,
-      experience,
-      clinic,
-      bio: document.getElementById('doctorBio').value,
-      profilePicture: document.getElementById('profilePictureDisplay').src,
-      bankAccount: {
-        holderName: accountHolder,
-        bankName,
-        accountNumber,
-        ifscCode,
-        accountType
-      },
-      lastUpdated: new Date().toISOString()
-    };
-    
-    // Save to localStorage
-    localStorage.setItem('doctorProfile', JSON.stringify(profileData));
-    alert('✅ Profile updated successfully!\nYour bank account details are safe and encrypted.');
-  }
-
-  function changePassword() {
-    const newPassword = document.getElementById('newPassword').value;
-    if (!newPassword) {
-      alert('⚠️ Please enter a new password');
-      return;
-    }
-    if (newPassword.length < 6) {
-      alert('⚠️ Password must be at least 6 characters');
-      return;
-    }
-    alert('✅ Password updated successfully!');
-    document.getElementById('newPassword').value = '';
-  }
-
-  function deleteAccount() {
-    if (confirm('⚠️ Are you sure? This action cannot be undone. All your data will be deleted.')) {
-      localStorage.removeItem('doctorProfile');
-      localStorage.removeItem('doctorLoggedIn');
-      alert('Account deletion initiated...');
-      window.location.href = 'login.html';
-    }
-  }
-
-  // ==================== PRESCRIPTION FUNCTIONS ====================
-
-  // Load quick medicine suggestions
-  function loadMedicineSuggestions() {
-    const medicines = [
-      'Paracetamol 500mg',
-      'Ibuprofen 400mg',
-      'Amoxicillin 250mg',
-      'Aspirin 75mg',
-      'Metformin 500mg',
-      'Lisinopril 10mg',
-      'Atorvastatin 20mg',
-      'Omeprazole 20mg'
-    ];
-    
-    const container = document.getElementById('medicineQuickAdd');
-    container.innerHTML = '';
-    medicines.forEach(medicine => {
-      const pill = document.createElement('div');
-      pill.className = 'medicine-suggestion';
-      pill.textContent = medicine;
-      pill.onclick = () => addToPrescrition(medicine);
-      container.appendChild(pill);
-    });
-  }
-
-  // Add medicine to prescription
-  function addToPrescrition(medicine) {
-    const prescriptionField = document.getElementById('prescriptionDetails');
-    const current = prescriptionField.value.trim();
-    const dosagePrompt = prompt(`Enter dosage for ${medicine}:\nExample: 2 tablets twice daily for 5 days`);
-    
-    if (dosagePrompt) {
-      const line = `${medicine} - ${dosagePrompt}`;
-      prescriptionField.value = current ? current + '\n' + line : line;
-    }
-  }
-
-  // Start video call and show prescription panel
-  function startCall() {
-    const patientEmail = document.getElementById('consultationPatientEmail').value;
-    const roomName = document.getElementById('roomName').value || 'doctor-patient-' + Date.now();
-    
-    if (!patientEmail) {
-      alert('⚠️ Please enter patient email address to send prescription');
-      return;
-    }
-    
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(patientEmail)) {
-      alert('⚠️ Please enter a valid email address');
-      return;
-    }
-    
-    // Store current patient email
-    localStorage.setItem('currentConsultationEmail', patientEmail);
-    
-    // Get patient name if available
-    const patientName = prompt('Enter patient name:') || 'Patient';
-    document.getElementById('prescriptionPatientName').value = patientName;
-    
-    // Show call interface
-    document.getElementById('callInterface').classList.remove('hidden');
-    
-    // Load medicine suggestions
-    loadMedicineSuggestions();
-    
-    // Initialize Jitsi Meet
-    const options = {
-      roomName: roomName,
-      width: '100%',
-      height: 400,
-      parentNode: document.getElementById('jitsiContainer'),
-      configOverwrite: {
-        prejoinPageEnabled: false,
-        startWithAudioMuted: false,
-        startWithVideoMuted: false
-      },
-      interfaceConfigOverwrite: {
-        TOOLBAR_BUTTONS: ['microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen', 'fodeviceselection', 'hangup', 'profile', 'chat', 'recording', 'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand', 'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts', 'tileview', 'toggle_filmstrip', 'download', 'help', 'mute-everyone', 'e2ee', 'security']
-      }
-    };
-    
-    const api = new JitsiMeetExternalAPI('meet.jit.si', options);
-    
-    api.addEventListener('videoConferenceLeft', () => {
-      closeCallInterface();
-    });
-  }
-
-  // Close call interface
-  function closeCallInterface() {
-    document.getElementById('callInterface').classList.add('hidden');
-    document.getElementById('jitsiContainer').innerHTML = '';
-    localStorage.removeItem('currentConsultationEmail');
-  }
-
-  // Send prescription via email
-  function sendPrescriptionEmail() {
-    const patientEmail = localStorage.getItem('currentConsultationEmail') || document.getElementById('consultationPatientEmail').value;
-    const patientName = document.getElementById('prescriptionPatientName').value;
-    const diagnosis = document.getElementById('prescriptionDiagnosis').value;
-    const prescription = document.getElementById('prescriptionDetails').value;
-    const followUpDate = document.getElementById('prescriptionFollowUpDate').value;
-    const notes = document.getElementById('prescriptionNotes').value;
-    
-    if (!patientEmail) {
-      alert('⚠️ Patient email is required');
-      return;
-    }
-    
-    if (!diagnosis || !prescription) {
-      alert('⚠️ Please fill in diagnosis and prescription details');
-      return;
-    }
-    
-    // Get doctor profile
-    const doctorProfile = JSON.parse(localStorage.getItem('doctorProfile') || '{}');
-    const doctorName = doctorProfile.name || 'Dr. Smith';
-    const doctorEmail = doctorProfile.email || 'doctor@example.com';
-    
-    // Prepare email content
-    const emailContent = `
-    <html>
-      <body style="font-family: Arial, sans-serif; color: #333;">
-        <div style="background: #0f766e; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
-          <h2>📋 Medical Prescription</h2>
-        </div>
-        
-        <div style="padding: 20px; background: #f9f9f9;">
-          <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
-          
-          <div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #0f766e;">
-            <p><strong>Dear ${patientName},</strong></p>
-            <p>Your consultation prescription from <strong>${doctorName}</strong> is ready below.</p>
-          </div>
-          
-          <div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px;">
-            <h3 style="color: #0f766e; border-bottom: 2px solid #0f766e; padding-bottom: 10px;">Diagnosis</h3>
-            <p style="font-size: 16px;"><strong>${diagnosis}</strong></p>
-          </div>
-          
-          <div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px;">
-            <h3 style="color: #0f766e; border-bottom: 2px solid #0f766e; padding-bottom: 10px;">Prescription</h3>
-            <pre style="background: #f5f5f5; padding: 10px; border-radius: 6px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;">${prescription}</pre>
-          </div>
-          
-          ${followUpDate ? `<div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px;">
-            <h3 style="color: #0f766e;">Follow-up Date</h3>
-            <p><strong>${new Date(followUpDate).toLocaleDateString()}</strong></p>
-          </div>` : ''}
-          
-          ${notes ? `<div style="background: white; padding: 15px; margin: 15px 0; border-radius: 8px;">
-            <h3 style="color: #0f766e; border-bottom: 2px solid #0f766e; padding-bottom: 10px;">Additional Notes</h3>
-            <p>${notes.replace(/\n/g, '<br>')}</p>
-          </div>` : ''}
-          
-          <div style="background: #e8f5e9; padding: 15px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #4caf50;">
-            <p><strong>Important:</strong> Please take your medicines as prescribed. If symptoms persist or worsen, contact your doctor immediately.</p>
-          </div>
-          
-          <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
-            <p><strong>Doctor Details:</strong></p>
-            <p>Name: ${doctorName}<br>Email: ${doctorEmail}</p>
-            <p style="margin-top: 15px;">This is an automated prescription from Care Without Borders. Please consult your doctor for any clarifications.</p>
-          </div>
-        </div>
-      </body>
-    </html>
-    `;
-    
-    // Send email via backend
-    sendEmailViaBackend(patientEmail, `Prescription from ${doctorName}`, emailContent);
-  }
-
-  // Save prescription to EHR
-  function savePrescriptionToEHR() {
-    const patientEmail = localStorage.getItem('currentConsultationEmail') || document.getElementById('consultationPatientEmail').value;
-    const patientName = document.getElementById('prescriptionPatientName').value;
-    const diagnosis = document.getElementById('prescriptionDiagnosis').value;
-    const prescription = document.getElementById('prescriptionDetails').value;
-    const followUpDate = document.getElementById('prescriptionFollowUpDate').value;
-    const notes = document.getElementById('prescriptionNotes').value;
-    
-    if (!patientEmail || !diagnosis || !prescription) {
-      alert('⚠️ Please fill in patient email, diagnosis, and prescription');
-      return;
-    }
-    
-    // Get doctor profile
-    const doctorProfile = JSON.parse(localStorage.getItem('doctorProfile') || '{}');
-    const doctorName = doctorProfile.name || 'Dr. Smith';
-    
-    // Create EHR record
-    const ehrData = {
-      patientEmail,
-      patientName,
-      doctorName,
-      diagnosis,
-      prescription,
-      followUpDate,
-      notes,
-      dateCreated: new Date().toISOString(),
-      consultationType: 'Video Consultation via Prescription Panel'
-    };
-    
-    // Get existing EHR records
-    let allEHRRecords = JSON.parse(localStorage.getItem('ehrRecords') || '[]');
-    
-    // Add new record
-    allEHRRecords.push(ehrData);
-    
-    // Save back to localStorage
-    localStorage.setItem('ehrRecords', JSON.stringify(allEHRRecords));
-    
-    alert('✅ Prescription saved to patient EHR!');
-    
-    // Send email as well
-    const confirmSendEmail = confirm('Do you want to send this prescription to the patient via email?');
-    if (confirmSendEmail) {
-      sendPrescriptionEmail();
-    }
-  }
-
-  // Backend function to send email
-  function sendEmailViaBackend(to, subject, htmlContent) {
-    // Using backend API endpoint
-    fetch(CONFIG.getApiUrl(CONFIG.ENDPOINTS.SEND_PRESCRIPTION), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        to,
-        subject,
-        htmlContent
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert('✅ Prescription sent successfully to ' + to);
-        // Also save to EHR automatically
-        savePrescriptionToEHR();
-      } else {
-        alert('⚠️ Email could not be sent. Please check the email address.');
-        console.error('Email error:', data.error);
-      }
-    })
-    .catch(error => {
-      console.error('Error sending email:', error);
-      alert('⚠️ Error sending email. Will save to EHR only.');
-      savePrescriptionToEHR();
-    });
-  }
-
-  // Load Appointments for Doctor
-  async function loadAppointments() {
-    const appointmentsList = document.getElementById('appointmentsList');
-    
-    try {
-      // Get appointments data
-      const appointments = [
-        {
-          id: 1,
-          patientName: 'John Doe',
-          patientEmail: 'john@example.com',
-          date: new Date().toISOString().split('T')[0],
-          time: '10:00',
-          reason: 'Regular Checkup',
-          status: 'pending'
-        },
-        {
-          id: 2,
-          patientName: 'Jane Smith',
-          patientEmail: 'jane@example.com',
-          date: new Date().toISOString().split('T')[0],
-          time: '11:00',
-          reason: 'Follow-up Visit',
-          status: 'pending'
-        }
-      ];
-
-      if (appointments.length === 0) {
-        appointmentsList.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;"><p>📭 No pending appointments at the moment</p></div>';
-        return;
-      }
-
-      appointmentsList.innerHTML = '';
-      appointments.forEach(apt => {
-        const statusColor = apt.status === 'pending' ? '#ffc107' : apt.status === 'confirmed' ? '#28a745' : '#6c757d';
-        const appointmentHTML = `
-          <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0f766e; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: start;">
-              <div>
-                <p style="margin: 0; font-weight: 600; font-size: 16px; color: #0f766e;">${apt.patientName}</p>
-                <p style="margin: 5px 0; color: #666; font-size: 14px;">📧 ${apt.patientEmail}</p>
-                <p style="margin: 5px 0; color: #333; font-size: 14px;">📅 ${apt.date} at <strong>${apt.time}</strong></p>
-                <p style="margin: 5px 0; color: #666; font-size: 14px;">🏥 ${apt.reason}</p>
-                <span style="display: inline-block; background: ${statusColor}; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; margin-top: 8px; font-weight: 600; text-transform: uppercase;">${apt.status}</span>
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                <button onclick="confirmAppointment(${apt.id})" style="background: #28a745; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s; white-space: nowrap;" onmouseover="this.style.background='#218838'" onmouseout="this.style.background='#28a745'">✓ Confirm</button>
-                <button onclick="completeAppointment(${apt.id})" style="background: #0f766e; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s; white-space: nowrap;" onmouseover="this.style.background='#0d5c56'" onmouseout="this.style.background='#0f766e'">✓ Complete</button>
-                <button onclick="rejectAppointment(${apt.id})" style="background: #f44336; color: white; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.3s; white-space: nowrap;" onmouseover="this.style.background='#da190b'" onmouseout="this.style.background='#f44336'">✕ Reject</button>
+              <div class="stat-card">
+                <div class="stat-number">156</div>
+                <div class="stat-label">Active Patients</div>
               </div>
             </div>
           </div>
-        `;
-        appointmentsList.innerHTML += appointmentHTML;
+        </div>
+
+        <!-- SETTINGS PAGE -->
+        <div id="settings" class="page-section">
+          <div class="card">
+            <h2>⚙️ Practice Settings</h2>
+            <p>Update your profile and preferences</p>
+            <div class="form-group">
+              <label>Specialization</label>
+              <select>
+                <option>General Physician</option>
+                <option>Cardiologist</option>
+                <option>Dermatologist</option>
+                <option>Pediatrician</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Clinic Address</label>
+              <input type="text" placeholder="Enter clinic address">
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" placeholder="Enter phone number">
+            </div>
+            <button class="btn btn-primary">💾 Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchPage(pageName) {
+      document.querySelectorAll('.page-section').forEach(section => {
+        section.classList.remove('active');
       });
-    } catch (error) {
-      console.error('Error loading appointments:', error);
-      appointmentsList.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;"><p>⚠️ Error loading appointments</p></div>';
+
+      document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      const pageEl = document.getElementById(pageName);
+      if (pageEl) {
+        pageEl.classList.add('active');
+      }
+
+      event.target.closest('.menu-item').classList.add('active');
+
+      const headers = {
+        dashboard: ['Welcome Back! 👋', 'Here\'s your medical practice overview'],
+        appointments: ['📅 Manage Appointments', 'View and manage all your patient appointments'],
+        patients: ['👥 My Patients', 'Manage your patient database and records'],
+        prescriptions: ['💊 Issue Prescriptions', 'Create and manage patient prescriptions'],
+        reports: ['📈 Performance Reports', 'View your practice statistics and analytics'],
+        settings: ['⚙️ Practice Settings', 'Update your profile and preferences']
+      };
+
+      const header = headers[pageName] || ['Dashboard', ''];
+      document.getElementById('pageTitle').textContent = header[0];
+      document.getElementById('pageSubtitle').textContent = header[1];
     }
-  }
 
-  // Accept Appointment (moved from window scope)
-  function acceptAppointment(appointmentId) {
-    alert('✅ Appointment accepted! The patient will be notified.');
-    loadAppointments();
-  }
-
-  // Complete Appointment
-  function completeAppointment(appointmentId) {
-    alert('✅ Appointment marked as completed!');
-    loadAppointments();
-  }
-
-  // Reject Appointment
-  function rejectAppointment(appointmentId) {
-    alert('❌ Appointment rejected. The patient will be notified.');
-    loadAppointments();
-  }
-
-</script>
-
-<script src="https://meet.jit.si/external_api.js"></script>
-<!-- Doctor Dashboard UI -->
-<script src="js/doctor-dashboard-ui.js"></script>
-<!-- Module Initialization -->
-<script type="module">
-  // Import modules for doctor dashboard
-  import { auth, db } from './js/firebase.js';
-  import AppointmentBookingEngine, { initAppointmentBookingEngine } from './js/appointment-booking.js';
-  import AppointmentManager, { initAppointmentManager } from './js/appointment-manager.js';
-  
-  // Load doctor module
-  import('./js/doctor.js');
-
-  // Wait for doctor authentication
-  auth.onAuthStateChanged(async (user) => {
-    if (user) {
-      console.log('[Doctor Module] Doctor authenticated:', user.email);
-      
-      // Initialize appointment booking engine
-      const engine = await initAppointmentBookingEngine();
-      window.appointmentBookingEngine = engine;
-      console.log('[Doctor Module] Appointment booking engine initialized');
-      
-      // Initialize appointment manager for real-time notifications
-      const manager = await initAppointmentManager();
-      window.appointmentManager = manager;
-      console.log('[Doctor Module] Appointment manager initialized');
-      
-      // Initialize doctor dashboard UI
-      if (window.initDoctorDashboardUI) {
-        window.initDoctorDashboardUI();
+    function switchLanguage() {
+      if (window.vilgaxVoiceSystem) {
+        const currentLang = window.vilgaxVoiceSystem.currentLanguage;
+        const nextLang = currentLang === 'en' ? 'ta' : currentLang === 'ta' ? 'hi' : 'en';
+        window.vilgaxVoiceSystem.setLanguage(nextLang);
+        const langNames = { en: '🇺🇸 English', ta: '🇮🇳 Tamil', hi: '🇮🇳 Hindi' };
+        alert(`Language changed to: ${langNames[nextLang]}`);
       }
     }
-  });
-</script>
-<!-- VILGAX AI Assistant - Advanced Version -->
-<script src="js/vilgax-assistant-advanced.js"></script>
-<!-- VILGAX Form Filling Engine -->
-<script src="js/vilgax-form-filler.js"></script>
-<!-- VILGAX Hotword Detection -->
-<script src="js/vilgax-hotword-detector.js"></script>
+
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('doctorLoggedIn');
+        window.location.href = 'index.html';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log('✓ Doctor Dashboard loaded');
+    });
+  </script>
 </body>
 </html>
