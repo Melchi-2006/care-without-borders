@@ -681,6 +681,7 @@
 <script src="js/i18n.js"></script>
 <script src="js/disease-medicine-database.js"></script>
 <script src="js/vilgax-voice-system.js"></script>
+<script src="js/vilgax-consultation.js"></script>
 
 <script>
   let currentPage = 'dashboard';
@@ -1065,7 +1066,160 @@
     } else {
       console.warn('⚠️ VILGAX Voice System not loaded');
     }
+
+    // Show consultation modal on page load
+    setTimeout(() => {
+      showConsultationModal();
+    }, 500);
   });
+</script>
+
+<!-- ==================== VILGAX CONSULTATION MODAL ==================== -->
+<div id="consultationModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease;">
+  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; width: 90%; max-width: 600px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+    
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan)); padding: 20px; border-radius: 16px 16px 0 0; display: flex; justify-content: space-between; align-items: center;">
+      <h2 style="color: var(--dark-bg); margin: 0; font-size: 22px;">🏥 VILGAX AI Consultation</h2>
+      <button onclick="closeConsultationModal()" style="background: rgba(0,0,0,0.2); border: none; color: var(--dark-bg); cursor: pointer; font-size: 24px; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">✕</button>
+    </div>
+
+    <!-- Chat Area -->
+    <div id="consultationChatBox" style="flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: rgba(15,23,42,0.3);">
+      <div style="background: rgba(20,184,166,0.2); color: var(--text-light); padding: 12px; border-radius: 8px; text-align: left; border-left: 3px solid var(--primary-cyan);">
+        👋 Hello! I'm VILGAX, your AI healthcare assistant. Please describe your health concerns. You can speak or type. For example: "I am John, 32 years old, I have fever for 2 days with vomiting."
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div style="padding: 15px; background: rgba(30,41,59,0.5); border-top: 1px solid var(--border-color); border-radius: 0 0 16px 16px;">
+      <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+        <button id="micButton" onclick="toggleMic()" style="flex: 1; padding: 12px; background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan)); border: none; border-radius: 8px; color: var(--dark-bg); font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 14px;">
+          🎤 Speak to VILGAX
+        </button>
+        <button onclick="closeConsultationModal()" style="padding: 12px 24px; background: transparent; border: 1.5px solid var(--primary-cyan); color: var(--primary-cyan); border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+          Close
+        </button>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="consultationInput" placeholder="Type your message or click 🎤 to speak..." style="flex: 1; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); font-family: inherit; font-size: 14px; transition: all 0.3s ease;" onkeypress="if(event.key==='Enter') submitConsultationMessage();">
+        <button onclick="submitConsultationMessage()" style="padding: 12px 24px; background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan)); border: none; border-radius: 8px; color: var(--dark-bg); font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== BOOKING CONFIRMATION MODAL ==================== -->
+<div id="bookingModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease;">
+  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; width: 90%; max-width: 500px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+    <h2 style="color: var(--primary-cyan); margin-top: 0;">✅ Appointment Confirmed!</h2>
+    <p style="color: var(--text-light);">Your consultation request has been sent to available doctors.</p>
+    
+    <div id="bookingDetails" style="background: rgba(20,184,166,0.1); padding: 15px; border-radius: 8px; margin: 20px 0; color: var(--text-light);">
+      <!-- Booking details will be inserted here -->
+    </div>
+
+    <p style="color: var(--text-light); font-size: 13px; font-style: italic;">
+      ⏱️ Doctors will respond shortly. You'll receive a notification when a doctor accepts your request.
+    </p>
+
+    <button onclick="closeBookingModal()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan)); border: none; border-radius: 8px; color: var(--dark-bg); font-weight: 600; cursor: pointer; margin-top: 20px;">
+      Done
+    </button>
+  </div>
+</div>
+
+<script>
+  // ==================== CONSULTATION MODAL FUNCTIONS ====================
+  function showConsultationModal() {
+    document.getElementById('consultationModal').style.display = 'flex';
+    // Auto-greet patient
+    if (window.vilgaxVoiceSystem) {
+      window.vilgaxVoiceSystem.speak('Hello! I am VILGAX, your AI healthcare assistant. Please describe your health concerns.');
+    }
+  }
+
+  function closeConsultationModal() {
+    document.getElementById('consultationModal').style.display = 'none';
+    if (window.vilgaxConsultation) {
+      window.vilgaxConsultation.stopListening();
+    }
+  }
+
+  function submitConsultationMessage() {
+    const input = document.getElementById('consultationInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    addChatMessage(message, 'user');
+    if (window.vilgaxConsultation) {
+      window.vilgaxConsultation.handlePatientInput(message, true);
+    }
+    input.value = '';
+  }
+
+  function closeBookingModal() {
+    document.getElementById('bookingModal').style.display = 'none';
+    closeConsultationModal();
+  }
+
+  function showBookingConfirmation(consultationData, specialty, preferredTime) {
+    const request = createConsultationRequest(consultationData, specialty, preferredTime);
+    
+    const details = document.getElementById('bookingDetails');
+    details.innerHTML = `
+      <p><strong>📋 Your Details:</strong></p>
+      <p>Name: ${consultationData.patientName || 'Not provided'}</p>
+      <p>Age: ${consultationData.age || 'Not provided'}</p>
+      <p>Gender: ${consultationData.gender || 'Not provided'}</p>
+      <p>Symptoms: ${consultationData.symptoms}</p>
+      <p>Duration: ${consultationData.duration}</p>
+      <p><strong>🏥 Specialist: ${specialty}</strong></p>
+      <p><strong>🕐 Preferred Time: ${preferredTime}</strong></p>
+      <p><strong>🆔 Request ID: ${request.id}</strong></p>
+    `;
+
+    document.getElementById('bookingModal').style.display = 'flex';
+    
+    if (window.vilgaxVoiceSystem) {
+      window.vilgaxVoiceSystem.speak(`Perfect! I've sent your consultation request to ${specialty} specialists. The request ID is ${request.id}. Doctors will respond within minutes.`);
+    }
+  }
+
+  // Handle pending consultation continuation
+  function processPendingConsultation(userInput) {
+    if (window.pendingConsultation) {
+      const { data, specialty, doctors } = window.pendingConsultation;
+      
+      // Extract time from user input
+      const timeMatch = userInput.match(/(\d{1,2})\s*(?:am|pm|AM|PM|:)/i);
+      let preferredTime = userInput;
+      
+      if (timeMatch) {
+        preferredTime = userInput.match(/\d{1,2}(?::\d{2})?\s*(?:am|pm|AM|PM)/i)?.[0] || userInput;
+      }
+
+      // Show booking confirmation
+      showBookingConfirmation(data, specialty, preferredTime);
+      
+      // Clear pending consultation
+      window.pendingConsultation = null;
+    }
+  }
+
+  // Override the handlePatientInput in vilgax-consultation to handle booking time
+  const originalHandleInput = window.vilgaxConsultation?.handlePatientInput;
+  if (originalHandleInput) {
+    window.vilgaxConsultation.handlePatientInput = function(userInput, isFinal) {
+      if (window.pendingConsultation && isFinal) {
+        processPendingConsultation(userInput);
+      } else {
+        originalHandleInput.call(this, userInput, isFinal);
+      }
+    };
+  }
 </script>
 
 </body>

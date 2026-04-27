@@ -6,6 +6,7 @@
   <title>Doctor Dashboard | Care Without Borders</title>
   <script src="js/i18n.js"></script>
   <script src="js/vilgax-voice-system.js"></script>
+  <script src="js/doctor-consultation-panel.js"></script>
   
   <style>
     * {
@@ -595,9 +596,13 @@
 
         <!-- APPOINTMENTS PAGE -->
         <div id="appointments" class="page-section">
+          <!-- VILGAX CONSULTATION REQUESTS -->
+          <div id="consultationRequests"></div>
+
+          <!-- REGULAR APPOINTMENTS -->
           <div class="card">
-            <h2>📅 Manage Appointments</h2>
-            <p>View and manage all your patient appointments</p>
+            <h2>📅 Your Scheduled Appointments</h2>
+            <p>All your confirmed and upcoming appointments</p>
             <div class="appointments-table">
               <table>
                 <thead>
@@ -772,7 +777,7 @@
 
       const headers = {
         dashboard: ['Welcome Back! 👋', 'Here\'s your medical practice overview'],
-        appointments: ['📅 Manage Appointments', 'View and manage all your patient appointments'],
+        appointments: ['📅 Manage Appointments', 'View and manage all your patient appointments & consultation requests'],
         patients: ['👥 My Patients', 'Manage your patient database and records'],
         prescriptions: ['💊 Issue Prescriptions', 'Create and manage patient prescriptions'],
         reports: ['📈 Performance Reports', 'View your practice statistics and analytics'],
@@ -782,6 +787,14 @@
       const header = headers[pageName] || ['Dashboard', ''];
       document.getElementById('pageTitle').textContent = header[0];
       document.getElementById('pageSubtitle').textContent = header[1];
+
+      // Load consultation requests if viewing appointments
+      if (pageName === 'appointments' && window.doctorPanel) {
+        const requestsDiv = document.getElementById('consultationRequests');
+        if (requestsDiv) {
+          requestsDiv.innerHTML = showDoctorConsultationRequests('General');
+        }
+      }
     }
 
     function switchLanguage() {
