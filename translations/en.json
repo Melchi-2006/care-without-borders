@@ -379,7 +379,7 @@
     "examples": "Examples: Tomorrow at 2 PM, Next Monday morning, 3:30 PM today",
     "preparingVideo": "Preparing your appointment with a specialist..."
   },
-  "appointment": {
+  "appointmentRequest": {
     "newRequest": "New Appointment Request",
     "patient": "Patient",
     "age": "Age",

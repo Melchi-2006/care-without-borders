@@ -986,7 +986,6 @@ class VILGAXAssistant {
         this.startVideoCall(appointment);
       }
     }, 500);
-    }, 3000);
   }
 
   /**
