@@ -408,6 +408,67 @@
       box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
     }
 
+    /* ==================== MODAL STYLES ==================== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+      color: var(--primary-cyan);
+      margin: 0;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      color: var(--primary-cyan);
+    }
+
     /* ==================== RESPONSIVE ==================== */
     @media (max-width: 1024px) {
       .sidebar {
@@ -623,30 +684,30 @@
           <div class="card">
             <h2>👨‍⚕️ Manage Doctors</h2>
             <p>Add, edit, and manage doctor profiles and credentials</p>
-            <button class="btn btn-primary" style="margin-bottom: 20px;">➕ Add New Doctor</button>
+            <button class="btn btn-primary" style="margin-bottom: 20px;" onclick="openAddDoctorModal()">➕ Add New Doctor</button>
             <div class="data-table">
               <table>
                 <thead>
                   <tr>
                     <th>Doctor Name</th>
                     <th>Specialization</th>
-                    <th>Patients</th>
+                    <th>Email</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="doctorsTableBody">
                   <tr>
                     <td>Dr. Rajesh Kumar</td>
                     <td>General Physician</td>
-                    <td>156</td>
+                    <td>rajesh.kumar@hospital.com</td>
                     <td><span class="status-badge status-active">Active</span></td>
-                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Edit</button></td>
+                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="editDoctor('doc001')">Edit</button></td>
                   </tr>
                   <tr>
                     <td>Dr. Priya Singh</td>
                     <td>Cardiologist</td>
-                    <td>134</td>
+                    <td>priya.singh@hospital.com</td>
                     <td><span class="status-badge status-active">Active</span></td>
                     <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Edit</button></td>
                   </tr>
@@ -661,28 +722,38 @@
           <div class="card">
             <h2>👥 Manage Patients</h2>
             <p>View and manage patient accounts and information</p>
+            <button class="btn btn-primary" style="margin-bottom: 20px;" onclick="openAddPatientModal()">➕ Add New Patient</button>
+            <div style="margin-bottom: 20px;">
+              <input type="text" placeholder="🔍 Search patients by name or email..." id="patientSearchBox" style="width: 100%; padding: 10px 15px; background: rgba(30,41,59,0.7); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light);">
+            </div>
             <div class="data-table">
               <table>
                 <thead>
                   <tr>
                     <th>Patient Name</th>
                     <th>Email</th>
+                    <th>Age</th>
+                    <th>Phone</th>
                     <th>Last Visit</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="patientsTableBody">
                   <tr>
                     <td>Rajesh Kumar</td>
                     <td>rajesh@email.com</td>
+                    <td>35</td>
+                    <td>+91-8765-432100</td>
                     <td>2026-04-25</td>
                     <td><span class="status-badge status-active">Active</span></td>
-                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">View</button></td>
+                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="editPatient('pat001')">Edit</button></td>
                   </tr>
                   <tr>
                     <td>Priya Singh</td>
                     <td>priya@email.com</td>
+                    <td>28</td>
+                    <td>+91-8765-432101</td>
                     <td>2026-04-20</td>
                     <td><span class="status-badge status-active">Active</span></td>
                     <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">View</button></td>
@@ -795,31 +866,322 @@
           <div class="card">
             <h2>⚙️ System Settings</h2>
             <p>Configure system-wide settings and preferences</p>
-            <div class="form-group">
-              <label>Platform Name</label>
-              <input type="text" placeholder="Care Without Borders" value="Care Without Borders">
-            </div>
-            <div class="form-group">
-              <label>Support Email</label>
-              <input type="email" placeholder="support@carewitoutborders.com">
-            </div>
-            <div class="form-group">
-              <label>Support Phone</label>
-              <input type="text" placeholder="+1-800-CARE">
-            </div>
-            <div class="form-group">
-              <label>Max Patients per Doctor</label>
-              <input type="number" placeholder="200" value="200">
-            </div>
-            <button class="btn btn-primary">💾 Save Settings</button>
-            <button class="btn btn-danger" style="margin-left: 10px;">🔄 Reset to Default</button>
+            <form id="systemSettingsForm">
+              <div class="form-group">
+                <label>Platform Name</label>
+                <input type="text" id="platformName" placeholder="Care Without Borders" value="Care Without Borders">
+              </div>
+              <div class="form-group">
+                <label>Support Email</label>
+                <input type="email" id="supportEmail" placeholder="support@carewitoutborders.com" value="support@carewitoutborders.com">
+              </div>
+              <div class="form-group">
+                <label>Support Phone</label>
+                <input type="text" id="supportPhone" placeholder="+1-800-CARE" value="+1-800-CARE">
+              </div>
+              <div class="form-group">
+                <label>Max Patients per Doctor</label>
+                <input type="number" id="maxPatientsPerDoctor" placeholder="200" value="200" min="50" max="1000">
+              </div>
+              <div class="form-group">
+                <label>Consultation Fee (₹)</label>
+                <input type="number" id="consultationFee" placeholder="500" value="500" min="100" max="5000">
+              </div>
+              <div class="form-group">
+                <label>Prescription Fee (₹)</label>
+                <input type="number" id="prescriptionFee" placeholder="200" value="200" min="50" max="1000">
+              </div>
+              <div class="form-group">
+                <label>Platform Currency</label>
+                <select id="platformCurrency" style="padding: 12px 15px; background: rgba(30,41,59,0.7); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); font-family: inherit; font-size: 14px;">
+                  <option value="INR">₹ Indian Rupee (INR)</option>
+                  <option value="USD">$ US Dollar (USD)</option>
+                  <option value="EUR">€ Euro (EUR)</option>
+                </select>
+              </div>
+              <button type="button" class="btn btn-primary" onclick="saveSystemSettings()">💾 Save Settings</button>
+              <button type="button" class="btn btn-danger" style="margin-left: 10px;" onclick="resetSystemSettings()">🔄 Reset to Default</button>
+            </form>
           </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- ADD DOCTOR MODAL -->
+  <div id="addDoctorModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>➕ Add New Doctor</h2>
+        <button class="modal-close" onclick="closeModal('addDoctorModal')">✕</button>
+      </div>
+      <form id="addDoctorForm" onsubmit="submitAddDoctor(event)">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="doctorName" placeholder="Dr. John Doe" required>
+        </div>
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input type="email" id="doctorEmail" placeholder="doctor@hospital.com" required>
+        </div>
+        <div class="form-group">
+          <label>Phone Number *</label>
+          <input type="tel" id="doctorPhone" placeholder="+91-9876543210" required>
+        </div>
+        <div class="form-group">
+          <label>Specialization *</label>
+          <select id="doctorSpecialty" required style="padding: 12px 15px; background: rgba(30,41,59,0.7); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); font-family: inherit; font-size: 14px;">
+            <option value="">Select Specialization</option>
+            <option value="General Physician">General Physician</option>
+            <option value="Cardiologist">Cardiologist</option>
+            <option value="Pediatrician">Pediatrician</option>
+            <option value="Dermatologist">Dermatologist</option>
+            <option value="Neurologist">Neurologist</option>
+            <option value="Orthopedic">Orthopedic</option>
+            <option value="Psychiatrist">Psychiatrist</option>
+            <option value="ENT">ENT Specialist</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>License Number *</label>
+          <input type="text" id="doctorLicense" placeholder="MCI/AYUSH License" required>
+        </div>
+        <div class="form-group">
+          <label>Experience (Years)</label>
+          <input type="number" id="doctorExperience" placeholder="10" min="0" max="70">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">✅ Add Doctor</button>
+        <button type="button" class="btn btn-secondary" style="width: 100%; justify-content: center; margin-top: 10px;" onclick="closeModal('addDoctorModal')">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD PATIENT MODAL -->
+  <div id="addPatientModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>➕ Add New Patient</h2>
+        <button class="modal-close" onclick="closeModal('addPatientModal')">✕</button>
+      </div>
+      <form id="addPatientForm" onsubmit="submitAddPatient(event)">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="patientName" placeholder="John Doe" required>
+        </div>
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input type="email" id="patientEmail" placeholder="patient@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>Phone Number *</label>
+          <input type="tel" id="patientPhone" placeholder="+91-9876543210" required>
+        </div>
+        <div class="form-group">
+          <label>Age *</label>
+          <input type="number" id="patientAge" placeholder="25" min="1" max="120" required>
+        </div>
+        <div class="form-group">
+          <label>Gender *</label>
+          <select id="patientGender" required style="padding: 12px 15px; background: rgba(30,41,59,0.7); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); font-family: inherit; font-size: 14px;">
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Blood Group</label>
+          <select id="patientBloodGroup" style="padding: 12px 15px; background: rgba(30,41,59,0.7); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-light); font-family: inherit; font-size: 14px;">
+            <option value="">Select Blood Group</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">✅ Add Patient</button>
+        <button type="button" class="btn btn-secondary" style="width: 100%; justify-content: center; margin-top: 10px;" onclick="closeModal('addPatientModal')">Cancel</button>
+      </form>
+    </div>
+  </div>
+
   <script>
+    // ==================== MODAL MANAGEMENT ====================
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function openAddDoctorModal() {
+      document.getElementById('addDoctorForm').reset();
+      openModal('addDoctorModal');
+    }
+
+    function openAddPatientModal() {
+      document.getElementById('addPatientForm').reset();
+      openModal('addPatientModal');
+    }
+
+    // ==================== DOCTOR MANAGEMENT ====================
+    function submitAddDoctor(event) {
+      event.preventDefault();
+      
+      const doctor = {
+        id: 'doc' + Date.now(),
+        name: document.getElementById('doctorName').value,
+        email: document.getElementById('doctorEmail').value,
+        phone: document.getElementById('doctorPhone').value,
+        specialty: document.getElementById('doctorSpecialty').value,
+        license: document.getElementById('doctorLicense').value,
+        experience: document.getElementById('doctorExperience').value,
+        status: 'active',
+        createdAt: new Date().toISOString()
+      };
+
+      // Load existing doctors
+      let doctors = JSON.parse(localStorage.getItem('doctors') || '[]');
+      doctors.push(doctor);
+      localStorage.setItem('doctors', JSON.stringify(doctors));
+
+      alert(`✅ Doctor "${doctor.name}" added successfully!`);
+      closeModal('addDoctorModal');
+      loadDoctorsTable();
+    }
+
+    function editDoctor(doctorId) {
+      alert('Edit doctor: ' + doctorId + ' (Feature coming soon)');
+    }
+
+    function loadDoctorsTable() {
+      const doctors = JSON.parse(localStorage.getItem('doctors') || '[]');
+      const tbody = document.getElementById('doctorsTableBody');
+      
+      if (tbody && doctors.length > 0) {
+        tbody.innerHTML = doctors.map(doc => `
+          <tr>
+            <td>${doc.name}</td>
+            <td>${doc.specialty}</td>
+            <td>${doc.email}</td>
+            <td><span class="status-badge status-active">Active</span></td>
+            <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="editDoctor('${doc.id}')">Edit</button></td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    // ==================== PATIENT MANAGEMENT ====================
+    function submitAddPatient(event) {
+      event.preventDefault();
+      
+      const patient = {
+        id: 'pat' + Date.now(),
+        name: document.getElementById('patientName').value,
+        email: document.getElementById('patientEmail').value,
+        phone: document.getElementById('patientPhone').value,
+        age: document.getElementById('patientAge').value,
+        gender: document.getElementById('patientGender').value,
+        bloodGroup: document.getElementById('patientBloodGroup').value || 'N/A',
+        status: 'active',
+        lastVisit: new Date().toISOString().split('T')[0],
+        createdAt: new Date().toISOString()
+      };
+
+      // Load existing patients
+      let patients = JSON.parse(localStorage.getItem('patients') || '[]');
+      patients.push(patient);
+      localStorage.setItem('patients', JSON.stringify(patients));
+
+      alert(`✅ Patient "${patient.name}" added successfully!`);
+      closeModal('addPatientModal');
+      loadPatientsTable();
+    }
+
+    function editPatient(patientId) {
+      alert('Edit patient: ' + patientId + ' (Feature coming soon)');
+    }
+
+    function loadPatientsTable() {
+      const patients = JSON.parse(localStorage.getItem('patients') || '[]');
+      const tbody = document.getElementById('patientsTableBody');
+      
+      if (tbody && patients.length > 0) {
+        tbody.innerHTML = patients.map(pat => `
+          <tr>
+            <td>${pat.name}</td>
+            <td>${pat.email}</td>
+            <td>${pat.age}</td>
+            <td>${pat.phone}</td>
+            <td>${pat.lastVisit}</td>
+            <td><span class="status-badge status-active">Active</span></td>
+            <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="editPatient('${pat.id}')">Edit</button></td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    // ==================== SETTINGS MANAGEMENT ====================
+    function loadSystemSettings() {
+      const settings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+      const defaults = {
+        platformName: 'Care Without Borders',
+        supportEmail: 'support@carewitoutborders.com',
+        supportPhone: '+1-800-CARE',
+        maxPatientsPerDoctor: 200,
+        consultationFee: 500,
+        prescriptionFee: 200,
+        platformCurrency: 'INR'
+      };
+
+      const finalSettings = { ...defaults, ...settings };
+      
+      document.getElementById('platformName').value = finalSettings.platformName;
+      document.getElementById('supportEmail').value = finalSettings.supportEmail;
+      document.getElementById('supportPhone').value = finalSettings.supportPhone;
+      document.getElementById('maxPatientsPerDoctor').value = finalSettings.maxPatientsPerDoctor;
+      document.getElementById('consultationFee').value = finalSettings.consultationFee;
+      document.getElementById('prescriptionFee').value = finalSettings.prescriptionFee;
+      document.getElementById('platformCurrency').value = finalSettings.platformCurrency;
+    }
+
+    function saveSystemSettings() {
+      const settings = {
+        platformName: document.getElementById('platformName').value,
+        supportEmail: document.getElementById('supportEmail').value,
+        supportPhone: document.getElementById('supportPhone').value,
+        maxPatientsPerDoctor: parseInt(document.getElementById('maxPatientsPerDoctor').value),
+        consultationFee: parseInt(document.getElementById('consultationFee').value),
+        prescriptionFee: parseInt(document.getElementById('prescriptionFee').value),
+        platformCurrency: document.getElementById('platformCurrency').value,
+        lastUpdated: new Date().toISOString()
+      };
+
+      localStorage.setItem('systemSettings', JSON.stringify(settings));
+      alert('✅ System Settings saved successfully!');
+      console.log('💾 Settings saved:', settings);
+    }
+
+    function resetSystemSettings() {
+      if (confirm('Are you sure you want to reset all settings to default?')) {
+        localStorage.removeItem('systemSettings');
+        loadSystemSettings();
+        alert('🔄 Settings reset to default!');
+      }
+    }
+
+    // Close modal on background click
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal')) {
+        e.target.classList.remove('active');
+      }
+    });
+
     function switchPage(pageName) {
       document.querySelectorAll('.page-section').forEach(section => {
         section.classList.remove('active');
@@ -856,8 +1218,15 @@
         document.getElementById('dashboardContent').innerHTML = window.getAdminDashboardHTML ? window.getAdminDashboardHTML() : '';
       } else if (pageName === 'consultations') {
         document.getElementById('consultationsContent').innerHTML = window.getConsultationRequestsHTML ? window.getConsultationRequestsHTML() : '';
+      } else if (pageName === 'doctors') {
+        loadDoctorsTable();
+      } else if (pageName === 'patients') {
+        loadPatientsTable();
+      } else if (pageName === 'settings') {
+        loadSystemSettings();
       }
     }
+
 
     function switchLanguage() {
       if (window.vilgaxVoiceSystem) {
@@ -882,6 +1251,9 @@
       if (window.getAdminDashboardHTML) {
         document.getElementById('dashboardContent').innerHTML = window.getAdminDashboardHTML();
       }
+      loadDoctorsTable();
+      loadPatientsTable();
+      loadSystemSettings();
     });
   </script>
 </body>
