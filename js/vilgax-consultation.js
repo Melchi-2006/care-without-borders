@@ -121,9 +121,14 @@ class VilgaxConsultation {
     };
 
     // Extract name (look for "I am [Name]" or "my name is [Name]")
-    const nameMatch = input.match(/(?:i am|my name is|i'm)\s+([a-z]+)/i);
+    // IMPORTANT: Don't extract gender words as names
+    const nameMatch = input.match(/(?:i am|my name is|i'm|call me|i'm calling myself)\s+([a-z]+)/i);
     if (nameMatch) {
-      extracted.name = nameMatch[1].charAt(0).toUpperCase() + nameMatch[1].slice(1);
+      const candidate = nameMatch[1].toLowerCase();
+      // Exclude gender-related and common non-name words
+      if (!['male', 'female', 'man', 'woman', 'boy', 'girl', 'doctor', 'patient', 'yes', 'no', 'ok', 'okay'].includes(candidate)) {
+        extracted.name = nameMatch[1].charAt(0).toUpperCase() + nameMatch[1].slice(1);
+      }
     }
 
     // Extract age (look for numbers followed by "years old" or "years")

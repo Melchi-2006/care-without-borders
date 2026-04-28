@@ -1422,6 +1422,12 @@
   }
 
   function showBookingConfirmation(consultationData, specialty, preferredTime) {
+    // If name is not extracted from consultation, use patient profile name
+    if (!consultationData.patientName || consultationData.patientName.toLowerCase() === 'male' || consultationData.patientName.toLowerCase() === 'female') {
+      const patientProfile = JSON.parse(localStorage.getItem('patientProfile') || '{}');
+      consultationData.patientName = patientProfile.name || 'Patient';
+    }
+    
     const request = createConsultationRequest(consultationData, specialty, preferredTime);
     
     const details = document.getElementById('bookingDetails');

@@ -19,8 +19,14 @@ class DoctorManagementSystem {
 
   // ==================== DATA MANAGEMENT ====================
   loadData() {
-    this.consultationRequests = JSON.parse(localStorage.getItem('consultationRequests') || '[]')
-      .filter(r => r.acceptedBy === this.doctorId || r.status === 'pending');
+    // Load ALL consultation requests - pending ones visible to all doctors, accepted/completed for this doctor
+    const allConsultations = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+    this.consultationRequests = allConsultations.filter(r => 
+      r.status === 'pending' || 
+      r.acceptedBy === this.doctorId || 
+      r.status === 'accepted' || 
+      r.status === 'completed'
+    );
     this.prescriptions = JSON.parse(localStorage.getItem(`prescriptions_${this.doctorId}`) || '[]');
     this.patients = JSON.parse(localStorage.getItem(`patients_${this.doctorId}`) || this.getMockPatients());
     this.earnings = JSON.parse(localStorage.getItem(`earnings_${this.doctorId}`) || JSON.stringify(this.getMockEarnings()));
