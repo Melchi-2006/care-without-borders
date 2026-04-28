@@ -712,7 +712,10 @@
                     <td>Cardiologist</td>
                     <td>priya.singh@hospital.com</td>
                     <td><span class="status-badge status-active">Active</span></td>
-                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Edit</button></td>
+                    <td>
+                      <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; margin-right: 5px;" onclick="editDoctor('doc002')">✏️ Edit</button>
+                      <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px; background: var(--danger);" onclick="deleteDoctor('doc002')">🗑️ Delete</button>
+                    </td>
                   </tr>
                 </tbody>
               </table>
