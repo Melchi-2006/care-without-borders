@@ -512,8 +512,9 @@
       <div class="sidebar-header">
         <div class="sidebar-avatar">👨‍⚕️</div>
         <div class="sidebar-info">
-          <h3>Doctor Profile</h3>
-          <p>Verified Physician</p>
+          <h3 id="doctorSidebarName">Doctor Profile</h3>
+          <p id="doctorSidebarSpecialty">Verified Physician</p>
+          <button onclick="openDoctorProfileModal()" style="margin-top: 8px; padding: 4px 8px; background: var(--primary-cyan); border: none; border-radius: 4px; color: var(--dark-bg); font-weight: 600; cursor: pointer; font-size: 11px;">✏️ Edit</button>
         </div>
       </div>
 
@@ -658,13 +659,148 @@
       }
     }
 
+    // ==================== DOCTOR PROFILE FUNCTIONS ====================
+    function openDoctorProfileModal() {
+      // Load existing doctor profile data
+      const doctorData = JSON.parse(localStorage.getItem('doctorData') || '{}');
+      const profileData = JSON.parse(localStorage.getItem('doctorProfile') || '{}');
+      
+      document.getElementById('doctorProfileName').value = profileData.name || doctorData.name || '';
+      document.getElementById('doctorProfileEmail').value = profileData.email || doctorData.email || '';
+      document.getElementById('doctorProfilePhone').value = profileData.phone || doctorData.phone || '';
+      document.getElementById('doctorProfileSpecialty').value = profileData.specialty || doctorData.specialty || '';
+      document.getElementById('doctorProfileLicense').value = profileData.license || doctorData.license || '';
+      document.getElementById('doctorProfileExperience').value = profileData.experience || doctorData.experience || '';
+      document.getElementById('doctorProfileQualification').value = profileData.qualification || '';
+      document.getElementById('doctorProfileBio').value = profileData.bio || '';
+      document.getElementById('doctorProfileClinicAddress').value = profileData.clinicAddress || '';
+      document.getElementById('doctorProfileConsultationFee').value = profileData.consultationFee || '';
+      
+      document.getElementById('doctorProfileModal').style.display = 'flex';
+    }
+
+    function closeDoctorProfileModal() {
+      document.getElementById('doctorProfileModal').style.display = 'none';
+    }
+
+    function saveDoctorProfile(event) {
+      event.preventDefault();
+      
+      const profile = {
+        name: document.getElementById('doctorProfileName').value,
+        email: document.getElementById('doctorProfileEmail').value,
+        phone: document.getElementById('doctorProfilePhone').value,
+        specialty: document.getElementById('doctorProfileSpecialty').value,
+        license: document.getElementById('doctorProfileLicense').value,
+        experience: document.getElementById('doctorProfileExperience').value,
+        qualification: document.getElementById('doctorProfileQualification').value,
+        bio: document.getElementById('doctorProfileBio').value,
+        clinicAddress: document.getElementById('doctorProfileClinicAddress').value,
+        consultationFee: document.getElementById('doctorProfileConsultationFee').value,
+        updatedAt: new Date().toISOString()
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('doctorProfile', JSON.stringify(profile));
+      
+      // Update sidebar display
+      document.getElementById('doctorSidebarName').textContent = profile.name || 'Doctor Profile';
+      document.getElementById('doctorSidebarSpecialty').textContent = profile.specialty || 'Verified Physician';
+      
+      alert('✅ Profile saved successfully!');
+      closeDoctorProfileModal();
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       console.log('✓ Doctor Dashboard loaded');
       // Load initial dashboard content
       if (window.getDoctorDashboardHTML) {
         document.getElementById('dashboardContent').innerHTML = window.getDoctorDashboardHTML();
       }
+      
+      // Load doctor profile data on page load
+      const doctorData = JSON.parse(localStorage.getItem('doctorData') || '{}');
+      const profileData = JSON.parse(localStorage.getItem('doctorProfile') || '{}');
+      if (doctorData.name) {
+        document.getElementById('doctorSidebarName').textContent = profileData.name || doctorData.name;
+        document.getElementById('doctorSidebarSpecialty').textContent = profileData.specialty || doctorData.specialty || 'Verified Physician';
+      }
     });
   </script>
+
+  <!-- ==================== DOCTOR PROFILE EDITOR MODAL ==================== -->
+  <div id="doctorProfileModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease; align-items: center; justify-content: center;">
+    <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; border-radius: 16px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+      
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #14b8a6, #06b6d4); padding: 20px; border-radius: 16px 16px 0 0; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0;">
+        <h2 style="color: #0f172a; margin: 0; font-size: 22px;">👨‍⚕️ Edit Doctor Profile</h2>
+        <button onclick="closeDoctorProfileModal()" style="background: rgba(0,0,0,0.2); border: none; color: #0f172a; cursor: pointer; font-size: 24px; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">✕</button>
+      </div>
+
+      <!-- Form Content -->
+      <div style="padding: 25px;">
+        <form id="doctorProfileForm" onsubmit="saveDoctorProfile(event)">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div>
+              <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Full Name *</label>
+              <input type="text" id="doctorProfileName" placeholder="Dr. Full Name" required style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit;">
+            </div>
+            <div>
+              <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Email *</label>
+              <input type="email" id="doctorProfileEmail" placeholder="doctor@example.com" required style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit;">
+            </div>
+            <div>
+              <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Phone</label>
+              <input type="tel" id="doctorProfilePhone" placeholder="+91-9876543210" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit;">
+            </div>
+            <div>
+              <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Specialization *</label>
+              <input type="text" id="doctorProfileSpecialty" placeholder="e.g., Cardiologist" required style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit;">
+            </div>
+            <div>
+              <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Medical License</label>
+              <input type="text" id="doctorProfileLicense" placeholder="License Number" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit;">
+            </div>
+            <div>
+              <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Experience (Years)</label>
+              <input type="number" id="doctorProfileExperience" placeholder="e.g., 15" min="0" max="70" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit;">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Qualifications</label>
+            <textarea id="doctorProfileQualification" placeholder="e.g., MBBS, MD (Cardiology), FACC" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit; min-height: 70px; resize: none;"></textarea>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Professional Bio</label>
+            <textarea id="doctorProfileBio" placeholder="Write a brief professional bio..." style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit; min-height: 80px; resize: none;"></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div>
+              <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Clinic Address</label>
+              <textarea id="doctorProfileClinicAddress" placeholder="Full clinic/hospital address" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit; min-height: 70px; resize: none;"></textarea>
+            </div>
+            <div>
+              <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Consultation Fee (₹)</label>
+              <input type="number" id="doctorProfileConsultationFee" placeholder="e.g., 500" min="0" style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit;">
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <button type="submit" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #14b8a6, #06b6d4); border: none; border-radius: 8px; color: #0f172a; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+              💾 Save Profile
+            </button>
+            <button type="button" onclick="closeDoctorProfileModal()" style="flex: 1; padding: 12px; background: transparent; border: 1.5px solid #14b8a6; color: #14b8a6; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

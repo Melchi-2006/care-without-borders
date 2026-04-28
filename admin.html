@@ -950,6 +950,18 @@
           <label>Experience (Years)</label>
           <input type="number" id="doctorExperience" placeholder="10" min="0" max="70">
         </div>
+        <div class="form-group">
+          <label>Password *</label>
+          <input type="password" id="doctorPassword" placeholder="Create a secure password (min 8 chars)" minlength="8" required>
+        </div>
+        <div class="form-group">
+          <label>Confirm Password *</label>
+          <input type="password" id="doctorPasswordConfirm" placeholder="Confirm password" minlength="8" required>
+        </div>
+        <div class="form-group">
+          <label>Google Account Email (Optional)</label>
+          <input type="email" id="doctorGoogleEmail" placeholder="doctor.google@gmail.com">
+        </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">✅ Add Doctor</button>
         <button type="button" class="btn btn-secondary" style="width: 100%; justify-content: center; margin-top: 10px;" onclick="closeModal('addDoctorModal')">Cancel</button>
       </form>
@@ -1033,6 +1045,24 @@
     function submitAddDoctor(event) {
       event.preventDefault();
       
+      const password = document.getElementById('doctorPassword').value;
+      const passwordConfirm = document.getElementById('doctorPasswordConfirm').value;
+      const googleEmail = document.getElementById('doctorGoogleEmail').value.trim();
+      
+      // Validate passwords match
+      if (password !== passwordConfirm) {
+        alert('❌ Passwords do not match! Please try again.');
+        return;
+      }
+      
+      if (password.length < 8) {
+        alert('❌ Password must be at least 8 characters long!');
+        return;
+      }
+      
+      // Simple hash function for password (NOTE: In production, use bcrypt server-side!)
+      const hashedPassword = btoa(password); // Base64 encoding for demo only
+      
       const doctor = {
         id: 'doc' + Date.now(),
         name: document.getElementById('doctorName').value,
@@ -1041,6 +1071,8 @@
         specialty: document.getElementById('doctorSpecialty').value,
         license: document.getElementById('doctorLicense').value,
         experience: document.getElementById('doctorExperience').value,
+        password: hashedPassword,
+        googleEmail: googleEmail || null,
         status: 'active',
         createdAt: new Date().toISOString()
       };
@@ -1050,7 +1082,10 @@
       doctors.push(doctor);
       localStorage.setItem('doctors', JSON.stringify(doctors));
 
-      alert(`✅ Doctor "${doctor.name}" added successfully!`);
+      alert(`✅ Doctor "${doctor.name}" added successfully!\n📧 Email: ${doctor.email}\n🔑 Password has been set.\n${googleEmail ? '🔐 Google login enabled' : ''}`);
+      
+      // Clear form
+      document.getElementById('addDoctorForm').reset();
       closeModal('addDoctorModal');
       loadDoctorsTable();
     }
