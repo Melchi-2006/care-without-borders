@@ -683,6 +683,62 @@
       document.getElementById('doctorProfileModal').style.display = 'none';
     }
 
+    function openChangePasswordModal() {
+      document.getElementById('changePasswordModal').style.display = 'flex';
+      document.getElementById('currentPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+    }
+
+    function closeChangePasswordModal() {
+      document.getElementById('changePasswordModal').style.display = 'none';
+    }
+
+    function submitChangePassword(event) {
+      event.preventDefault();
+      
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      // Validate new password length
+      if (newPassword.length < 8) {
+        alert('❌ New password must be at least 8 characters long!');
+        return;
+      }
+      
+      // Validate passwords match
+      if (newPassword !== confirmPassword) {
+        alert('❌ New passwords do not match!');
+        return;
+      }
+      
+      // Verify current password
+      const doctorData = JSON.parse(localStorage.getItem('doctorData') || '{}');
+      const hashedCurrentPassword = btoa(currentPassword);
+      
+      if (hashedCurrentPassword !== doctorData.password) {
+        alert('❌ Current password is incorrect!');
+        return;
+      }
+      
+      // Update password
+      const hashedNewPassword = btoa(newPassword);
+      doctorData.password = hashedNewPassword;
+      localStorage.setItem('doctorData', JSON.stringify(doctorData));
+      
+      // Also update in doctors array if it exists
+      const doctors = JSON.parse(localStorage.getItem('doctors') || '[]');
+      const doctorIndex = doctors.findIndex(d => d.id === doctorData.id);
+      if (doctorIndex !== -1) {
+        doctors[doctorIndex].password = hashedNewPassword;
+        localStorage.setItem('doctors', JSON.stringify(doctors));
+      }
+      
+      alert('✅ Password changed successfully!');
+      closeChangePasswordModal();
+    }
+
     function saveDoctorProfile(event) {
       event.preventDefault();
       
@@ -793,7 +849,51 @@
             <button type="submit" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #14b8a6, #06b6d4); border: none; border-radius: 8px; color: #0f172a; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
               💾 Save Profile
             </button>
+            <button type="button" onclick="openChangePasswordModal()" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 8px; color: #0f172a; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+              🔐 Change Password
+            </button>
             <button type="button" onclick="closeDoctorProfileModal()" style="flex: 1; padding: 12px; background: transparent; border: 1.5px solid #14b8a6; color: #14b8a6; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CHANGE PASSWORD MODAL ==================== -->
+  <div id="changePasswordModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease; align-items: center; justify-content: center;">
+    <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; border-radius: 16px; width: 90%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+      
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 20px; border-radius: 16px 16px 0 0; display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="color: #0f172a; margin: 0; font-size: 22px;">🔐 Change Password</h2>
+        <button onclick="closeChangePasswordModal()" style="background: rgba(0,0,0,0.2); border: none; color: #0f172a; cursor: pointer; font-size: 24px; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">✕</button>
+      </div>
+
+      <!-- Form Content -->
+      <div style="padding: 25px;">
+        <form id="changePasswordForm" onsubmit="submitChangePassword(event)">
+          <div style="margin-bottom: 20px;">
+            <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Current Password *</label>
+            <input type="password" id="currentPassword" placeholder="Enter your current password" required style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit;">
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">New Password * (min 8 chars)</label>
+            <input type="password" id="newPassword" placeholder="Enter new password" minlength="8" required style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit;">
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Confirm New Password *</label>
+            <input type="password" id="confirmPassword" placeholder="Confirm new password" minlength="8" required style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit;">
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <button type="submit" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; border-radius: 8px; color: #0f172a; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+              ✅ Change Password
+            </button>
+            <button type="button" onclick="closeChangePasswordModal()" style="flex: 1; padding: 12px; background: transparent; border: 1.5px solid #f59e0b; color: #f59e0b; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
               Cancel
             </button>
           </div>
