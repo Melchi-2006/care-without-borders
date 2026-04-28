@@ -20,16 +20,45 @@ class DoctorManagementSystem {
   // ==================== DATA MANAGEMENT ====================
   loadData() {
     // Load ALL consultation requests - pending ones visible to all doctors, accepted/completed for this doctor
-    const allConsultations = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
-    this.consultationRequests = allConsultations.filter(r => 
-      r.status === 'pending' || 
-      r.acceptedBy === this.doctorId || 
-      r.status === 'accepted' || 
-      r.status === 'completed'
-    );
-    this.prescriptions = JSON.parse(localStorage.getItem(`prescriptions_${this.doctorId}`) || '[]');
-    this.patients = JSON.parse(localStorage.getItem(`patients_${this.doctorId}`) || this.getMockPatients());
-    this.earnings = JSON.parse(localStorage.getItem(`earnings_${this.doctorId}`) || JSON.stringify(this.getMockEarnings()));
+    try {
+      const allConsultations = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+      this.consultationRequests = Array.isArray(allConsultations) ? allConsultations.filter(r => 
+        r.status === 'pending' || 
+        r.acceptedBy === this.doctorId || 
+        r.status === 'accepted' || 
+        r.status === 'completed'
+      ) : [];
+    } catch (e) {
+      console.error('❌ Error loading consultationRequests:', e);
+      // Clear corrupted data
+      localStorage.removeItem('consultationRequests');
+      this.consultationRequests = [];
+    }
+    
+    try {
+      this.prescriptions = JSON.parse(localStorage.getItem(`prescriptions_${this.doctorId}`) || '[]');
+    } catch (e) {
+      console.error('❌ Error loading prescriptions:', e);
+      localStorage.removeItem(`prescriptions_${this.doctorId}`);
+      this.prescriptions = [];
+    }
+    
+    try {
+      this.patients = JSON.parse(localStorage.getItem(`patients_${this.doctorId}`) || JSON.stringify(this.getMockPatients()));
+    } catch (e) {
+      console.error('❌ Error loading patients:', e);
+      localStorage.removeItem(`patients_${this.doctorId}`);
+      this.patients = this.getMockPatients();
+    }
+    
+    try {
+      this.earnings = JSON.parse(localStorage.getItem(`earnings_${this.doctorId}`) || JSON.stringify(this.getMockEarnings()));
+    } catch (e) {
+      console.error('❌ Error loading earnings:', e);
+      localStorage.removeItem(`earnings_${this.doctorId}`);
+      this.earnings = this.getMockEarnings();
+    }
+    
     console.log('💊 Doctor System: Loaded data for', this.name);
   }
 
