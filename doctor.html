@@ -7,6 +7,7 @@
   <script src="js/i18n.js"></script>
   <script src="js/vilgax-voice-system.js"></script>
   <script src="js/doctor-consultation-panel.js"></script>
+  <script src="js/notifications.js"></script>
   <script src="js/doctor-management.js"></script>
   
   <style>
@@ -781,6 +782,103 @@
         document.getElementById('doctorSidebarName').textContent = profileData.name || doctorData.name;
         document.getElementById('doctorSidebarSpecialty').textContent = profileData.specialty || doctorData.specialty || 'Verified Physician';
       }
+
+      // ==================== VIDEO CALL & DIAGNOSIS SYSTEM ====================
+      window.addEventListener('newNotification', (e) => {
+        const notification = e.detail;
+        if (notification.type === 'patient_accepted_call') {
+          showVideoCallModalDoctor(notification);
+        }
+      });
+
+      function showVideoCallModalDoctor(notification) {
+        window.currentVideoCall = {
+          consultationId: notification.consultationId,
+          patientName: notification.patientName,
+          patientAccepted: true,
+          doctorAccepted: false
+        };
+        
+        document.getElementById('videoCallPatientName').textContent = notification.patientName;
+        document.getElementById('videoCallModal').style.display = 'flex';
+      }
+
+      function acceptVideoCallDoctor() {
+        if (!window.currentVideoCall) return;
+        
+        window.currentVideoCall.doctorAccepted = true;
+        
+        // Save acceptance
+        const videoSessions = JSON.parse(localStorage.getItem('videoSessions') || '[]');
+        const session = videoSessions.find(v => v.consultationId === window.currentVideoCall.consultationId);
+        if (session) {
+          session.doctorAccepted = true;
+          session.callStartedAt = new Date().toISOString();
+        }
+        localStorage.setItem('videoSessions', JSON.stringify(videoSessions));
+        
+        alert('✅ Video call accepted! Starting consultation with ' + window.currentVideoCall.patientName + '...');
+        document.getElementById('videoCallModal').style.display = 'none';
+        
+        // Show diagnosis input modal after short delay
+        setTimeout(() => {
+          document.getElementById('diagnosisPatientName').value = window.currentVideoCall.patientName;
+          document.getElementById('diagnosisInputModal').style.display = 'flex';
+        }, 500);
+      }
+
+      function rejectVideoCallDoctor() {
+        alert('❌ You have declined the video call. The patient will be notified.');
+        document.getElementById('videoCallModal').style.display = 'none';
+        window.currentVideoCall = null;
+      }
+
+      function closeDiagnosisInputModal() {
+        document.getElementById('diagnosisInputModal').style.display = 'none';
+        document.getElementById('diagnosisText').value = '';
+        document.getElementById('treatmentText').value = '';
+        document.getElementById('precautionsText').value = '';
+      }
+
+      function saveDiagnosisAndNotify() {
+        const diagnosis = document.getElementById('diagnosisText').value.trim();
+        const treatment = document.getElementById('treatmentText').value.trim();
+        const precautions = document.getElementById('precautionsText').value.trim();
+        const patientName = document.getElementById('diagnosisPatientName').value;
+
+        if (!diagnosis || !treatment) {
+          alert('⚠️ Please fill in at least Diagnosis and Treatment fields');
+          return;
+        }
+
+        // Create diagnosis object
+        const diagnosisData = {
+          id: 'DGN-' + Date.now(),
+          consultationId: window.currentVideoCall?.consultationId || '',
+          doctorName: profileData.name || doctorData.name || 'Dr. Unnamed',
+          doctorId: doctorData.id || 'DR_001',
+          patientName: patientName,
+          diagnosis: diagnosis,
+          treatment: treatment,
+          precautions: precautions,
+          medicines: [],
+          date: new Date().toISOString(),
+          notes: ''
+        };
+
+        // Save to doctor's diagnoses
+        const doctorDiagnoses = JSON.parse(localStorage.getItem('doctorDiagnoses_' + (doctorData.id || 'DR_001')) || '[]');
+        doctorDiagnoses.push(diagnosisData);
+        localStorage.setItem('doctorDiagnoses_' + (doctorData.id || 'DR_001'), JSON.stringify(doctorDiagnoses));
+
+        // Send notification to patient
+        if (window.notificationSystem) {
+          window.notificationSystem.sendDiagnosisNotification('patient@example.com', diagnosisData);
+        }
+
+        alert('✅ Diagnosis saved and sent to patient successfully!');
+        closeDiagnosisInputModal();
+      }
     });
   </script>
 
@@ -898,6 +996,57 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS CONTAINER -->
+  <div id="notificationsContainer" style="position: fixed; top: 20px; right: 20px; z-index: 2000; max-width: 400px;"></div>
+
+  <!-- VIDEO CALL ACCEPTANCE MODAL -->
+  <div id="videoCallModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1500; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease; display: flex; align-items: center; justify-content: center;">
+    <div style="background: linear-gradient(135deg, var(--card-bg), #1a3a3a); border-radius: 12px; padding: 30px; max-width: 500px; text-align: center; border: 2px solid var(--primary-cyan); box-shadow: 0 0 30px rgba(20,184,166,0.3);">
+      <h2 style="color: var(--primary-cyan); margin-bottom: 15px; font-size: 24px;">📞 Video Call Invitation</h2>
+      <p style="color: var(--text-light); margin-bottom: 10px; font-size: 16px;">Patient <span id="videoCallPatientName">Patient</span> has accepted your video call invitation.</p>
+      <p style="color: var(--success); margin-bottom: 20px; font-size: 14px;">✅ Ready to start the consultation!</p>
+      <div style="display: flex; gap: 15px; justify-content: center;">
+        <button onclick="acceptVideoCallDoctor()" style="padding: 12px 30px; background: var(--success); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">✓ Start Call</button>
+        <button onclick="rejectVideoCallDoctor()" style="padding: 12px 30px; background: var(--danger); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">✕ Decline</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIAGNOSIS MODAL -->
+  <div id="diagnosisInputModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1200; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease; display: flex; align-items: center; justify-content: center;">
+    <div style="background: linear-gradient(135deg, var(--card-bg), #1a3a3a); border-radius: 12px; padding: 30px; max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; border: 2px solid var(--primary-cyan);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: var(--primary-cyan); margin: 0;">📋 Provide Diagnosis</h2>
+        <button onclick="closeDiagnosisInputModal()" style="background: none; border: none; color: var(--primary-cyan); font-size: 24px; cursor: pointer;">✕</button>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="color: var(--primary-cyan); display: block; margin-bottom: 8px; font-weight: 600;">Patient Name</label>
+        <input type="text" id="diagnosisPatientName" readonly style="width: 100%; padding: 10px; background: rgba(20,184,166,0.1); border: 1px solid var(--primary-cyan); border-radius: 6px; color: var(--text-light); font-size: 14px;">
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="color: var(--primary-cyan); display: block; margin-bottom: 8px; font-weight: 600;">Diagnosis</label>
+        <textarea id="diagnosisText" style="width: 100%; padding: 10px; background: rgba(20,184,166,0.1); border: 1px solid var(--primary-cyan); border-radius: 6px; color: var(--text-light); font-size: 14px; min-height: 100px; font-family: inherit;" placeholder="Enter your medical diagnosis..."></textarea>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="color: var(--success); display: block; margin-bottom: 8px; font-weight: 600;">Recommended Treatment</label>
+        <textarea id="treatmentText" style="width: 100%; padding: 10px; background: rgba(16,185,129,0.1); border: 1px solid var(--success); border-radius: 6px; color: var(--text-light); font-size: 14px; min-height: 100px; font-family: inherit;" placeholder="Enter treatment recommendations..."></textarea>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label style="color: var(--warning); display: block; margin-bottom: 8px; font-weight: 600;">Precautions/Lifestyle Changes</label>
+        <textarea id="precautionsText" style="width: 100%; padding: 10px; background: rgba(245,158,11,0.1); border: 1px solid var(--warning); border-radius: 6px; color: var(--text-light); font-size: 14px; min-height: 80px; font-family: inherit;" placeholder="Enter precautions and lifestyle recommendations..."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button onclick="saveDiagnosisAndNotify()" style="flex: 1; padding: 12px; background: var(--success); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">✓ Save & Send to Patient</button>
+        <button onclick="closeDiagnosisInputModal()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: var(--text-light); border: 1px solid var(--text-light); border-radius: 8px; cursor: pointer; font-weight: 600;">Cancel</button>
       </div>
     </div>
   </div>

@@ -184,6 +184,21 @@ class DoctorManagementSystem {
         localStorage.setItem('consultationRequests', JSON.stringify(allRequests));
       }
       
+      // Send notification to patient
+      if (window.notificationSystem) {
+        window.notificationSystem.sendConsultationApprovedNotification(
+          'patient@example.com',
+          {
+            id: requestId,
+            doctorId: this.doctorId,
+            doctorName: this.name,
+            specialty: request.specialty,
+            symptoms: request.symptoms,
+            patientName: request.patientName
+          }
+        );
+      }
+      
       // Add patient if new
       if (!this.patients.find(p => p.id === request.patientId)) {
         this.patients.push({
@@ -747,7 +762,17 @@ function getEarningsHTML() {
 function acceptDoctorConsultation(requestId) {
   const result = window.doctorSystem.acceptConsultation(requestId);
   if (result) {
-    alert(`✅ Consultation accepted!\nVideo Link: ${result.videoCallLink}`);
+    // Send video call notification to patient
+    const consultation = window.doctorSystem.consultationRequests.find(r => r.id === requestId);
+    if (window.notificationSystem && consultation) {
+      window.notificationSystem.sendVideoCallInvitationNotification(
+        'patient@example.com',
+        window.doctorSystem.name,
+        requestId
+      );
+    }
+    
+    alert(`✅ Consultation accepted!\nSending video call invitation to ${consultation.patientName}...`);
     location.reload();
   }
 }
