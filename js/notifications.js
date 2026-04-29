@@ -7,7 +7,6 @@ class NotificationSystem {
   constructor() {
     this.notifications = [];
     this.loadNotifications();
-    this.setupListeners();
   }
 
   // Load notifications from localStorage
