@@ -769,7 +769,21 @@
     }
 
     // ==================== VIDEO CALL & DIAGNOSIS SYSTEM ====================
+    function closeVideoCallModal() {
+      const modal = document.getElementById('videoCallModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+      window.currentVideoCall = null;
+    }
+
     function showVideoCallModalDoctor(notification) {
+      // Only show if we have valid notification data with actual scheduled call
+      if (!notification || !notification.consultationId || !notification.patientName) {
+        console.warn('⚠️ Invalid notification data - modal not shown');
+        return;
+      }
+
       window.currentVideoCall = {
         consultationId: notification.consultationId,
         patientName: notification.patientName,
@@ -777,12 +791,23 @@
         doctorAccepted: false
       };
       
-      document.getElementById('videoCallPatientName').textContent = notification.patientName;
-      document.getElementById('videoCallModal').style.display = 'flex';
+      const videoCallPatientName = document.getElementById('videoCallPatientName');
+      if (videoCallPatientName) {
+        videoCallPatientName.textContent = notification.patientName;
+      }
+      
+      const modal = document.getElementById('videoCallModal');
+      if (modal) {
+        modal.style.display = 'block';
+      }
     }
 
     function acceptVideoCallDoctor() {
-      if (!window.currentVideoCall) return;
+      if (!window.currentVideoCall) {
+        alert('⚠️ No active call to accept');
+        closeVideoCallModal();
+        return;
+      }
       
       window.currentVideoCall.doctorAccepted = true;
       
@@ -796,21 +821,28 @@
       localStorage.setItem('videoSessions', JSON.stringify(videoSessions));
       
       alert('✅ Video call accepted! Starting consultation with ' + window.currentVideoCall.patientName + '...');
-      document.getElementById('videoCallModal').style.display = 'none';
+      
+      // Close the video call modal
+      closeVideoCallModal();
       
       // Show diagnosis input modal after short delay
       setTimeout(() => {
         const doctorData = JSON.parse(localStorage.getItem('doctorData') || '{}');
         const profileData = JSON.parse(localStorage.getItem('doctorProfile') || '{}');
-        document.getElementById('diagnosisPatientName').value = window.currentVideoCall.patientName;
-        document.getElementById('diagnosisInputModal').style.display = 'flex';
+        const diagnosisInput = document.getElementById('diagnosisPatientName');
+        if (diagnosisInput && window.currentVideoCall) {
+          diagnosisInput.value = window.currentVideoCall.patientName;
+        }
+        const diagnosisModal = document.getElementById('diagnosisInputModal');
+        if (diagnosisModal) {
+          diagnosisModal.style.display = 'flex';
+        }
       }, 500);
     }
 
     function rejectVideoCallDoctor() {
       alert('❌ You have declined the video call. The patient will be notified.');
-      document.getElementById('videoCallModal').style.display = 'none';
-      window.currentVideoCall = null;
+      closeVideoCallModal();
     }
 
     function closeDiagnosisInputModal() {
@@ -878,10 +910,16 @@
         document.getElementById('doctorSidebarSpecialty').textContent = profileData.specialty || doctorData.specialty || 'Verified Physician';
       }
 
-      // Listen for patient acceptance notifications
+      // Ensure modal is hidden on page load
+      const videoCallModal = document.getElementById('videoCallModal');
+      if (videoCallModal) {
+        videoCallModal.style.display = 'none';
+      }
+
+      // Listen for patient acceptance notifications (only show for valid calls)
       window.addEventListener('newNotification', (e) => {
         const notification = e.detail;
-        if (notification.type === 'patient_accepted_call') {
+        if (notification && notification.type === 'patient_accepted_call' && notification.consultationId && notification.patientName) {
           showVideoCallModalDoctor(notification);
         }
       });
@@ -1010,8 +1048,9 @@
   <div id="notificationsContainer" style="position: fixed; top: 20px; right: 20px; z-index: 2000; max-width: 400px;"></div>
 
   <!-- VIDEO CALL ACCEPTANCE MODAL -->
-  <div id="videoCallModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1500; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease; align-items: center; justify-content: center;">
-    <div style="background: linear-gradient(135deg, var(--card-bg), #1a3a3a); border-radius: 12px; padding: 30px; max-width: 500px; text-align: center; border: 2px solid var(--primary-cyan); box-shadow: 0 0 30px rgba(20,184,166,0.3);">
+  <div id="videoCallModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1500; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease;" onclick="if(event.target.id === 'videoCallModal') closeVideoCallModal();">
+    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 500px; background: linear-gradient(135deg, var(--card-bg), #1a3a3a); border-radius: 12px; padding: 30px; text-align: center; border: 2px solid var(--primary-cyan); box-shadow: 0 0 30px rgba(20,184,166,0.3);">
+      <button onclick="closeVideoCallModal()" style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: var(--primary-cyan); font-size: 24px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">✕</button>
       <h2 style="color: var(--primary-cyan); margin-bottom: 15px; font-size: 24px;">📞 Video Call Invitation</h2>
       <p style="color: var(--text-light); margin-bottom: 10px; font-size: 16px;">Patient <span id="videoCallPatientName">Patient</span> has accepted your video call invitation.</p>
       <p style="color: var(--success); margin-bottom: 20px; font-size: 14px;">✅ Ready to start the consultation!</p>
