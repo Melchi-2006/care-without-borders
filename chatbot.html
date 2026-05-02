@@ -527,12 +527,37 @@
     </div>
   </div>
 
+  <!-- Load Medical Database First -->
+  <script src="js/disease-medicine-database.js"></script>
+  <!-- Load Diagnostic Engine -->
+  <script src="js/vilgax-diagnostic-engine.js"></script>
+
   <script type="module">
     import { ChatbotEngine, processUserMessage, initializeChatbot } from './js/chatbot-utils.js';
     import { DISEASE_MEDICINE_DATABASE } from './js/disease-medicine-database.js';
 
     // Initialize chatbot
     let chatbot = initializeChatbot();
+    
+    // Wait for diagnostic engine to be ready
+    let diagnosisEngine = null;
+    function initializeDiagnosisEngine() {
+      if (window.diagnosticEngine) {
+        diagnosisEngine = window.diagnosticEngine;
+        console.log('✅ Diagnosis Engine loaded');
+        return true;
+      }
+      return false;
+    }
+    
+    // Check every 100ms until engine is ready
+    let engineCheckInterval = setInterval(() => {
+      if (initializeDiagnosisEngine()) {
+        clearInterval(engineCheckInterval);
+      }
+    }, 100);
+    
+    setTimeout(() => clearInterval(engineCheckInterval), 5000);
     let isTyping = false;
 
     // Display initial greeting
@@ -620,18 +645,93 @@
       setTimeout(() => {
         removeTyping();
 
-        // Process message
-        const response = processUserMessage(chatbot, message);
+        let response = {};
+        
+        // Use diagnostic engine for complex symptom analysis
+        if (diagnosisEngine) {
+          // Check if message contains symptom indicators
+          const symptomKeywords = ['fever', 'cough', 'sore throat', 'pain', 'ache', 'vomit', 'diarrhea', 'dizzy', 'temperature', 'degree', 'celsius', 'breath', 'headache', 'nausea', 'weakness', 'fatigue'];
+          const hasSymptomKeywords = symptomKeywords.some(keyword => message.toLowerCase().includes(keyword));
+          
+          if (hasSymptomKeywords) {
+            // Use diagnostic engine for analysis
+            const analysis = diagnosisEngine.processHealthDescription(message);
+            
+            if (analysis.type === 'analysis') {
+              let responseHTML = '<strong>🩺 Symptom Analysis Results:</strong><br><br>';
+              
+              // Show detected symptoms
+              responseHTML += '<strong>Detected Symptoms:</strong><br>';
+              responseHTML += analysis.detected_symptoms.join(', ') + '<br><br>';
+              
+              // Show possible conditions
+              if (analysis.possible_conditions && analysis.possible_conditions.length > 0) {
+                responseHTML += '<strong>Possible Conditions (in order of likelihood):</strong><br>';
+                analysis.possible_conditions.forEach(condition => {
+                  responseHTML += `<br><strong>${condition.rank}. ${condition.disease.toUpperCase()}</strong><br>`;
+                  responseHTML += `   Category: ${condition.category}<br>`;
+                  responseHTML += `   Severity: ${condition.severity}<br>`;
+                  if (condition.matchedSymptoms.length > 0) {
+                    responseHTML += `   Matched Symptoms: ${condition.matchedSymptoms.join(', ')}<br>`;
+                  }
+                  if (condition.medicines && condition.medicines.length > 0) {
+                    responseHTML += `   Common Medicines:<br>`;
+                    condition.medicines.slice(0, 3).forEach(med => {
+                      responseHTML += `     • ${med.name} - ${med.dosage} (${med.frequency})<br>`;
+                    });
+                  }
+                });
+              }
+              
+              // Show recommendations
+              if (analysis.recommendations && analysis.recommendations.length > 0) {
+                responseHTML += '<br><strong>Recommendations:</strong><br>';
+                analysis.recommendations.forEach(rec => {
+                  if (rec.type === 'EMERGENCY') {
+                    responseHTML += `<div style="background: #ffebee; padding: 10px; border-radius: 5px; color: #c62828; margin: 10px 0;">${rec.message}</div>`;
+                  } else if (rec.type === 'DOCTOR_CONSULTATION') {
+                    responseHTML += `<div style="background: #fff3e0; padding: 10px; border-radius: 5px; color: #e65100; margin: 10px 0;">${rec.message}</div>`;
+                  } else {
+                    responseHTML += `• ${rec.message}<br>`;
+                  }
+                });
+              }
+              
+              // Show urgency
+              responseHTML += `<br><strong>Urgency Level:</strong> ${analysis.urgency}`;
+              
+              response = {
+                message: responseHTML,
+                type: 'info'
+              };
+            } else {
+              response = {
+                message: analysis.message,
+                type: 'info'
+              };
+            }
+          } else {
+            // Fall back to standard chatbot
+            response = processUserMessage(chatbot, message);
+          }
+        } else {
+          // Fallback if diagnosis engine not loaded
+          response = processUserMessage(chatbot, message);
+        }
+        
         addMessage('assistant', response.message, response.type);
 
         // Add suggestions if available
         if (response.suggestions && response.suggestions.length > 0) {
           const suggestionsHtml = '<div class="suggestions">' +
             response.suggestions.map(s => 
-              `<button class="suggestion-btn" onclick="useSuggestion('${s}')">${s}</button>`
+              `<button class="suggestion-btn" onclick="useSuggestion('${s.replace(/'/g, "\\'")}')">${s}</button>`
             ).join('') +
             '</div>';
-          document.querySelectorAll('.message.assistant:last-child .message-content')[0].innerHTML += suggestionsHtml;
+          const lastMessage = document.querySelectorAll('.message.assistant:last-child .message-content');
+          if (lastMessage.length > 0) {
+            lastMessage[lastMessage.length - 1].innerHTML += suggestionsHtml;
+          }
         }
 
         isTyping = false;

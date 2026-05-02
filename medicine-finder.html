@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Medicine Finder | Care Without Borders</title>
+  <!-- Load Medical Database FIRST -->
+  <script src="js/disease-medicine-database.js"></script>
   <!-- Multilingual Support - Load First! -->
   <script src="js/i18n.js"></script>
   <!-- Audio System -->
@@ -599,21 +601,56 @@
   </div>
 
   <script type="module">
-    import { DISEASE_MEDICINE_DATABASE, SYMPTOMS_TO_DISEASES } from './js/disease-medicine-database.js';
-    import { ChatbotEngine } from './js/chatbot-utils.js';
+    const ChatbotEngine = class {
+      constructor() {}
+    };
 
     const chatbot = new ChatbotEngine();
+    let dbReady = false;
+    
+    // Check if database is ready
+    function checkDatabase() {
+      if (window.DISEASE_MEDICINE_DATABASE) {
+        window.DB = window.DISEASE_MEDICINE_DATABASE;
+        dbReady = true;
+        console.log('✅ Database ready with', Object.keys(window.DB).length, 'conditions');
+        return true;
+      }
+      return false;
+    }
+    
+    // Try checking database
+    if (!checkDatabase()) {
+      // Wait for database to load (max 5 seconds)
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        if (checkDatabase() || attempts > 50) {
+          clearInterval(interval);
+          if (!dbReady) {
+            console.error('Database failed to load');
+            document.getElementById('diseaseError').style.display = 'block';
+            document.getElementById('diseaseError').textContent = '❌ Database loading... Please wait or refresh the page.';
+          }
+        }
+      }, 100);
+    }
 
     // Search disease
     window.searchDisease = function() {
+      if (!dbReady || !window.DB) {
+        alert('Database is still loading. Please wait a moment and try again.');
+        return;
+      }
+      
       const searchTerm = document.getElementById('diseaseSearch').value.toLowerCase().trim();
       const resultsDiv = document.getElementById('diseaseResults');
 
       if (!searchTerm) {
         resultsDiv.innerHTML = `
           <div class="empty-state">
-            <h3 data-i18n="auth.email">Enter a disease name</h3>
-            <p data-i18n="pages.medicineFinder.searchInputPlaceholder">Try searching for: pneumonia, diabetes, asthma, etc.</p>
+            <h3>Enter a disease name</h3>
+            <p>Try searching for: pneumonia, diabetes, asthma, fever, cough, etc.</p>
           </div>
         `;
         return;
@@ -621,8 +658,8 @@
 
       // Find exact or partial match
       let matchedDiseases = [];
-      Object.keys(DISEASE_MEDICINE_DATABASE).forEach(disease => {
-        if (disease.includes(searchTerm) || searchTerm.includes(disease)) {
+      Object.keys(window.DB).forEach(disease => {
+        if (disease.toLowerCase().includes(searchTerm) || searchTerm.includes(disease.toLowerCase())) {
           matchedDiseases.push(disease);
         }
       });
@@ -631,7 +668,7 @@
         resultsDiv.innerHTML = `
           <div class="empty-state">
             <h3>No diseases found</h3>
-            <p>Try a different search term or browse common conditions</p>
+            <p>Try a different search term or browse common conditions like: fever, cough, headache, pneumonia, etc.</p>
           </div>
         `;
         return;
@@ -640,7 +677,7 @@
       // Display results
       let html = '';
       matchedDiseases.forEach(disease => {
-        const info = DISEASE_MEDICINE_DATABASE[disease];
+        const info = window.DB[disease];
         html += generateDiseaseCard(disease, info);
       });
 
@@ -649,6 +686,11 @@
 
     // Search medicine
     window.searchMedicine = function() {
+      if (!dbReady || !window.DB) {
+        alert('Database is still loading. Please wait a moment and try again.');
+        return;
+      }
+      
       const searchTerm = document.getElementById('medicineSearch').value.toLowerCase().trim();
       const resultsDiv = document.getElementById('medicineResults');
 
@@ -656,7 +698,7 @@
         resultsDiv.innerHTML = `
           <div class="empty-state">
             <h3>Enter a medicine name</h3>
-            <p>Try searching for: aspirin, paracetamol, metformin, etc.</p>
+            <p>Try searching for: paracetamol, aspirin, ibuprofen, metformin, etc.</p>
           </div>
         `;
         return;
@@ -664,15 +706,17 @@
 
       // Find medicines containing search term
       let matchedMedicines = {};
-      Object.entries(DISEASE_MEDICINE_DATABASE).forEach(([disease, info]) => {
-        info.medicines.forEach(med => {
-          if (med.name.toLowerCase().includes(searchTerm)) {
-            if (!matchedMedicines[med.name]) {
-              matchedMedicines[med.name] = [];
+      Object.entries(window.DB).forEach(([disease, info]) => {
+        if (info.medicines && Array.isArray(info.medicines)) {
+          info.medicines.forEach(med => {
+            if (med.name.toLowerCase().includes(searchTerm)) {
+              if (!matchedMedicines[med.name]) {
+                matchedMedicines[med.name] = [];
+              }
+              matchedMedicines[med.name].push({ disease, dosage: med.dosage, frequency: med.frequency });
             }
-            matchedMedicines[med.name].push({ disease, dosage: med.dosage, frequency: med.frequency });
-          }
-        });
+          });
+        }
       });
 
       if (Object.keys(matchedMedicines).length === 0) {
@@ -696,26 +740,27 @@
 
     // Generate disease card
     function generateDiseaseCard(disease, info) {
-      const severityClass = `severity-${info.severity.toLowerCase().replace('-', '')}`;
+      const severity = info.severity || 'Mild';
+      const severityClass = `severity-${severity.toLowerCase().replace('-', '').replace(' ', '')}`;
       
       let html = `
         <div class="result-card">
           <div class="result-header">
             <div class="result-title">
               <h3>${disease.toUpperCase()}</h3>
-              <p>${info.category} • ${info.duration}</p>
+              <p>${info.category || 'General'} • ${info.duration || 'Varies'}</p>
             </div>
-            <span class="severity-badge ${severityClass}">${info.severity}</span>
+            <span class="severity-badge ${severityClass}">${severity}</span>
           </div>
 
           <div class="info-grid">
             <div class="info-item">
               <div class="info-label">📋 Symptoms</div>
-              <div class="info-value">${info.symptoms}</div>
+              <div class="info-value">${info.symptoms || 'Not specified'}</div>
             </div>
             <div class="info-item">
               <div class="info-label">⏱️ Expected Duration</div>
-              <div class="info-value">${info.duration}</div>
+              <div class="info-value">${info.duration || 'Varies'}</div>
             </div>
           </div>
 
@@ -723,17 +768,19 @@
             <h4>💊 Recommended Medicines</h4>
       `;
 
-      info.medicines.forEach(med => {
-        html += `
-          <div class="medicine-item">
-            <div class="medicine-name">${med.name}</div>
-            <div class="medicine-details">
-              <span><strong>Dosage:</strong> ${med.dosage}</span>
-              <span><strong>Frequency:</strong> ${med.frequency}</span>
+      if (info.medicines && Array.isArray(info.medicines)) {
+        info.medicines.forEach(med => {
+          html += `
+            <div class="medicine-item">
+              <div class="medicine-name">${med.name}</div>
+              <div class="medicine-details">
+                <span><strong>Dosage:</strong> ${med.dosage}</span>
+                <span><strong>Frequency:</strong> ${med.frequency}</span>
+              </div>
             </div>
-          </div>
-        `;
-      });
+          `;
+        });
+      }
 
       html += `</div>`;
 
@@ -747,7 +794,7 @@
 
       html += `
         <div class="summary-box">
-          📌 <strong>Summary:</strong> ${disease} is a ${info.severity.toLowerCase()} condition that is typically treated with the medicines listed above. It lasts approximately ${info.duration}. Always follow your doctor's prescriptions.
+          📌 <strong>Summary:</strong> ${disease} is a ${severity.toLowerCase()} condition that is typically treated with the medicines listed above. It lasts approximately ${info.duration || 'varies'}. Always follow your doctor's prescriptions.
         </div>
       `;
 
@@ -793,21 +840,15 @@
       return html;
     }
 
-    // Quick search buttons
-    const quickDiseases = ['pneumonia', 'diabetes', 'asthma', 'covid-19'];
-    const quickMedicines = ['paracetamol', 'aspirin', 'ibuprofen', 'metformin'];
-
-    // Handle tab switching
-    window.switchTab = function(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById(`${tabName}Tab`).classList.add('active');
-      event.target.classList.add('active');
-    };
-
     // Focus input on load
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('diseaseSearch').focus();
+      console.log('📊 Medicine Finder initialized - waiting for database...');
+      
+      // Show loading message
+      if (!dbReady) {
+        document.getElementById('diseaseResults').innerHTML = '<div class="empty-state"><h3>Loading database...</h3><p>Please wait while the medical database is being loaded. This usually takes a few seconds.</p></div>';
+      }
     });
   </script>
   <!-- VILGAX AI Assistant - Advanced Version -->
