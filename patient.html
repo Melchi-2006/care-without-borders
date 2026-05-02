@@ -720,6 +720,7 @@
 <script src="js/vilgax-voice-system.js"></script>
 <script src="js/vilgax-consultation.js"></script>
 <script src="js/notifications.js"></script>
+<script src="js/scheduled-notifications.js"></script>
 
 <script>
   let currentPage = 'dashboard';
@@ -1199,6 +1200,22 @@
       console.warn('⚠️ VILGAX Voice System not loaded');
     }
 
+    // Start monitoring scheduled consultations
+    if (window.scheduledNotificationManager) {
+      ScheduledNotificationManager.requestNotificationPermissions();
+      window.scheduledNotificationManager.start(60); // Check every 60 seconds
+    }
+
+    // Listen for appointment time reached notifications
+    window.addEventListener('appointmentTimeReached', (e) => {
+      const appointmentNotification = e.detail;
+      if (appointmentNotification.role === 'patient') {
+        console.log('📢 Appointment time reached:', appointmentNotification);
+        // Show appointment notification to patient
+        alert(`📅 ${appointmentNotification.message}`);
+      }
+    });
+
     // Show consultation modal on page load
     setTimeout(() => {
       showConsultationModal();
@@ -1668,6 +1685,122 @@
     // Close modal and clear data
     closeDiagnosisModal();
     window.currentDiagnosis = null;
+  }
+
+  function joinPatientVideoCall(consultationId) {
+    const consultations = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+    const consultation = consultations.find(c => c.id === consultationId);
+    
+    if (!consultation) {
+      alert('❌ Consultation not found');
+      return;
+    }
+
+    const patientProfile = JSON.parse(localStorage.getItem('patientProfile') || '{}');
+
+    // Get or create Jitsi room ID
+    const jitsiRoomId = consultation.videoCallLink || `jitsi_${consultation.acceptedBy}_${consultationId}`;
+
+    // Update consultation waiting state
+    consultation.waitingState = 'patient_waiting';
+    const updatedConsultations = consultations.map(c => c.id === consultationId ? consultation : c);
+    localStorage.setItem('consultationRequests', JSON.stringify(updatedConsultations));
+
+    // Store current video call
+    window.currentVideoCall = {
+      consultationId: consultationId,
+      doctorName: consultation.doctorName || 'Dr. Unnamed',
+      doctorId: consultation.acceptedBy,
+      patientName: patientProfile.name || 'Patient',
+      jitsiRoomId: jitsiRoomId,
+      patientAccepted: true,
+      startTime: new Date().toISOString()
+    };
+
+    // Show waiting state or video room
+    showPatientVideoRoom(jitsiRoomId, consultation.doctorName || 'Doctor');
+  }
+
+  function showPatientVideoRoom(jitsiRoomId, doctorName) {
+    // Create video room container if it doesn't exist
+    let videoContainer = document.getElementById('jitsiContainer');
+    if (!videoContainer) {
+      videoContainer = document.createElement('div');
+      videoContainer.id = 'jitsiContainer';
+      videoContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2000;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      `;
+      document.body.appendChild(videoContainer);
+    }
+
+    // Clear previous content
+    videoContainer.innerHTML = '';
+
+    // Add close button
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '✕ End Call';
+    closeBtn.style.cssText = `
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 2001;
+    `;
+    closeBtn.onclick = () => {
+      videoContainer.remove();
+      window.currentVideoCall = null;
+    };
+    videoContainer.appendChild(closeBtn);
+
+    // Add waiting indicator
+    const waitingDiv = document.createElement('div');
+    waitingDiv.style.cssText = `
+      text-align: center;
+      color: #06b6d4;
+      font-size: 18px;
+      margin-bottom: 20px;
+    `;
+    waitingDiv.innerHTML = `⏳ Waiting for ${doctorName} to join the video call...`;
+    videoContainer.appendChild(waitingDiv);
+
+    // For now, show placeholder (Jitsi integration would go here)
+    const placeholder = document.createElement('div');
+    placeholder.style.cssText = `
+      width: 80%;
+      max-width: 1000px;
+      height: 600px;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 2px solid #14b8a6;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #06b6d4;
+      font-size: 16px;
+      flex-direction: column;
+    `;
+    placeholder.innerHTML = `
+      <div style="margin-bottom: 20px;">📹 Video Room: ${jitsiRoomId}</div>
+      <div style="font-size: 14px; color: #64748b;">Jitsi integration pending - Placeholder video interface</div>
+    `;
+    videoContainer.appendChild(placeholder);
   }
 
 </script>

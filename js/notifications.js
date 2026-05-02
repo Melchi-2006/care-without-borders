@@ -112,6 +112,30 @@ class NotificationSystem {
     this.notifications = this.notifications.filter(n => n.recipient !== recipient);
     this.saveNotifications();
   }
+
+  // Broadcast appointment time reached notification
+  broadcastAppointmentNotification(role, appointmentNotification) {
+    const event = new CustomEvent('appointmentTimeReached', { 
+      detail: {
+        role: role, // 'doctor' or 'patient'
+        ...appointmentNotification
+      }
+    });
+    window.dispatchEvent(event);
+    console.log(`📢 Appointment notification broadcasted to ${role}: ${appointmentNotification.timeMessage}`);
+  }
+
+  // Broadcast consultation accepted to other doctors (for filtering)
+  broadcastConsultationAccepted(consultationId, doctorId) {
+    const event = new CustomEvent('consultationAccepted', {
+      detail: {
+        consultationId: consultationId,
+        doctorId: doctorId
+      }
+    });
+    window.dispatchEvent(event);
+    console.log(`📢 Consultation ${consultationId} marked as accepted by doctor ${doctorId}`);
+  }
 }
 
 // Initialize global notification system

@@ -8,6 +8,7 @@
   <script src="js/vilgax-voice-system.js"></script>
   <script src="js/doctor-consultation-panel.js"></script>
   <script src="js/notifications.js"></script>
+  <script src="js/scheduled-notifications.js"></script>
   <script src="js/doctor-management.js"></script>
   
   <style>
@@ -769,21 +770,7 @@
     }
 
     // ==================== VIDEO CALL & DIAGNOSIS SYSTEM ====================
-    function closeVideoCallModal() {
-      const modal = document.getElementById('videoCallModal');
-      if (modal) {
-        modal.style.display = 'none';
-      }
-      window.currentVideoCall = null;
-    }
-
     function showVideoCallModalDoctor(notification) {
-      // Only show if we have valid notification data with actual scheduled call
-      if (!notification || !notification.consultationId || !notification.patientName) {
-        console.warn('⚠️ Invalid notification data - modal not shown');
-        return;
-      }
-
       window.currentVideoCall = {
         consultationId: notification.consultationId,
         patientName: notification.patientName,
@@ -791,23 +778,12 @@
         doctorAccepted: false
       };
       
-      const videoCallPatientName = document.getElementById('videoCallPatientName');
-      if (videoCallPatientName) {
-        videoCallPatientName.textContent = notification.patientName;
-      }
-      
-      const modal = document.getElementById('videoCallModal');
-      if (modal) {
-        modal.style.display = 'block';
-      }
+      document.getElementById('videoCallPatientName').textContent = notification.patientName;
+      document.getElementById('videoCallModal').style.display = 'flex';
     }
 
     function acceptVideoCallDoctor() {
-      if (!window.currentVideoCall) {
-        alert('⚠️ No active call to accept');
-        closeVideoCallModal();
-        return;
-      }
+      if (!window.currentVideoCall) return;
       
       window.currentVideoCall.doctorAccepted = true;
       
@@ -821,28 +797,21 @@
       localStorage.setItem('videoSessions', JSON.stringify(videoSessions));
       
       alert('✅ Video call accepted! Starting consultation with ' + window.currentVideoCall.patientName + '...');
-      
-      // Close the video call modal
-      closeVideoCallModal();
+      document.getElementById('videoCallModal').style.display = 'none';
       
       // Show diagnosis input modal after short delay
       setTimeout(() => {
         const doctorData = JSON.parse(localStorage.getItem('doctorData') || '{}');
         const profileData = JSON.parse(localStorage.getItem('doctorProfile') || '{}');
-        const diagnosisInput = document.getElementById('diagnosisPatientName');
-        if (diagnosisInput && window.currentVideoCall) {
-          diagnosisInput.value = window.currentVideoCall.patientName;
-        }
-        const diagnosisModal = document.getElementById('diagnosisInputModal');
-        if (diagnosisModal) {
-          diagnosisModal.style.display = 'flex';
-        }
+        document.getElementById('diagnosisPatientName').value = window.currentVideoCall.patientName;
+        document.getElementById('diagnosisInputModal').style.display = 'flex';
       }, 500);
     }
 
     function rejectVideoCallDoctor() {
       alert('❌ You have declined the video call. The patient will be notified.');
-      closeVideoCallModal();
+      document.getElementById('videoCallModal').style.display = 'none';
+      window.currentVideoCall = null;
     }
 
     function closeDiagnosisInputModal() {
@@ -895,6 +864,178 @@
       closeDiagnosisInputModal();
     }
 
+    function joinDoctorVideoCall(consultationId) {
+      const consultations = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+      const consultation = consultations.find(c => c.id === consultationId);
+      
+      if (!consultation) {
+        alert('❌ Consultation not found');
+        return;
+      }
+
+      const doctorData = JSON.parse(localStorage.getItem('doctorData') || '{}');
+      const profileData = JSON.parse(localStorage.getItem('doctorProfile') || '{}');
+
+      // Get or create Jitsi room ID
+      const jitsiRoomId = consultation.videoCallLink || `jitsi_${doctorData.id || 'DR_001'}_${consultationId}`;
+
+      // Update consultation waiting state
+      consultation.waitingState = 'doctor_waiting';
+      const updatedConsultations = consultations.map(c => c.id === consultationId ? consultation : c);
+      localStorage.setItem('consultationRequests', JSON.stringify(updatedConsultations));
+
+      // Store current video call
+      window.currentVideoCall = {
+        consultationId: consultationId,
+        patientName: consultation.patientName,
+        doctorName: profileData.name || doctorData.name || 'Dr. Unnamed',
+        doctorId: doctorData.id || 'DR_001',
+        jitsiRoomId: jitsiRoomId,
+        doctorAccepted: true,
+        startTime: new Date().toISOString()
+      };
+
+      // Show waiting state or video room
+      showVideoRoom(jitsiRoomId, consultation.patientName, 'doctor');
+      
+      // Notify patient through notification system
+      if (window.notificationSystem) {
+        window.notificationSystem.sendVideoCallInvitationNotification(
+          consultation.patientEmail || 'patient@example.com',
+          profileData.name || doctorData.name || 'Dr. Unnamed',
+          consultationId
+        );
+      }
+    }
+
+    function sendDoctorDiagnosis(consultationId) {
+      const consultations = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+      const consultation = consultations.find(c => c.id === consultationId);
+      
+      if (!consultation) {
+        alert('❌ Consultation not found');
+        return;
+      }
+
+      window.currentVideoCall = {
+        consultationId: consultationId,
+        patientName: consultation.patientName
+      };
+
+      const doctorData = JSON.parse(localStorage.getItem('doctorData') || '{}');
+      document.getElementById('diagnosisPatientName').value = consultation.patientName;
+      document.getElementById('diagnosisInputModal').style.display = 'flex';
+    }
+
+    function completeDoctorConsultation(consultationId) {
+      const confirmComplete = confirm('Are you sure you want to mark this consultation as completed?');
+      if (!confirmComplete) return;
+
+      const consultations = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+      const consultation = consultations.find(c => c.id === consultationId);
+      
+      if (!consultation) {
+        alert('❌ Consultation not found');
+        return;
+      }
+
+      // Mark as completed
+      consultation.status = 'completed';
+      consultation.completedAt = new Date().toISOString();
+      
+      const updatedConsultations = consultations.map(c => c.id === consultationId ? consultation : c);
+      localStorage.setItem('consultationRequests', JSON.stringify(updatedConsultations));
+
+      // Reload dashboard
+      const doctorManagement = new DoctorManagementSystem();
+      doctorManagement.loadData();
+      document.getElementById('dashboardContent').innerHTML = window.getDoctorDashboardHTML();
+
+      alert('✅ Consultation marked as completed');
+    }
+
+    function showVideoRoom(jitsiRoomId, patientName, role) {
+      // Create video room container if it doesn't exist
+      let videoContainer = document.getElementById('jitsiContainer');
+      if (!videoContainer) {
+        videoContainer = document.createElement('div');
+        videoContainer.id = 'jitsiContainer';
+        videoContainer.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 2000;
+          background: #000;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        `;
+        document.body.appendChild(videoContainer);
+      }
+
+      // Clear previous content
+      videoContainer.innerHTML = '';
+
+      // Add close button
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = '✕ End Call';
+      closeBtn.style.cssText = `
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #dc2626;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        z-index: 2001;
+      `;
+      closeBtn.onclick = () => {
+        videoContainer.remove();
+        window.currentVideoCall = null;
+      };
+      videoContainer.appendChild(closeBtn);
+
+      // Add waiting indicator
+      const waitingDiv = document.createElement('div');
+      waitingDiv.style.cssText = `
+        text-align: center;
+        color: #06b6d4;
+        font-size: 18px;
+        margin-bottom: 20px;
+      `;
+      waitingDiv.innerHTML = `⏳ Waiting for ${patientName} to join the video call...`;
+      videoContainer.appendChild(waitingDiv);
+
+      // For now, show placeholder (Jitsi integration would go here)
+      const placeholder = document.createElement('div');
+      placeholder.style.cssText = `
+        width: 80%;
+        max-width: 1000px;
+        height: 600px;
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+        border: 2px solid #14b8a6;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #06b6d4;
+        font-size: 16px;
+        flex-direction: column;
+      `;
+      placeholder.innerHTML = `
+        <div style="margin-bottom: 20px;">📹 Video Room: ${jitsiRoomId}</div>
+        <div style="font-size: 14px; color: #64748b;">Jitsi integration pending - Placeholder video interface</div>
+      `;
+      videoContainer.appendChild(placeholder);
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       console.log('✓ Doctor Dashboard loaded');
       // Load initial dashboard content
@@ -910,17 +1051,27 @@
         document.getElementById('doctorSidebarSpecialty').textContent = profileData.specialty || doctorData.specialty || 'Verified Physician';
       }
 
-      // Ensure modal is hidden on page load
-      const videoCallModal = document.getElementById('videoCallModal');
-      if (videoCallModal) {
-        videoCallModal.style.display = 'none';
+      // Start monitoring scheduled consultations
+      if (window.scheduledNotificationManager) {
+        ScheduledNotificationManager.requestNotificationPermissions();
+        window.scheduledNotificationManager.start(60); // Check every 60 seconds
       }
 
-      // Listen for patient acceptance notifications (only show for valid calls)
+      // Listen for patient acceptance notifications
       window.addEventListener('newNotification', (e) => {
         const notification = e.detail;
-        if (notification && notification.type === 'patient_accepted_call' && notification.consultationId && notification.patientName) {
+        if (notification.type === 'patient_accepted_call') {
           showVideoCallModalDoctor(notification);
+        }
+      });
+
+      // Listen for appointment time reached notifications
+      window.addEventListener('appointmentTimeReached', (e) => {
+        const appointmentNotification = e.detail;
+        if (appointmentNotification.role === 'doctor') {
+          console.log('📢 Appointment time reached:', appointmentNotification);
+          // Show appointment notification to doctor
+          alert(`📅 ${appointmentNotification.message}`);
         }
       });
     });
@@ -1048,9 +1199,8 @@
   <div id="notificationsContainer" style="position: fixed; top: 20px; right: 20px; z-index: 2000; max-width: 400px;"></div>
 
   <!-- VIDEO CALL ACCEPTANCE MODAL -->
-  <div id="videoCallModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1500; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease;" onclick="if(event.target.id === 'videoCallModal') closeVideoCallModal();">
-    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 500px; background: linear-gradient(135deg, var(--card-bg), #1a3a3a); border-radius: 12px; padding: 30px; text-align: center; border: 2px solid var(--primary-cyan); box-shadow: 0 0 30px rgba(20,184,166,0.3);">
-      <button onclick="closeVideoCallModal()" style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: var(--primary-cyan); font-size: 24px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">✕</button>
+  <div id="videoCallModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1500; backdrop-filter: blur(5px); animation: fadeIn 0.3s ease; align-items: center; justify-content: center;">
+    <div style="background: linear-gradient(135deg, var(--card-bg), #1a3a3a); border-radius: 12px; padding: 30px; max-width: 500px; text-align: center; border: 2px solid var(--primary-cyan); box-shadow: 0 0 30px rgba(20,184,166,0.3);">
       <h2 style="color: var(--primary-cyan); margin-bottom: 15px; font-size: 24px;">📞 Video Call Invitation</h2>
       <p style="color: var(--text-light); margin-bottom: 10px; font-size: 16px;">Patient <span id="videoCallPatientName">Patient</span> has accepted your video call invitation.</p>
       <p style="color: var(--success); margin-bottom: 20px; font-size: 14px;">✅ Ready to start the consultation!</p>

@@ -19,14 +19,15 @@ class DoctorManagementSystem {
 
   // ==================== DATA MANAGEMENT ====================
   loadData() {
-    // Load ALL consultation requests - pending ones visible to all doctors, accepted/completed for this doctor
+    // Load consultation requests:
+    // - Pending (no doctor accepted yet) - visible to all doctors
+    // - Accepted by THIS doctor - only show this doctor's accepted consultations
     try {
       const allConsultations = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
       this.consultationRequests = Array.isArray(allConsultations) ? allConsultations.filter(r => 
-        r.status === 'pending' || 
-        r.acceptedBy === this.doctorId || 
-        r.status === 'accepted' || 
-        r.status === 'completed'
+        (r.status === 'pending' && !r.acceptedBy) || 
+        (r.acceptedBy === this.doctorId) ||
+        (r.status === 'completed' && r.acceptedBy === this.doctorId)
       ) : [];
     } catch (e) {
       console.error('❌ Error loading consultationRequests:', e);
@@ -161,11 +162,15 @@ class DoctorManagementSystem {
 
   // ==================== CONSULTATION MANAGEMENT ====================
   getPendingConsultations() {
-    return this.consultationRequests.filter(r => r.status === 'pending');
+    return this.consultationRequests.filter(r => r.status === 'pending' && !r.acceptedBy);
   }
 
   getAcceptedConsultations() {
-    return this.consultationRequests.filter(r => r.status === 'accepted');
+    return this.consultationRequests.filter(r => r.acceptedBy === this.doctorId && r.status === 'accepted');
+  }
+
+  getScheduledConsultations() {
+    return this.getAcceptedConsultations().filter(c => c.preferredTime);
   }
 
   acceptConsultation(requestId) {
@@ -174,7 +179,8 @@ class DoctorManagementSystem {
       request.status = 'accepted';
       request.acceptedBy = this.doctorId;
       request.acceptedAt = new Date().toISOString();
-      request.videoCallLink = `https://call.carewitoutborders.com/${this.doctorId}/${requestId}`;
+      request.videoCallLink = `jitsi_${this.doctorId}_${requestId}`;
+      request.waitingState = 'none'; // 'none', 'doctor_waiting', 'patient_waiting', 'in_call'
       
       // Update in localStorage
       const allRequests = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
@@ -194,7 +200,9 @@ class DoctorManagementSystem {
             doctorName: this.name,
             specialty: request.specialty,
             symptoms: request.symptoms,
-            patientName: request.patientName
+            patientName: request.patientName,
+            videoCallLink: request.videoCallLink,
+            preferredTime: request.preferredTime
           }
         );
       }
@@ -520,9 +528,52 @@ function getDoctorDashboardHTML() {
 function getConsultationsHTML() {
   const pending = window.doctorSystem.getPendingConsultations();
   const accepted = window.doctorSystem.getAcceptedConsultations();
+  const scheduled = window.doctorSystem.getScheduledConsultations();
 
   return `
     <div class="card">
+      <h2 style="color: var(--primary-cyan);">📅 Scheduled Consultations (${scheduled.length})</h2>
+      ${scheduled.length === 0 ? '<p style="color: var(--text-light);">No scheduled appointments</p>' : `
+        <div style="margin-top: 15px; overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <thead>
+              <tr style="background: rgba(20,184,166,0.1); border-bottom: 1px solid var(--border-color);">
+                <th style="padding: 10px; text-align: left; color: var(--primary-cyan);">Patient Name</th>
+                <th style="padding: 10px; text-align: left; color: var(--primary-cyan);">Specialty</th>
+                <th style="padding: 10px; text-align: left; color: var(--primary-cyan);">Date & Time</th>
+                <th style="padding: 10px; text-align: left; color: var(--primary-cyan);">Status</th>
+                <th style="padding: 10px; text-align: center; color: var(--primary-cyan);">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${scheduled.map(req => {
+                const appointmentTime = new Date(req.preferredTime);
+                const now = new Date();
+                const isUpcoming = appointmentTime > now;
+                const statusBg = isUpcoming ? 'rgba(59,130,246,0.1)' : 'rgba(16,185,129,0.1)';
+                const statusColor = isUpcoming ? '#3b82f6' : '#10b981';
+                const statusText = isUpcoming ? '⏱️ Upcoming' : '🟢 Active';
+                
+                return `
+                  <tr style="border-bottom: 1px solid var(--border-color); background: ${statusBg};">
+                    <td style="padding: 10px; color: var(--primary-cyan); font-weight: 600;">${req.patientName}</td>
+                    <td style="padding: 10px; color: var(--text-light);">${req.specialty}</td>
+                    <td style="padding: 10px; color: var(--text-light);">📅 ${appointmentTime.toLocaleDateString()} 🕐 ${appointmentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                    <td style="padding: 10px; color: ${statusColor}; font-weight: 600;">${statusText}</td>
+                    <td style="padding: 10px; text-align: center;">
+                      <button onclick="joinDoctorVideoCall('${req.id}')" style="padding: 4px 8px; background: var(--primary-cyan); color: var(--dark-bg); border: none; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px; margin-right: 4px;">🎥 Join</button>
+                      <button onclick="sendDoctorDiagnosis('${req.id}')" style="padding: 4px 8px; background: var(--success); color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px;">📋 Diagnosis</button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `}
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
       <h2 style="color: var(--primary-cyan);">⏳ Pending Consultation Requests (${pending.length})</h2>
       ${pending.length === 0 ? '<p style="color: var(--text-light);">No pending requests</p>' : `
         <div style="margin-top: 15px;">
@@ -533,6 +584,7 @@ function getConsultationsHTML() {
                   <p style="color: var(--primary-cyan); font-weight: bold; margin: 0 0 5px 0;">${req.patientName}</p>
                   <p style="color: var(--text-light); margin: 0 0 3px 0; font-size: 12px;">🔴 ${req.specialty} | Age: ${req.age}</p>
                   <p style="color: var(--text-light); margin: 0; font-size: 12px;">📋 ${req.symptoms.substring(0, 50)}</p>
+                  ${req.preferredTime ? `<p style="color: var(--text-light); margin: 5px 0 0 0; font-size: 12px;">📅 Preferred: ${new Date(req.preferredTime).toLocaleString()}</p>` : ''}
                 </div>
                 <div style="display: flex; gap: 8px;">
                   <button onclick="acceptDoctorConsultation('${req.id}')" style="padding: 6px 12px; background: var(--success); color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">✓ Accept</button>
@@ -546,18 +598,19 @@ function getConsultationsHTML() {
     </div>
 
     <div class="card" style="margin-top: 20px;">
-      <h2 style="color: var(--primary-cyan);">✅ Active Consultations (${accepted.length})</h2>
-      ${accepted.length === 0 ? '<p style="color: var(--text-light);">No active consultations</p>' : `
+      <h2 style="color: var(--primary-cyan);">✅ Active Consultations (${accepted.filter(a => !a.preferredTime || new Date(a.preferredTime) <= new Date()).length})</h2>
+      ${accepted.filter(a => !a.preferredTime || new Date(a.preferredTime) <= new Date()).length === 0 ? '<p style="color: var(--text-light);">No active consultations</p>' : `
         <div style="margin-top: 15px;">
-          ${accepted.slice(0, 5).map(req => `
+          ${accepted.filter(a => !a.preferredTime || new Date(a.preferredTime) <= new Date()).slice(0, 5).map(req => `
             <div style="background: rgba(16,185,129,0.05); padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid var(--success);">
               <div style="display: flex; justify-content: space-between; align-items: start;">
                 <div style="flex: 1;">
                   <p style="color: var(--primary-cyan); font-weight: bold; margin: 0 0 5px 0;">${req.patientName}</p>
-                  <p style="color: var(--text-light); margin: 0 0 3px 0; font-size: 12px;">🎥 <a href="${req.videoCallLink}" target="_blank" style="color: var(--light-cyan); text-decoration: none;">Join Video Call</a></p>
+                  <p style="color: var(--text-light); margin: 0 0 3px 0; font-size: 12px;">🎥 Video Call: ${req.videoCallLink}</p>
                   <p style="color: var(--text-light); margin: 0; font-size: 12px;">⏰ Since: ${new Date(req.acceptedAt).toLocaleDateString()}</p>
                 </div>
                 <div style="display: flex; gap: 8px;">
+                  <button onclick="joinDoctorVideoCall('${req.id}')" style="padding: 6px 12px; background: var(--primary-cyan); color: var(--dark-bg); border: none; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">🎥 Join</button>
                   <button onclick="sendDoctorDiagnosis('${req.id}')" style="padding: 6px 12px; background: var(--primary-cyan); color: var(--dark-bg); border: none; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">📋 Diagnosis</button>
                   <button onclick="completeDoctorConsultation('${req.id}')" style="padding: 6px 12px; background: var(--success); color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">✓ Complete</button>
                 </div>
