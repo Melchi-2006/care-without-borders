@@ -1206,6 +1206,15 @@
       window.scheduledNotificationManager.start(60); // Check every 60 seconds
     }
 
+    // Auto-refresh consultation data every 5 seconds to sync with doctor page
+    setInterval(() => {
+      const appointmentsPage = document.getElementById('appointments');
+      if (appointmentsPage && appointmentsPage.classList.contains('active')) {
+        // Reload appointments to show doctor responses
+        showConsultationModal();
+      }
+    }, 5000); // Refresh every 5 seconds when on appointments page
+
     // Listen for appointment time reached notifications
     window.addEventListener('appointmentTimeReached', (e) => {
       const appointmentNotification = e.detail;

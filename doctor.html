@@ -1057,6 +1057,14 @@
         window.scheduledNotificationManager.start(60); // Check every 60 seconds
       }
 
+      // Auto-refresh consultation data every 5 seconds to sync with patient page
+      setInterval(() => {
+        if (window.doctorManagementSystem) {
+          window.doctorManagementSystem.loadData();
+          document.getElementById('dashboardContent').innerHTML = window.getDoctorDashboardHTML();
+        }
+      }, 5000); // Refresh every 5 seconds
+
       // Listen for patient acceptance notifications
       window.addEventListener('newNotification', (e) => {
         const notification = e.detail;
