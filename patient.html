@@ -1194,6 +1194,18 @@
   window.addEventListener('DOMContentLoaded', () => {
     console.log('✓ Patient Dashboard loaded');
     
+    // ==================== RESTORE PATIENT PROFILE ====================
+    // Load patient profile data from localStorage on page load
+    const patientProfile = JSON.parse(localStorage.getItem('patientProfile') || '{}');
+    if (patientProfile.name) {
+      // Update sidebar display with saved profile
+      const userNameEl = document.querySelector('.user-name');
+      const userEmailEl = document.querySelector('.user-email');
+      if (userNameEl) userNameEl.textContent = '👤 ' + patientProfile.name;
+      if (userEmailEl) userEmailEl.textContent = patientProfile.email || 'Patient';
+      console.log('✓ Patient profile restored from localStorage:', patientProfile.name);
+    }
+    
     // Clear old notifications and modals on page load
     localStorage.removeItem('systemNotifications');
     document.getElementById('videoCallModal').style.display = 'none';

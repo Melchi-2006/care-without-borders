@@ -726,6 +726,8 @@
         localStorage.setItem('patientLoggedIn', 'true');
         localStorage.setItem('patientToken', data.token.token);
         localStorage.setItem('patientData', JSON.stringify(data.patient));
+        localStorage.setItem('patientEmail', email);
+        localStorage.setItem('patientName', data.patient.name);
         
         // Save user ID if available from backend
         if (data.patient && data.patient.uid) {
@@ -740,14 +742,34 @@
           window.location.href = 'patient.html';
         }, 1500);
       } else {
-        showAlert(`Login failed: ${data.error}`, 'error');
-        loginBtn.disabled = false;
-        loginBtn.textContent = '🔐 Login';
+        throw new Error(data.error || 'Login failed');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      showAlert(`Login failed: ${error.message}`, 'error');
-      loginBtn.disabled = false;
+      console.error('Backend login error:', error);
+      
+      // ==================== FALLBACK: LOCAL STORAGE LOGIN ====================
+      console.log('📌 Backend unavailable. Trying local storage credentials...');
+      
+      const patientCredentials = JSON.parse(localStorage.getItem('patientCredentials') || '[]');
+      const patient = patientCredentials.find(p => p.email === email && p.password === password);
+      
+      if (patient) {
+        // Successful local login
+        localStorage.setItem('patientLoggedIn', 'true');
+        localStorage.setItem('patientEmail', email);
+        localStorage.setItem('patientName', patient.name);
+        localStorage.setItem('patientID', patient.id);
+        localStorage.setItem('patientData', JSON.stringify(patient));
+        
+        showAlert(`✅ Welcome ${patient.name}! (Local mode)`, 'success');
+        console.log('✅ Patient logged in locally:', email);
+        
+        setTimeout(() => {
+          window.location.href = 'patient.html';
+        }, 1500);
+      } else {
+        showAlert('❌ Invalid email or password', 'error');
+        loginBtn.disabled = false;
       loginBtn.textContent = '🔐 Login';
     }
   };

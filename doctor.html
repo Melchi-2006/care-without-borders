@@ -640,7 +640,12 @@
       } else if (pageName === 'appointments' && window.doctorPanel) {
         const requestsDiv = document.getElementById('consultationRequests');
         if (requestsDiv) {
-          requestsDiv.innerHTML = showDoctorConsultationRequests('General');
+          // ==================== GET DOCTOR'S ACTUAL SPECIALTY ====================
+          const doctorData = JSON.parse(localStorage.getItem('doctorData') || '{}');
+          const profileData = JSON.parse(localStorage.getItem('doctorProfile') || '{}');
+          const doctorSpecialty = profileData.specialty || doctorData.specialty || 'General Practice';
+          console.log(`👨‍⚕️ Loading consultation requests for specialty: ${doctorSpecialty}`);
+          requestsDiv.innerHTML = showDoctorConsultationRequests(doctorSpecialty);
         }
       }
     }
@@ -1121,7 +1126,20 @@
             </div>
             <div>
               <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Specialization *</label>
-              <input type="text" id="doctorProfileSpecialty" placeholder="e.g., Cardiologist" required style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit;">
+              <select id="doctorProfileSpecialty" required style="width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.5); border: 1px solid #334155; border-radius: 8px; color: #cbd5e1; font-family: inherit;">
+                <option value="">-- Select Your Specialty --</option>
+                <option value="Cardiology">Cardiology</option>
+                <option value="Neurology">Neurology</option>
+                <option value="Orthopedics">Orthopedics</option>
+                <option value="Pediatrics">Pediatrics</option>
+                <option value="General Practice">General Practice</option>
+                <option value="Dentistry">Dentistry</option>
+                <option value="Dermatology">Dermatology</option>
+                <option value="Psychiatry">Psychiatry</option>
+                <option value="Gastroenterology">Gastroenterology</option>
+                <option value="ENT">ENT</option>
+                <option value="Pulmonology">Pulmonology</option>
+              </select>
             </div>
             <div>
               <label style="color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 8px;">Medical License</label>

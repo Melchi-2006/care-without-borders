@@ -153,11 +153,67 @@ class DoctorBookingSystem {
   }
 
   /**
+   * Normalize specialty names to handle variations
+   * E.g., "Cardiologist" -> "Cardiology"
+   */
+  normalizeSpecialty(specialty) {
+    if (!specialty) return '';
+    
+    const specialty_lower = specialty.toLowerCase().trim();
+    
+    // Define normalization mappings
+    const mappings = {
+      'cardiology': 'Cardiology',
+      'cardiologist': 'Cardiology',
+      'neurology': 'Neurology',
+      'neurologist': 'Neurology',
+      'orthopedics': 'Orthopedics',
+      'orthopedist': 'Orthopedics',
+      'orthopedic': 'Orthopedics',
+      'pediatrics': 'Pediatrics',
+      'pediatrician': 'Pediatrics',
+      'general practice': 'General Practice',
+      'general practitioner': 'General Practice',
+      'gp': 'General Practice',
+      'dentistry': 'Dentistry',
+      'dentist': 'Dentistry',
+      'dermatology': 'Dermatology',
+      'dermatologist': 'Dermatology',
+      'psychiatry': 'Psychiatry',
+      'psychiatrist': 'Psychiatry',
+      'gastroenterology': 'Gastroenterology',
+      'gastroenterologist': 'Gastroenterology',
+      'ent': 'ENT',
+      'ear nose throat': 'ENT',
+      'pulmonology': 'Pulmonology',
+      'pulmonologist': 'Pulmonology',
+      'lung': 'Pulmonology'
+    };
+    
+    return mappings[specialty_lower] || specialty;
+  }
+
+  /**
    * Find available doctors by specialty, sorted by rating and patient severity
+   * Handles specialty name variations and case-insensitive matching
    */
   findDoctorsBySpecialty(specialty, patientSeverity = null) {
+    if (!specialty) return [];
+    
+    // Normalize the incoming specialty
+    const normalizedSpecialty = this.normalizeSpecialty(specialty);
+    
+    // Filter doctors - use normalized specialty for matching
     let availableDoctors = Array.from(this.doctors.values())
-      .filter(doc => doc.specialty === specialty && doc.isOnline);
+      .filter(doc => {
+        // Normalize doctor's specialty too
+        const docSpecialty = this.normalizeSpecialty(doc.specialty);
+        // Match normalized specialties or exact match as fallback
+        return (docSpecialty === normalizedSpecialty || doc.specialty === specialty) && doc.isOnline;
+      });
+
+    console.log(`🔍 Searching for doctors in "${specialty}" (normalized: "${normalizedSpecialty}")`);
+    console.log(`   Found ${availableDoctors.length} available doctors`);
 
     // If we have severity info, prioritize high-rated doctors for urgent cases
     if (patientSeverity && patientSeverity.level !== 'ROUTINE') {
@@ -185,12 +241,18 @@ class DoctorBookingSystem {
     const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     const request = {
+      id: requestId,
       requestId,
-      patientInfo,
+      patientName: patientInfo.name || 'Anonymous',
+      age: patientInfo.age || 'N/A',
+      gender: patientInfo.gender || 'N/A',
+      location: patientInfo.location || '',
+      symptoms: patientInfo.symptoms ? patientInfo.symptoms.join(', ') : 'Not specified',
+      duration: patientInfo.duration || '',
       specialty,
       preferredTime,
       severity,
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
       status: 'pending', // pending -> accepted -> active -> completed
       acceptedByDoctor: null,
       acceptedAt: null,
@@ -199,6 +261,10 @@ class DoctorBookingSystem {
     };
 
     this.appointmentRequests.set(requestId, request);
+    
+    // ==================== SAVE TO LOCALSTORAGE ====================
+    // Persist request to localStorage so doctor page can see Vilgax bookings
+    this.syncRequestsToLocalStorage();
 
     // Log request with severity
     console.log(`📋 Appointment Request Created: ${requestId}`);
@@ -213,6 +279,30 @@ class DoctorBookingSystem {
     this.broadcastToDocdoctors(request);
 
     return request;
+  }
+
+  /**
+   * Sync all appointment requests to localStorage
+   * This makes Vilgax bookings visible in the doctor dashboard
+   */
+  syncRequestsToLocalStorage() {
+    const allRequests = Array.from(this.appointmentRequests.values()).map(req => ({
+      id: req.id || req.requestId,
+      requestId: req.requestId,
+      patientName: req.patientName,
+      age: req.age,
+      gender: req.gender,
+      location: req.location,
+      symptoms: req.symptoms,
+      duration: req.duration,
+      specialty: req.specialty,
+      status: req.status,
+      createdAt: req.createdAt,
+      acceptedBy: req.acceptedByDoctor,
+      videoRoomId: req.videoRoomId
+    }));
+    localStorage.setItem('consultationRequests', JSON.stringify(allRequests));
+    console.log(`💾 Synced ${allRequests.length} VILGAX appointment requests to localStorage`);
   }
 
   /**
@@ -270,6 +360,10 @@ class DoctorBookingSystem {
     };
 
     this.activeAppointments.set(appointment.appointmentId, appointment);
+    
+    // ==================== SYNC TO LOCALSTORAGE ====================
+    // Update localStorage so doctor page reflects accepted appointments
+    this.syncRequestsToLocalStorage();
 
     console.log(`✅ Appointment Accepted!`);
     console.log(`   Doctor: ${doctor.name} (${doctor.specialty})`);
@@ -296,6 +390,10 @@ class DoctorBookingSystem {
         console.log(`🚫 Cancelled competing request: ${id}`);
       }
     }
+    
+    // ==================== SYNC TO LOCALSTORAGE ====================
+    // Update localStorage after cancelling competing requests
+    this.syncRequestsToLocalStorage();
   }
 
   /**

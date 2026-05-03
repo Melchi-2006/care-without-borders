@@ -10,6 +10,47 @@ class DoctorConsultationPanel {
     this.loadRequests();
   }
 
+  /**
+   * Normalize specialty names to handle variations
+   * E.g., "Cardiologist" -> "Cardiology"
+   */
+  normalizeSpecialty(specialty) {
+    if (!specialty) return '';
+    
+    const specialty_lower = specialty.toLowerCase().trim();
+    
+    // Define normalization mappings
+    const mappings = {
+      'cardiology': 'Cardiology',
+      'cardiologist': 'Cardiology',
+      'neurology': 'Neurology',
+      'neurologist': 'Neurology',
+      'orthopedics': 'Orthopedics',
+      'orthopedist': 'Orthopedics',
+      'orthopedic': 'Orthopedics',
+      'pediatrics': 'Pediatrics',
+      'pediatrician': 'Pediatrics',
+      'general practice': 'General Practice',
+      'general practitioner': 'General Practice',
+      'gp': 'General Practice',
+      'dentistry': 'Dentistry',
+      'dentist': 'Dentistry',
+      'dermatology': 'Dermatology',
+      'dermatologist': 'Dermatology',
+      'psychiatry': 'Psychiatry',
+      'psychiatrist': 'Psychiatry',
+      'gastroenterology': 'Gastroenterology',
+      'gastroenterologist': 'Gastroenterology',
+      'ent': 'ENT',
+      'ear nose throat': 'ENT',
+      'pulmonology': 'Pulmonology',
+      'pulmonologist': 'Pulmonology',
+      'lung': 'Pulmonology'
+    };
+    
+    return mappings[specialty_lower] || specialty;
+  }
+
   loadRequests() {
     // Load from local storage (in production, fetch from server)
     const allRequests = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
@@ -47,7 +88,17 @@ class DoctorConsultationPanel {
   }
 
   getRequestsBySpecialty(specialty) {
-    return this.activeRequests.filter(r => r.specialty === specialty);
+    if (!specialty) return this.activeRequests;
+    
+    // Normalize the specialty for matching
+    const normalizedSpecialty = this.normalizeSpecialty(specialty);
+    
+    return this.activeRequests.filter(r => {
+      // Normalize request specialty too
+      const requestSpecialty = this.normalizeSpecialty(r.specialty);
+      // Match normalized specialties or exact match as fallback
+      return requestSpecialty === normalizedSpecialty || r.specialty === specialty;
+    });
   }
 
   sendDiagnosis(requestId, diagnosisText, medicines) {
@@ -96,6 +147,15 @@ window.doctorPanel = new DoctorConsultationPanel();
 function showDoctorConsultationRequests(doctorSpecialty = 'General') {
   window.doctorPanel.loadRequests();
   const requests = window.doctorPanel.getRequestsBySpecialty(doctorSpecialty);
+
+  console.log(`📋 Doctor Consultation Panel`);
+  console.log(`   Doctor Specialty: ${doctorSpecialty}`);
+  console.log(`   Requests matching this specialty: ${requests.length}`);
+  if (requests.length > 0) {
+    requests.forEach(r => {
+      console.log(`   - Patient: ${r.patientName}, Specialty: ${r.specialty}`);
+    });
+  }
 
   let html = `
     <div style="background: rgba(20,184,166,0.1); padding: 20px; border-radius: 12px; border-left: 4px solid var(--primary-cyan);">

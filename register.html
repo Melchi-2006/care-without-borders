@@ -952,7 +952,12 @@
       },
       body: JSON.stringify({ email, password, name })
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(err => { throw err; });
+      }
+      return response.json();
+    })
     .then(data => {
       if (data.success) {
         showAlert('✅ Account created successfully! Redirecting...', 'success');
@@ -960,16 +965,44 @@
           window.location.href = 'login.html';
         }, 1500);
       } else {
-        showAlert(`❌ ${data.error}`, 'error');
+        showAlert(`❌ ${data.error || 'Registration failed'}`, 'error');
+        console.error('Signup error:', data);
         signupBtn.disabled = false;
         signupBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
       }
     })
     .catch(error => {
-      console.error('Registration error:', error);
-      showAlert('❌ Registration failed. Please try again.', 'error');
-      signupBtn.disabled = false;
-      signupBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+      console.error('Backend registration error:', error);
+      
+      // ==================== FALLBACK: LOCAL STORAGE REGISTRATION ====================
+      // If backend is not available, save locally and allow login
+      console.log('📌 Backend unavailable. Using local storage registration...');
+      
+      const patientCredentials = JSON.parse(localStorage.getItem('patientCredentials') || '[]');
+      
+      // Check if email already exists
+      if (patientCredentials.some(p => p.email === email)) {
+        showAlert('❌ Email already registered', 'error');
+        signupBtn.disabled = false;
+        signupBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+        return;
+      }
+      
+      // Save to local storage
+      patientCredentials.push({
+        id: 'patient_' + Date.now(),
+        email,
+        password,
+        name,
+        createdAt: new Date().toISOString()
+      });
+      localStorage.setItem('patientCredentials', JSON.stringify(patientCredentials));
+      
+      showAlert('✅ Account created successfully! (Local mode) Redirecting...', 'success');
+      console.log('✅ Patient registered locally:', email);
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 1500);
     });
   }
 
