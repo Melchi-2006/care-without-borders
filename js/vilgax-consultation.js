@@ -391,6 +391,8 @@ function createConsultationRequest(patientData, specialty, preferredTime) {
   const request = {
     id: 'CONSULT-' + Date.now(),
     patientName: patientData.patientName,
+    patientId: patientData.patientId || 'PATIENT-' + Date.now(),
+    patientEmail: patientData.patientEmail || 'patient@example.com',
     age: patientData.age,
     gender: patientData.gender,
     symptoms: patientData.symptoms,
@@ -399,11 +401,15 @@ function createConsultationRequest(patientData, specialty, preferredTime) {
     preferredTime: preferredTime,
     status: 'pending', // pending, accepted, completed, cancelled
     acceptedBy: null,
+    acceptedAt: null,
     createdAt: new Date().toISOString(),
-    videoCallLink: null
+    videoCallLink: null,
+    waitingState: 'none',
+    doctorName: null,
+    doctorId: null
   };
 
-  // Save to local storage (in production, send to server)
+  // Save to Firebase
   saveConsultationRequest(request);
   
   // Notify doctors (in production, use WebSocket/Push notifications)
@@ -412,11 +418,26 @@ function createConsultationRequest(patientData, specialty, preferredTime) {
   return request;
 }
 
-function saveConsultationRequest(request) {
-  const requests = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
-  requests.push(request);
-  localStorage.setItem('consultationRequests', JSON.stringify(requests));
-  console.log('💾 Consultation request saved:', request);
+async function saveConsultationRequest(request) {
+  try {
+    // Try Firebase first
+    if (window.firebaseConsultationService) {
+      await window.firebaseConsultationService.saveConsultationRequest(request);
+      console.log('💾 Consultation saved to Firebase:', request.id);
+    } else {
+      // Fallback to localStorage
+      const requests = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+      requests.push(request);
+      localStorage.setItem('consultationRequests', JSON.stringify(requests));
+      console.log('💾 Consultation saved to localStorage (Firebase unavailable):', request.id);
+    }
+  } catch (error) {
+    console.error('❌ Error saving consultation:', error);
+    // Fallback to localStorage
+    const requests = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+    requests.push(request);
+    localStorage.setItem('consultationRequests', JSON.stringify(requests));
+  }
 }
 
 function notifyDoctors(request) {
@@ -425,26 +446,53 @@ function notifyDoctors(request) {
   console.log('📋 Patient symptoms:', request.symptoms);
 }
 
-function acceptConsultationRequest(requestId, doctorId) {
-  const requests = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
-  const request = requests.find(r => r.id === requestId);
+async function acceptConsultationRequest(requestId, doctorId, doctorName = 'Dr. Unnamed') {
+  try {
+    const updates = {
+      status: 'accepted',
+      acceptedBy: doctorId,
+      acceptedAt: new Date().toISOString(),
+      videoCallLink: generateVideoCallLink(doctorId, requestId),
+      doctorName: doctorName,
+      doctorId: doctorId,
+      waitingState: 'none'
+    };
 
-  if (request) {
-    request.status = 'accepted';
-    request.acceptedBy = doctorId;
-    request.videoCallLink = generateVideoCallLink();
-    
-    localStorage.setItem('consultationRequests', JSON.stringify(requests));
-    console.log('✅ Request accepted by doctor:', doctorId);
-    
-    return request;
+    // Try Firebase first
+    if (window.firebaseConsultationService) {
+      await window.firebaseConsultationService.updateConsultation(requestId, updates);
+      console.log('✅ Request accepted by doctor (Firebase):', doctorId);
+    } else {
+      // Fallback to localStorage
+      const requests = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+      const request = requests.find(r => r.id === requestId);
+      if (request) {
+        Object.assign(request, updates);
+        localStorage.setItem('consultationRequests', JSON.stringify(requests));
+        console.log('✅ Request accepted by doctor (localStorage):', doctorId);
+      }
+    }
+
+    return updates;
+  } catch (error) {
+    console.error('❌ Error accepting consultation:', error);
+    // Fallback to localStorage
+    const requests = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+    const request = requests.find(r => r.id === requestId);
+    if (request) {
+      request.status = 'accepted';
+      request.acceptedBy = doctorId;
+      request.videoCallLink = generateVideoCallLink(doctorId, requestId);
+      request.doctorName = doctorName;
+      request.doctorId = doctorId;
+      localStorage.setItem('consultationRequests', JSON.stringify(requests));
+    }
   }
 }
 
-function generateVideoCallLink() {
-  // Generate unique video call link
-  // In production, use Agora, Jitsi, or similar
-  return `https://video.carewithoutborders.com/call/${Date.now()}`;
+function generateVideoCallLink(doctorId = '', requestId = '') {
+  // Generate Jitsi-compatible room ID
+  return `jitsi_${doctorId}_${requestId}`;
 }
 
 function completeConsultationRequest(requestId) {

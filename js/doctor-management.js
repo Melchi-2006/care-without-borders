@@ -14,16 +14,57 @@ class DoctorManagementSystem {
     this.earnings = { totalEarnings: 0, consultations: 0, prescriptions: 0 };
     this.consultationRequests = [];
     this.rating = 4.9;
+    this.setupFirebaseListener();
     this.loadData();
   }
 
+  // ==================== FIREBASE SETUP ====================
+  setupFirebaseListener() {
+    // Set up real-time listener for consultations
+    if (window.firebaseConsultationService) {
+      try {
+        window.firebaseConsultationService.subscribeToConsultations((consultations) => {
+          // Update consultations when Firebase data changes
+          const allConsultations = consultations;
+          this.consultationRequests = Array.isArray(allConsultations) ? allConsultations.filter(r => 
+            (r.status === 'pending' && !r.acceptedBy) || 
+            (r.acceptedBy === this.doctorId) ||
+            (r.status === 'completed' && r.acceptedBy === this.doctorId)
+          ) : [];
+          
+          console.log('🔄 Doctor consultations updated via Firebase:', this.consultationRequests.length);
+          
+          // Auto-update dashboard if it exists
+          if (window.getDoctorDashboardHTML && document.getElementById('dashboardContent')) {
+            document.getElementById('dashboardContent').innerHTML = window.getDoctorDashboardHTML();
+          }
+        });
+        
+        console.log('✓ Firebase listener set up for doctor consultations');
+      } catch (error) {
+        console.error('Error setting up Firebase listener:', error);
+      }
+    }
+  }
+
   // ==================== DATA MANAGEMENT ====================
-  loadData() {
+  async loadData() {
     // Load consultation requests:
     // - Pending (no doctor accepted yet) - visible to all doctors
     // - Accepted by THIS doctor - only show this doctor's accepted consultations
     try {
-      const allConsultations = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+      let allConsultations = [];
+      
+      // Try Firebase first
+      if (window.firebaseConsultationService) {
+        allConsultations = await window.firebaseConsultationService.loadConsultations();
+        console.log('📥 Loaded consultations from Firebase:', allConsultations.length);
+      } else {
+        // Fallback to localStorage
+        allConsultations = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+        console.log('📥 Loaded consultations from localStorage:', allConsultations.length);
+      }
+      
       this.consultationRequests = Array.isArray(allConsultations) ? allConsultations.filter(r => 
         (r.status === 'pending' && !r.acceptedBy) || 
         (r.acceptedBy === this.doctorId) ||
@@ -173,7 +214,7 @@ class DoctorManagementSystem {
     return this.getAcceptedConsultations().filter(c => c.preferredTime);
   }
 
-  acceptConsultation(requestId) {
+  async acceptConsultation(requestId) {
     const request = this.consultationRequests.find(r => r.id === requestId);
     if (request) {
       request.status = 'accepted';
@@ -181,19 +222,46 @@ class DoctorManagementSystem {
       request.acceptedAt = new Date().toISOString();
       request.videoCallLink = `jitsi_${this.doctorId}_${requestId}`;
       request.waitingState = 'none'; // 'none', 'doctor_waiting', 'patient_waiting', 'in_call'
+      request.doctorName = this.name;
+      request.doctorId = this.doctorId;
       
-      // Update in localStorage
-      const allRequests = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
-      const index = allRequests.findIndex(r => r.id === requestId);
-      if (index !== -1) {
-        allRequests[index] = request;
-        localStorage.setItem('consultationRequests', JSON.stringify(allRequests));
+      // Try Firebase first
+      if (window.firebaseConsultationService) {
+        try {
+          await window.firebaseConsultationService.updateConsultation(requestId, {
+            status: 'accepted',
+            acceptedBy: this.doctorId,
+            acceptedAt: request.acceptedAt,
+            videoCallLink: request.videoCallLink,
+            waitingState: 'none',
+            doctorName: this.name,
+            doctorId: this.doctorId
+          });
+          console.log('✅ Consultation accepted (Firebase):', requestId);
+        } catch (error) {
+          console.error('Error updating in Firebase:', error);
+          // Fallback to localStorage
+          const allRequests = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+          const index = allRequests.findIndex(r => r.id === requestId);
+          if (index !== -1) {
+            allRequests[index] = request;
+            localStorage.setItem('consultationRequests', JSON.stringify(allRequests));
+          }
+        }
+      } else {
+        // No Firebase, use localStorage
+        const allRequests = JSON.parse(localStorage.getItem('consultationRequests') || '[]');
+        const index = allRequests.findIndex(r => r.id === requestId);
+        if (index !== -1) {
+          allRequests[index] = request;
+          localStorage.setItem('consultationRequests', JSON.stringify(allRequests));
+        }
       }
       
       // Send notification to patient
       if (window.notificationSystem) {
         window.notificationSystem.sendConsultationApprovedNotification(
-          'patient@example.com',
+          request.patientEmail || 'patient@example.com',
           {
             id: requestId,
             doctorId: this.doctorId,
@@ -222,7 +290,6 @@ class DoctorManagementSystem {
       }
 
       this.saveData();
-      console.log('✅ Consultation accepted:', requestId);
       return request;
     }
     return null;
@@ -812,21 +879,27 @@ function getEarningsHTML() {
 
 // ==================== EVENT HANDLERS ====================
 
-function acceptDoctorConsultation(requestId) {
-  const result = window.doctorSystem.acceptConsultation(requestId);
-  if (result) {
-    // Send video call notification to patient
-    const consultation = window.doctorSystem.consultationRequests.find(r => r.id === requestId);
-    if (window.notificationSystem && consultation) {
-      window.notificationSystem.sendVideoCallInvitationNotification(
-        'patient@example.com',
-        window.doctorSystem.name,
-        requestId
-      );
+async function acceptDoctorConsultation(requestId) {
+  try {
+    const result = await window.doctorSystem.acceptConsultation(requestId);
+    if (result) {
+      // Send video call notification to patient
+      const consultation = window.doctorSystem.consultationRequests.find(r => r.id === requestId);
+      if (window.notificationSystem && consultation) {
+        window.notificationSystem.sendVideoCallInvitationNotification(
+          consultation.patientEmail || 'patient@example.com',
+          window.doctorSystem.name,
+          requestId
+        );
+      }
+      
+      alert(`✅ Consultation accepted!\nSending video call invitation to ${consultation.patientName}...`);
+      // Don't reload - let Firebase listener update the UI
+      setTimeout(() => location.reload(), 1000);
     }
-    
-    alert(`✅ Consultation accepted!\nSending video call invitation to ${consultation.patientName}...`);
-    location.reload();
+  } catch (error) {
+    console.error('Error accepting consultation:', error);
+    alert('❌ Error accepting consultation. Please try again.');
   }
 }
 
