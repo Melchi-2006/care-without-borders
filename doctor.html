@@ -1039,6 +1039,13 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       console.log('✓ Doctor Dashboard loaded');
+      
+      // Clear old notifications and modals on page load
+      localStorage.removeItem('systemNotifications');
+      document.getElementById('videoCallModal').style.display = 'none';
+      document.getElementById('diagnosisInputModal').style.display = 'none';
+      console.log('✓ Cleared old notifications and modals');
+      
       // Load initial dashboard content
       if (window.getDoctorDashboardHTML) {
         document.getElementById('dashboardContent').innerHTML = window.getDoctorDashboardHTML();

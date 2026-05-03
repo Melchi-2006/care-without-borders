@@ -1194,6 +1194,12 @@
   window.addEventListener('DOMContentLoaded', () => {
     console.log('✓ Patient Dashboard loaded');
     
+    // Clear old notifications and modals on page load
+    localStorage.removeItem('systemNotifications');
+    document.getElementById('videoCallModal').style.display = 'none';
+    document.getElementById('diagnosisModal').style.display = 'none';
+    console.log('✓ Cleared old notifications and modals');
+    
     // Initialize VILGAX
     if (window.vilgaxVoiceSystem) {
       setTimeout(() => initializeVilgax(), 1000);
