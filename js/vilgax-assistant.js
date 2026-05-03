@@ -977,6 +977,9 @@ class VILGAXAssistant {
     window.currentAppointment = appointment;
     window.currentAnalysis = analysis;
 
+    // ✅ CRITICAL: Save appointment to Firebase via backend API
+    this.saveAppointmentToBackend(appointment, medicalAnalyzer.patientInfo);
+
     // Show beautiful appointment confirmation modal with professional UI
     setTimeout(() => {
       if (typeof displayAppointmentConfirmation === 'function') {
@@ -986,6 +989,63 @@ class VILGAXAssistant {
         this.startVideoCall(appointment);
       }
     }, 500);
+  }
+
+  /**
+   * Save Appointment to Backend/Firebase
+   * This ensures doctors can see the appointment in their dashboard
+   */
+  async saveAppointmentToBackend(appointment, patientInfo) {
+    try {
+      const today = new Date();
+      const appointmentDate = today.toISOString().split('T')[0]; // YYYY-MM-DD
+      const appointmentTime = today.toTimeString().slice(0, 5); // HH:MM
+
+      const appointmentPayload = {
+        patientName: patientInfo.name || 'Anonymous Patient',
+        patientEmail: patientInfo.email || localStorage.getItem('userEmail') || 'patient@example.com',
+        date: appointmentDate,
+        time: appointmentTime,
+        reason: this.formatSymptoms(patientInfo.symptoms) || 'Health Consultation',
+        specialty: appointment.doctor.specialty,
+        doctorName: appointment.doctor.name,
+        doctorId: appointment.doctorId,
+        videoRoomId: appointment.videoRoomId,
+        severity: patientInfo._severity?.level || 'Routine'
+      };
+
+      console.log('📤 Saving appointment to backend:', appointmentPayload);
+
+      const response = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(appointmentPayload)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ Appointment saved to Firebase:', result.appointmentId);
+        window.currentAppointment.firebaseId = result.appointmentId;
+        this.respond(`\n✅ Appointment saved to system and doctor has been notified!`);
+      } else {
+        console.error('❌ Failed to save appointment:', result.error);
+        this.respond(`\n⚠️ Warning: Could not save appointment to system (${result.error}). Please note the video room ID: ${appointment.videoRoomId}`);
+      }
+    } catch (error) {
+      console.error('❌ Error saving appointment:', error);
+      this.respond(`\n⚠️ Warning: Connection error while saving appointment. Please screenshot the confirmation details.`);
+    }
+  }
+
+  /**
+   * Format symptoms for display
+   */
+  formatSymptoms(symptoms) {
+    if (!symptoms || symptoms.length === 0) return 'General Health Consultation';
+    return symptoms.slice(0, 3).join(', ');
   }
 
   /**

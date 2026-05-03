@@ -221,7 +221,56 @@ const getPatientPrescriptionsFromFirebase = async (patientId) => {
 // ==================== APPOINTMENT OPERATIONS ====================
 
 /**
- * Save appointment to Firestore
+ * Save VILGAX appointment to Firestore
+ * Enhanced to handle appointment data from medical intake system
+ */
+const saveVILGAXAppointmentToFirebase = async (appointmentData) => {
+  if (!db) return { success: false, message: 'Firebase not configured' };
+
+  try {
+    const appointmentRef = db.collection('appointments').doc();
+    
+    const firebaseData = {
+      // Patient Info
+      patientName: appointmentData.patientName || 'Anonymous',
+      patientEmail: appointmentData.patientEmail || '',
+      
+      // Appointment Details
+      date: appointmentData.date,           // YYYY-MM-DD
+      time: appointmentData.time,           // HH:MM
+      reason: appointmentData.reason,       // symptoms/complaint
+      specialty: appointmentData.specialty || 'General',
+      
+      // Doctor Info
+      doctorName: appointmentData.doctorName || 'TBD',
+      doctorId: appointmentData.doctorId || '',
+      
+      // Video Call
+      videoRoomId: appointmentData.videoRoomId || '',
+      
+      // Medical Info
+      severity: appointmentData.severity || 'Routine',
+      
+      // Status
+      status: appointmentData.status || 'pending',
+      
+      // Timestamps
+      createdAt: appointmentData.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    await appointmentRef.set(firebaseData);
+
+    console.log(`✅ VILGAX Appointment saved: ${appointmentRef.id}`);
+    return { success: true, appointmentId: appointmentRef.id };
+  } catch (error) {
+    console.error('❌ Error saving VILGAX appointment to Firebase:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Save appointment to Firestore (Legacy format)
  */
 const saveAppointmentToFirebase = async (appointmentData) => {
   if (!db) return { success: false, message: 'Firebase not configured' };
@@ -659,7 +708,9 @@ module.exports = {
 
   // Appointment operations
   saveAppointmentToFirebase,
+  saveVILGAXAppointmentToFirebase,
   getDoctorAppointmentsFromFirebase,
+  updateAppointmentStatusFromFirebase,
 
   // Payment operations
   savePaymentToFirebase,
@@ -676,7 +727,6 @@ module.exports = {
   // Appointment request operations (NEW)
   saveAppointmentRequestToFirebase,
   getAppointmentFromFirebase,
-  updateAppointmentStatusFromFirebase,
   getDoctorPendingAppointmentsFromFirebase,
   acceptAppointmentFromFirebase,
   declineAppointmentFromFirebase,

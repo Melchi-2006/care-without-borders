@@ -295,6 +295,157 @@ app.post('/api/validate-email', (req, res) => {
   }
 });
 
+// ============ APPOINTMENT ROUTES ============
+
+// Create/Save Appointment (from VILGAX to Firebase)
+app.post('/api/appointments', async (req, res) => {
+  try {
+    const { patientName, patientEmail, date, time, reason, specialty, doctorName, severity, videoRoomId } = req.body;
+
+    if (!patientName || !patientEmail || !date || !time || !reason) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: patientName, patientEmail, date, time, reason'
+      });
+    }
+
+    const appointmentData = {
+      patientName,
+      patientEmail,
+      date,        // YYYY-MM-DD format
+      time,        // HH:MM format
+      reason,
+      specialty: specialty || 'General',
+      doctorName: doctorName || 'TBD',
+      severity: severity || 'Routine',
+      videoRoomId: videoRoomId || '',
+      status: 'pending'
+    };
+
+    // Save to Firebase via firebaseService using VILGAX format
+    const result = await firebaseService.saveVILGAXAppointmentToFirebase(appointmentData);
+
+    if (result.success) {
+      console.log(`✅ Appointment saved to Firebase: ${result.appointmentId}`);
+      console.log(`   Patient: ${patientName} (${patientEmail})`);
+      console.log(`   Specialty: ${specialty}`);
+      console.log(`   Date/Time: ${date} ${time}`);
+
+      res.status(201).json({
+        success: true,
+        message: 'Appointment created successfully',
+        appointmentId: result.appointmentId,
+        appointment: appointmentData
+      });
+    } else {
+      throw new Error(result.error || 'Failed to save appointment');
+    }
+  } catch (error) {
+    console.error('Error creating appointment:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to create appointment',
+      details: error.message
+    });
+  }
+});
+
+// Get All Appointments (for admin/doctor dashboard)
+app.get('/api/appointments', async (req, res) => {
+  try {
+    // Check if Firebase is available
+    if (!firebaseService.isFirebaseAvailable()) {
+      return res.status(503).json({
+        success: false,
+        error: 'Firebase not available'
+      });
+    }
+
+    const db = firebaseService.getFirebaseInstance();
+    const snapshot = await db.collection('appointments').get();
+    const appointments = [];
+    
+    snapshot.forEach(doc => {
+      appointments.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+
+    res.json({
+      success: true,
+      appointments,
+      count: appointments.length
+    });
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch appointments',
+      details: error.message
+    });
+  }
+});
+
+// Get Appointments for Doctor
+app.get('/api/appointments/doctor/:doctorId', async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+
+    const appointments = await firebaseService.getDoctorAppointmentsFromFirebase(doctorId);
+
+    res.json({
+      success: true,
+      appointments,
+      count: appointments.length
+    });
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch appointments',
+      details: error.message
+    });
+  }
+});
+
+// Update Appointment Status
+app.put('/api/appointments/:appointmentId', async (req, res) => {
+  try {
+    const { appointmentId } = req.params;
+    const { status, doctorName, notes } = req.body;
+
+    if (!status) {
+      return res.status(400).json({
+        success: false,
+        error: 'Status is required'
+      });
+    }
+
+    const result = await firebaseService.updateAppointmentStatusFromFirebase(appointmentId, status, notes);
+
+    if (result.success) {
+      console.log(`✅ Appointment updated: ${appointmentId} → ${status}`);
+
+      res.json({
+        success: true,
+        message: 'Appointment updated successfully',
+        appointmentId,
+        status
+      });
+    } else {
+      throw new Error(result.error || 'Failed to update appointment');
+    }
+  } catch (error) {
+    console.error('Error updating appointment:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update appointment',
+      details: error.message
+    });
+  }
+});
+
 // Serve HTML files
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
