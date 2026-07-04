@@ -3,1167 +3,1086 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VILGAX AI Healthcare Assistant - Care Without Borders</title>
+  <title>Care Without Borders — AI Healthcare, Anytime, Anywhere</title>
+  <meta name="description" content="VILGAX AI-powered telemedicine platform. Get instant symptom analysis, connect with verified doctors, and manage your health records — all in one place.">
+  <link rel="stylesheet" href="css/design-system.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* ── PAGE-SPECIFIC STYLES ─────────────────────────── */
 
-    :root {
-      --primary-teal: #0f766e;
-      --primary-cyan: #14b8a6;
-      --light-cyan: #06b6d4;
-      --dark-bg: #0f172a;
-      --card-bg: #1e293b;
-      --text-white: #ffffff;
-      --text-light: #cbd5e1;
-      --accent-blue: #667eea;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, var(--dark-bg) 0%, #1a3a40 50%, var(--primary-teal) 100%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0;
-      color: var(--text-white);
-      overflow-x: hidden;
-    }
-
-    /* NAVBAR */
-    .navbar {
-      width: 100%;
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(10px);
-      padding: 20px 0;
-      position: fixed;
-      top: 0;
-      z-index: 1000;
-      border-bottom: 1px solid rgba(20, 184, 166, 0.2);
-    }
-
-    .navbar-content {
-      max-width: 1400px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 0 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .navbar-logo {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--primary-cyan);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .navbar-logo-icon {
-      font-size: 36px;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
-
-    /* MAIN LAYOUT */
-    .container {
-      width: 100%;
-      max-width: 1400px;
-      padding: 0 40px;
-      margin: 0 auto;
-      padding-top: 120px;
-    }
-
-    /* WELCOME SECTION */
-    .welcome-section {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
-      margin-bottom: 80px;
-      animation: slideInLeft 0.7s ease;
-    }
-
-    @keyframes slideInLeft {
-      from {
-        opacity: 0;
-        transform: translateX(-40px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    .welcome-content h1 {
-      font-size: 54px;
-      font-weight: 900;
-      line-height: 1.2;
-      margin-bottom: 20px;
-      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .welcome-content p {
-      font-size: 18px;
-      color: var(--text-light);
-      line-height: 1.8;
-      margin-bottom: 30px;
-    }
-
-    .welcome-features {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-bottom: 40px;
-    }
-
-    .feature-item {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      font-size: 16px;
-      color: var(--text-light);
-    }
-
-    .feature-icon {
-      font-size: 24px;
-      flex-shrink: 0;
-    }
-
-    .welcome-hero {
-      perspective: 1000px;
-      animation: slideInRight 0.7s ease;
-    }
-
-    @keyframes slideInRight {
-      from {
-        opacity: 0;
-        transform: translateX(40px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    .hero-card {
-      background: linear-gradient(135deg, rgba(20, 184, 166, 0.2) 0%, rgba(6, 182, 212, 0.1) 100%);
-      padding: 60px 40px;
-      border-radius: 30px;
-      border: 2px solid rgba(20, 184, 166, 0.3);
-      text-align: center;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      transition: all 0.5s ease;
-    }
-
-    .hero-card:hover {
-      transform: translateY(-10px);
-      border-color: rgba(20, 184, 166, 0.6);
-      box-shadow: 0 30px 80px rgba(20, 184, 166, 0.2);
-    }
-
-    .hero-icon {
-      font-size: 80px;
-      margin-bottom: 20px;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
-    .hero-title {
-      font-size: 28px;
-      font-weight: 800;
-      margin-bottom: 15px;
-      color: var(--primary-cyan);
-    }
-
-    .hero-text {
-      font-size: 16px;
-      color: var(--text-light);
-      line-height: 1.6;
-    }
-
-    /* ROLE SELECTION SECTION */
-    .role-section {
-      margin-bottom: 100px;
-      animation: slideInUp 0.7s ease 0.3s backwards;
-    }
-
-    @keyframes slideInUp {
-      from {
-        opacity: 0;
-        transform: translateY(40px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 60px;
-    }
-
-    .section-title {
-      font-size: 42px;
-      font-weight: 900;
-      margin-bottom: 15px;
-      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .section-subtitle {
-      font-size: 18px;
-      color: var(--text-light);
-    }
-
-    .role-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 30px;
-      margin-bottom: 60px;
-    }
-
-    .role-card {
-      background: linear-gradient(135deg, var(--card-bg) 0%, rgba(30, 41, 59, 0.8) 100%);
-      border: 2px solid rgba(20, 184, 166, 0.2);
-      border-radius: 25px;
-      padding: 50px 35px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.4s ease;
+    /* Hero */
+    .hero {
+      padding-top: calc(var(--header-h) + var(--space-20));
+      padding-bottom: var(--space-20);
+      background: linear-gradient(160deg, #fff 0%, var(--primary-xlight) 50%, var(--primary-light) 100%);
       position: relative;
       overflow: hidden;
     }
-
-    .role-card::before {
+    .hero::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(20, 184, 166, 0.1), transparent);
-      transition: left 0.6s ease;
-      z-index: 0;
+      top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(15,118,110,0.12) 0%, transparent 70%);
+      pointer-events: none;
     }
-
-    .role-card:hover::before {
-      left: 100%;
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -150px; left: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(20,184,166,0.08) 0%, transparent 70%);
+      pointer-events: none;
     }
-
-    .role-card:hover {
-      border-color: var(--primary-cyan);
-      box-shadow: 0 20px 60px rgba(20, 184, 166, 0.3);
-      transform: translateY(-12px);
-      background: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
-    }
-
-    .role-card.selected {
-      border-color: var(--primary-cyan);
-      background: linear-gradient(135deg, rgba(20, 184, 166, 0.2) 0%, rgba(6, 182, 212, 0.1) 100%);
-      box-shadow: 0 15px 50px rgba(20, 184, 166, 0.4);
-    }
-
-    .role-card-content {
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-16);
+      align-items: center;
       position: relative;
       z-index: 1;
     }
-
-    .role-icon {
-      font-size: 70px;
-      margin-bottom: 20px;
-      display: inline-block;
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: var(--primary-light);
+      border: 1px solid var(--accent-light);
+      color: var(--primary-dark);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      margin-bottom: var(--space-5);
     }
-
-    .role-title {
-      font-size: 28px;
+    .hero-eyebrow-dot {
+      width: 7px; height: 7px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: blink 1.5s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .hero-title {
+      font-size: clamp(2.4rem, 4.5vw, 3.5rem);
       font-weight: 800;
-      color: var(--primary-cyan);
-      margin-bottom: 12px;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: var(--space-5);
     }
-
-    .role-description {
-      font-size: 15px;
-      color: var(--text-light);
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-
-    .role-features {
-      text-align: left;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 20px;
-      border-radius: 12px;
-      font-size: 13px;
-      color: var(--text-light);
-      line-height: 1.8;
-    }
-
-    .role-features li {
-      list-style: none;
-      padding-left: 20px;
-      position: relative;
-      margin-bottom: 8px;
-    }
-
-    .role-features li:before {
-      content: '✓';
-      position: absolute;
-      left: 0;
-      color: var(--primary-cyan);
-      font-weight: bold;
-    }
-
-    /* LANGUAGE & GREETING SECTION */
-    .language-section {
-      background: linear-gradient(135deg, var(--card-bg) 0%, rgba(30, 41, 59, 0.8) 100%);
-      border: 2px solid rgba(20, 184, 166, 0.2);
-      border-radius: 25px;
-      padding: 60px;
-      margin-bottom: 100px;
-      animation: slideInUp 0.7s ease 0.5s backwards;
-    }
-
-    .language-header {
-      text-align: center;
-      margin-bottom: 50px;
-    }
-
-    .language-title {
-      font-size: 36px;
-      font-weight: 900;
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
+    .hero-title .highlight {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+    .hero-desc {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: var(--space-8);
+      max-width: 520px;
+    }
+    .hero-ctas {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-10);
+    }
+    .hero-trust {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+    .trust-avatars {
+      display: flex;
+    }
+    .trust-avatars .avatar {
+      width: 32px; height: 32px;
+      border: 2px solid #fff;
+      margin-left: -8px;
+      font-size: 0.75rem;
+    }
+    .trust-avatars .avatar:first-child { margin-left: 0; }
+    .trust-text {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    .trust-text strong { color: var(--text-primary); }
 
-    .language-subtitle {
-      font-size: 16px;
-      color: var(--text-light);
+    /* Hero Visual */
+    .hero-visual {
+      position: relative;
+    }
+    .hero-card-main {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-xl);
+      position: relative;
+      z-index: 2;
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-12px); }
+    }
+    .hero-card-badge {
+      position: absolute;
+      top: -14px;
+      right: var(--space-6);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      box-shadow: var(--shadow-primary);
+    }
+    .hero-pulse {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+    .pulse-bar-wrap {
+      flex: 1;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .pulse-bar {
+      flex: 1;
+      background: var(--primary-light);
+      border-radius: 3px;
+      transition: height 0.3s ease;
+    }
+    .pulse-bar:nth-child(odd)  { height: 24px; }
+    .pulse-bar:nth-child(even) { height: 40px; }
+    .pulse-bar:nth-child(3n)   { height: 16px; }
+    .pulse-bar:nth-child(5)    { background: var(--primary); height: 48px; }
+    .pulse-bar:nth-child(9)    { background: var(--accent); height: 36px; }
+
+    .diagnosis-chip {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+      margin-bottom: var(--space-3);
+    }
+    .diagnosis-icon {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-sm);
+      background: var(--primary-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem;
+    }
+    .diagnosis-label { font-size: 0.8rem; color: var(--text-muted); }
+    .diagnosis-value { font-size: 0.9375rem; font-weight: 600; }
+    .confidence-bar-wrap {
+      display: flex; align-items: center; gap: var(--space-2);
+      margin-top: 2px;
+    }
+    .confidence-track {
+      flex: 1; height: 5px;
+      background: var(--border); border-radius: 3px; overflow: hidden;
+    }
+    .confidence-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 3px;
     }
 
-    .language-buttons {
+    .floating-badge {
+      position: absolute;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-lg);
+      display: flex; align-items: center; gap: var(--space-2);
+      font-size: 0.8125rem; font-weight: 600;
+      animation: float-badge 3s ease-in-out infinite;
+      z-index: 3;
+    }
+    @keyframes float-badge {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+    .floating-badge-1 {
+      top: 20px; left: -60px;
+      animation-delay: 0.5s;
+    }
+    .floating-badge-2 {
+      bottom: 30px; right: -50px;
+      animation-delay: 1s;
+    }
+
+    /* Stats strip */
+    .stats-strip {
+      background: var(--primary);
+      color: #fff;
+      padding: var(--space-8) 0;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      text-align: center;
+      gap: var(--space-6);
+    }
+    .stat-num {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .stat-name {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+
+    /* Features section */
+    .features-section {
+      padding: var(--space-20) 0;
+      background: var(--surface);
+    }
+    .section-eyebrow {
+      text-align: center;
+      margin-bottom: var(--space-3);
+    }
+    .section-heading {
+      text-align: center;
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: var(--space-4);
+    }
+    .section-subheading {
+      text-align: center;
+      font-size: 1.0625rem;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto var(--space-12);
+      line-height: 1.7;
+    }
+    .feature-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      transition: all var(--transition);
+      cursor: default;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+      background: var(--surface);
+    }
+    .feature-card-icon {
+      width: 56px; height: 56px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.625rem;
+      margin-bottom: var(--space-4);
+      box-shadow: var(--shadow-primary);
+    }
+    .feature-card-title {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      margin-bottom: var(--space-2);
+    }
+    .feature-card-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    /* How it works */
+    .how-section {
+      padding: var(--space-20) 0;
+      background: var(--bg);
+    }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-6);
+      position: relative;
+    }
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: calc(12.5% + 20px);
+      right: calc(12.5% + 20px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      opacity: 0.3;
+    }
+    .step-card {
+      text-align: center;
+      position: relative;
+    }
+    .step-num {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1rem;
+      margin: 0 auto var(--space-4);
+      box-shadow: var(--shadow-primary);
+    }
+    .step-title { font-weight: 700; margin-bottom: var(--space-2); }
+    .step-desc  { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+
+    /* Role section */
+    .role-section {
+      padding: var(--space-20) 0;
+      background: linear-gradient(160deg, #f0f0ff 0%, var(--surface) 100%);
+    }
+    .roles-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-bottom: 50px;
+      gap: var(--space-6);
+      margin-top: var(--space-10);
     }
-
-    .lang-btn {
-      padding: 25px 20px;
-      border: 2px solid rgba(20, 184, 166, 0.3);
-      background: rgba(0, 0, 0, 0.3);
-      color: var(--text-light);
-      font-size: 16px;
-      font-weight: 700;
+    .role-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8) var(--space-6);
+      text-align: center;
       cursor: pointer;
-      border-radius: 15px;
-      transition: all 0.3s ease;
+      transition: all var(--transition);
+      position: relative;
+    }
+    .role-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .role-card.selected {
+      border-color: var(--primary);
+      background: var(--primary-xlight);
+      box-shadow: var(--shadow-primary-lg);
+    }
+    .role-emoji {
+      font-size: 3rem;
+      margin-bottom: var(--space-4);
+      display: block;
+    }
+    .role-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: var(--space-2);
+    }
+    .role-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-5);
+      line-height: 1.6;
+    }
+    .role-features-list {
+      text-align: left;
       display: flex;
       flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-6);
+    }
+    .role-feature-item {
+      display: flex;
       align-items: center;
-      gap: 12px;
+      gap: var(--space-2);
+      font-size: 0.875rem;
+      color: var(--text-secondary);
     }
-
-    .lang-btn:hover {
-      background: rgba(20, 184, 166, 0.15);
-      border-color: var(--primary-cyan);
-      transform: translateY(-5px);
-      color: var(--primary-cyan);
-    }
-
-    .lang-btn.active {
-      background: linear-gradient(135deg, rgba(20, 184, 166, 0.3) 0%, rgba(6, 182, 212, 0.2) 100%);
-      color: var(--primary-cyan);
-      border-color: var(--primary-cyan);
-      box-shadow: 0 8px 25px rgba(20, 184, 166, 0.3);
-    }
-
-    .lang-flag {
-      font-size: 32px;
-    }
-
-    .greeting-box {
-      background: rgba(20, 184, 166, 0.1);
-      border-left: 4px solid var(--primary-cyan);
-      padding: 30px;
-      border-radius: 12px;
-      font-size: 17px;
-      line-height: 1.8;
-      color: var(--text-light);
-      font-weight: 500;
-      margin-bottom: 30px;
-      transition: all 0.3s ease;
-    }
-
-    .greeting-box:hover {
-      box-shadow: 0 10px 30px rgba(20, 184, 166, 0.2);
-      transform: translateX(5px);
-    }
-
-    .greeting-icon {
-      font-size: 24px;
-      margin-right: 10px;
-    }
-
-    .voice-btn {
-      padding: 14px 35px;
-      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
-      color: var(--dark-bg);
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
+    .role-feature-item::before {
+      content: '✓';
+      width: 18px; height: 18px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem;
       font-weight: 700;
-      font-size: 15px;
-      transition: all 0.3s ease;
-      display: inline-block;
-      margin-top: 10px;
+      flex-shrink: 0;
     }
-
-    .voice-btn:hover {
-      transform: scale(1.08);
-      box-shadow: 0 12px 35px rgba(20, 184, 166, 0.4);
+    .role-check-badge {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 28px; height: 28px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: none;
+      align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
     }
+    .role-card.selected .role-check-badge { display: flex; }
 
-    /* CTA SECTION */
-    .cta-section {
-      text-align: center;
-      margin-bottom: 80px;
-      animation: slideInUp 0.7s ease 0.7s backwards;
-    }
-
-    .cta-button {
-      padding: 18px 50px;
-      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
-      color: var(--dark-bg);
-      border: none;
-      border-radius: 15px;
-      font-size: 18px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.4s ease;
-      display: inline-block;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .cta-button:hover:not(:disabled) {
-      transform: translateY(-5px);
-      box-shadow: 0 20px 50px rgba(20, 184, 166, 0.4);
-    }
-
-    .cta-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* FOOTER */
-    .footer {
-      width: 100%;
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(10px);
-      padding: 40px;
-      text-align: center;
-      border-top: 1px solid rgba(20, 184, 166, 0.2);
-      color: var(--text-light);
-      font-size: 14px;
-    }
-
-    .footer a {
-      color: var(--primary-cyan);
-      text-decoration: none;
-      margin: 0 10px;
-    }
-
-    /* VILGAX AI ASSISTANT INTERFACE */
-    .vilgax-container {
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-      margin-bottom: 60px;
-    }
-
-    .vilgax-greeting {
-      background: linear-gradient(135deg, rgba(20, 184, 166, 0.15) 0%, rgba(6, 182, 212, 0.08) 100%);
-      border: 2px solid var(--primary-cyan);
-      border-radius: 20px;
-      padding: 50px;
-      text-align: center;
-      animation: slideInUp 0.7s ease 0.2s backwards;
-    }
-
-    .vilgax-avatar {
-      font-size: 80px;
-      margin-bottom: 20px;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    .vilgax-name {
-      font-size: 32px;
-      font-weight: 800;
-      color: var(--primary-cyan);
-      margin-bottom: 15px;
-    }
-
-    .vilgax-greeting-text {
-      font-size: 18px;
-      color: var(--text-light);
-      line-height: 1.8;
-      margin-bottom: 25px;
-      font-weight: 500;
-    }
-
-    .vilgax-language-bar {
+    /* Language bar */
+    .lang-bar {
       display: flex;
       justify-content: center;
-      gap: 15px;
-      margin-bottom: 25px;
+      gap: var(--space-3);
+      margin-bottom: var(--space-8);
       flex-wrap: wrap;
     }
-
-    .lang-badge {
-      padding: 10px 20px;
-      border-radius: 25px;
-      font-weight: 700;
-      font-size: 14px;
+    .lang-btn {
+      padding: 8px 20px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-full);
+      background: var(--surface);
+      font-size: 0.875rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.3s ease;
-      border: 2px solid rgba(20, 184, 166, 0.3);
-      background: rgba(0, 0, 0, 0.2);
-      color: var(--text-light);
+      transition: all var(--transition-fast);
+      color: var(--text-secondary);
+    }
+    .lang-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-xlight); }
+    .lang-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: var(--shadow-primary);
     }
 
-    .lang-badge.active {
-      background: linear-gradient(135deg, var(--primary-cyan), var(--light-cyan));
-      color: var(--dark-bg);
-      border-color: var(--primary-cyan);
-      box-shadow: 0 8px 25px rgba(20, 184, 166, 0.3);
+    /* CTA section */
+    .cta-section {
+      text-align: center;
+      margin-top: var(--space-10);
+    }
+    .proceed-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-3);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      border: none;
+      padding: 16px 40px;
+      border-radius: var(--radius-full);
+      font-size: 1.0625rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow-primary-lg);
+      transition: all var(--transition);
+    }
+    .proceed-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(99,102,241,0.5);
+    }
+    .proceed-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
-    .lang-badge:hover {
-      transform: translateY(-3px);
-      border-color: var(--primary-cyan);
-    }
-
-    .vilgax-status {
-      display: inline-block;
-      padding: 8px 16px;
-      background: rgba(16, 185, 129, 0.2);
-      border-left: 3px solid #10b981;
-      color: #a7f3d0;
-      border-radius: 4px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .vilgax-ml-insights {
-      background: linear-gradient(135deg, var(--card-bg) 0%, rgba(30, 41, 59, 0.8) 100%);
-      border: 2px solid rgba(20, 184, 166, 0.2);
-      border-radius: 20px;
-      padding: 40px;
-      animation: slideInUp 0.7s ease 0.3s backwards;
-    }
-
-    .ml-title {
-      font-size: 24px;
-      font-weight: 800;
-      color: var(--primary-cyan);
-      margin-bottom: 25px;
+    /* VILGAX greeting card */
+    .vilgax-greeting-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      margin-bottom: var(--space-10);
+      box-shadow: var(--shadow-md);
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: var(--space-5);
     }
-
-    .ml-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
+    .vilgax-bot-icon {
+      width: 72px; height: 72px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-primary);
     }
-
-    .ml-card {
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(20, 184, 166, 0.2);
-      border-radius: 15px;
-      padding: 25px;
-      text-align: center;
-      transition: all 0.3s ease;
+    .vilgax-greeting-text {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      min-height: 48px;
     }
-
-    .ml-card:hover {
-      border-color: var(--primary-cyan);
-      background: rgba(20, 184, 166, 0.08);
-      transform: translateY(-5px);
-    }
-
-    .ml-icon {
-      font-size: 50px;
-      margin-bottom: 12px;
-    }
-
-    .ml-label {
-      font-weight: 700;
-      color: var(--primary-cyan);
-      margin-bottom: 8px;
-    }
-
-    .ml-description {
-      font-size: 13px;
-      color: var(--text-light);
-      line-height: 1.5;
-    }
-
-    .role-section-new {
-      animation: slideInUp 0.7s ease 0.4s backwards;
-    }
-
-    .role-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    /* LOADING ANIMATION */
-    .loading-dot {
+    .loading-dots span {
       display: inline-block;
-      width: 8px;
-      height: 8px;
+      width: 8px; height: 8px;
+      background: var(--primary);
       border-radius: 50%;
-      background: var(--primary-cyan);
-      animation: loading 1.4s infinite;
+      margin: 0 2px;
+      animation: bounce-dot 1s ease-in-out infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes bounce-dot {
+      0%,80%,100% { transform: translateY(0); }
+      40%          { transform: translateY(-8px); }
     }
 
-    .loading-dot:nth-child(2) {
-      animation-delay: 0.2s;
+    /* Testimonials */
+    .testimonials-section {
+      padding: var(--space-20) 0;
+      background: var(--surface);
+    }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+    .testimonial-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+    }
+    .testimonial-stars {
+      color: #f59e0b;
+      font-size: 0.875rem;
+      margin-bottom: var(--space-3);
+    }
+    .testimonial-text {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: var(--space-4);
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
     }
 
-    .loading-dot:nth-child(3) {
-      animation-delay: 0.4s;
+    /* Footer */
+    .footer {
+      background: var(--text-primary);
+      color: rgba(255,255,255,0.7);
+      padding: var(--space-10) 0 var(--space-6);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: var(--space-10);
+      margin-bottom: var(--space-10);
+    }
+    .footer-brand-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: var(--space-3);
+    }
+    .footer-brand-desc {
+      font-size: 0.875rem;
+      line-height: 1.7;
+      margin-bottom: var(--space-5);
+    }
+    .footer-col-title {
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: var(--space-4);
+    }
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .footer-link {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+    .footer-link:hover { color: #fff; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8125rem;
     }
 
-    @keyframes loading {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
-    }
-
-    /* MOBILE RESPONSIVE */
     @media (max-width: 1024px) {
-      .welcome-section {
-        grid-template-columns: 1fr;
-        gap: 40px;
-      }
-
-      .role-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .navbar-content {
-        padding: 0 20px;
-      }
-
-      .container {
-        padding: 0 20px;
-      }
-
-      .language-section {
-        padding: 40px;
-      }
-
-      .welcome-content h1 {
-        font-size: 42px;
-      }
-
-      .section-title {
-        font-size: 36px;
-      }
+      .hero-inner     { grid-template-columns: 1fr; }
+      .hero-visual    { display: none; }
+      .stats-grid     { grid-template-columns: repeat(2,1fr); }
+      .steps-grid     { grid-template-columns: repeat(2,1fr); }
+      .steps-grid::before { display: none; }
+      .roles-grid     { grid-template-columns: 1fr 1fr; }
+      .footer-grid    { grid-template-columns: 1fr 1fr; }
     }
-
-    @media (max-width: 768px) {
-      .welcome-section {
-        grid-template-columns: 1fr;
-        gap: 30px;
-      }
-
-      .role-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .language-buttons {
-        grid-template-columns: 1fr;
-      }
-
-      .container {
-        padding: 0 20px;
-        padding-top: 120px;
-      }
-
-      .welcome-content h1 {
-        font-size: 32px;
-      }
-
-      .section-title {
-        font-size: 28px;
-      }
-
-      .role-card {
-        padding: 35px 25px;
-      }
-
-      .role-icon {
-        font-size: 50px;
-      }
-
-      .role-title {
-        font-size: 22px;
-      }
-
-      .language-section {
-        padding: 30px 20px;
-      }
-
-      .hero-card {
-        padding: 40px 25px;
-      }
-
-      .hero-icon {
-        font-size: 60px;
-      }
-
-      .navbar-content {
-        padding: 0 15px;
-      }
-
-      .navbar-logo {
-        font-size: 20px;
-      }
-
-      .navbar-logo-icon {
-        font-size: 28px;
-      }
+    @media (max-width: 640px) {
+      .stats-grid  { grid-template-columns: repeat(2,1fr); }
+      .roles-grid  { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .hero-ctas   { flex-direction: column; }
+      .floating-badge { display: none; }
     }
   </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
-<div class="navbar">
-  <div class="navbar-content">
-    <a href="index.html" class="navbar-logo">
-      <span class="navbar-logo-icon">🏥</span>
+<!-- ══════════ NAVBAR ══════════════════════════════════════════ -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🏥</div>
       <span>Care Without Borders</span>
     </a>
+    <div class="nav-links">
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#how-it-works" class="nav-link">How it Works</a>
+      <a href="#choose-role" class="nav-link">Get Started</a>
+    </div>
+    <div class="nav-actions">
+      <a href="doctor-login.html" class="btn btn-ghost btn-sm">Doctor Login</a>
+      <a href="login.html" class="btn btn-primary btn-sm">Patient Login</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <!-- Left copy -->
+      <div class="animate-fade">
+        <div class="hero-eyebrow">
+          <div class="hero-eyebrow-dot"></div>
+          Powered by VILGAX AI &amp; Machine Learning
+        </div>
+        <h1 class="hero-title">
+          Healthcare that<br>
+          <span class="highlight">knows no borders</span>
+        </h1>
+        <p class="hero-desc">
+          Get instant AI-powered symptom analysis, connect with verified doctors in minutes, and manage all your health records — in your language, any time, anywhere.
+        </p>
+        <div class="hero-ctas">
+          <a href="login.html" class="btn btn-primary btn-lg">
+            🩺 Start as Patient
+          </a>
+          <a href="doctor-login.html" class="btn btn-outline btn-lg">
+            👨‍⚕️ I'm a Doctor
+          </a>
+        </div>
+        <div class="hero-trust">
+          <div class="trust-avatars">
+            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,var(--primary),var(--accent))">R</div>
+            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,var(--accent),#5eead4)">S</div>
+            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,var(--primary-dark),var(--primary))">M</div>
+            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,#042f2e,var(--primary))">P</div>
+            <div class="avatar avatar-sm" style="background:linear-gradient(135deg,var(--primary),#5eead4)">A</div>
+          </div>
+          <div class="trust-text">
+            Trusted by <strong>10,000+</strong> patients across India
+          </div>
+        </div>
+      </div>
+
+      <!-- Right visual -->
+      <div class="hero-visual" style="position:relative;">
+        <div class="floating-badge floating-badge-1">
+          <span>🧠</span> AI Analysis: 98.5% accurate
+        </div>
+        <div class="hero-card-main">
+          <div class="hero-card-badge">✨ Live Diagnosis</div>
+          <div class="hero-pulse">
+            <div style="font-size:1.5rem;">❤️</div>
+            <div class="pulse-bar-wrap">
+              <div class="pulse-bar"></div><div class="pulse-bar"></div><div class="pulse-bar"></div>
+              <div class="pulse-bar"></div><div class="pulse-bar"></div><div class="pulse-bar"></div>
+              <div class="pulse-bar"></div><div class="pulse-bar"></div><div class="pulse-bar"></div>
+              <div class="pulse-bar"></div><div class="pulse-bar"></div><div class="pulse-bar"></div>
+            </div>
+            <span style="font-size:0.875rem;font-weight:700;color:var(--primary)">72 bpm</span>
+          </div>
+          <div class="diagnosis-chip">
+            <div class="diagnosis-icon">🔬</div>
+            <div>
+              <div class="diagnosis-label">Detected Condition</div>
+              <div class="diagnosis-value">Upper Respiratory Infection</div>
+              <div class="confidence-bar-wrap">
+                <div class="confidence-track">
+                  <div class="confidence-fill" style="width:92%"></div>
+                </div>
+                <span style="font-size:0.75rem;font-weight:700;color:var(--primary)">92%</span>
+              </div>
+            </div>
+          </div>
+          <div class="diagnosis-chip">
+            <div class="diagnosis-icon">👨‍⚕️</div>
+            <div>
+              <div class="diagnosis-label">Recommended Specialist</div>
+              <div class="diagnosis-value">Dr. Priya Sharma · ENT</div>
+              <div class="confidence-bar-wrap">
+                <span class="badge badge-success badge-dot">Available Now</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <div class="badge badge-primary badge-dot">₹5 Consultation</div>
+            <div class="badge badge-success badge-dot">15-min session</div>
+          </div>
+        </div>
+        <div class="floating-badge floating-badge-2">
+          🌐 Hindi · Tamil · English
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ STATS STRIP ═════════════════════════════════════ -->
+<div class="stats-strip">
+  <div class="container">
+    <div class="stats-grid">
+      <div>
+        <div class="stat-num">10K+</div>
+        <div class="stat-name">Patients Helped</div>
+      </div>
+      <div>
+        <div class="stat-num">500+</div>
+        <div class="stat-name">Verified Doctors</div>
+      </div>
+      <div>
+        <div class="stat-num">99.9%</div>
+        <div class="stat-name">AI Accuracy</div>
+      </div>
+      <div>
+        <div class="stat-num">₹5</div>
+        <div class="stat-name">Per Consultation</div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- MAIN CONTENT -->
-<div class="container">
-
-  <!-- VILGAX AI GREETING & LANGUAGE SELECTION -->
-  <div class="vilgax-container">
-    <div class="vilgax-greeting">
-      <svg width="120" height="120" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 15px; display: block;">
-        <!-- Face -->
-        <circle cx="100" cy="100" r="95" fill="#14b8a6" stroke="#06b6d4" stroke-width="2"/>
-        
-        <!-- Head glow -->
-        <circle cx="100" cy="100" r="105" fill="none" stroke="#06b6d4" stroke-width="1" opacity="0.3"/>
-        
-        <!-- Left Eye -->
-        <circle cx="75" cy="85" r="12" fill="#0f172a"/>
-        <circle cx="75" cy="85" r="7" fill="#06b6d4"/>
-        <circle cx="77" cy="83" r="3" fill="#ffffff"/>
-        
-        <!-- Right Eye -->
-        <circle cx="125" cy="85" r="12" fill="#0f172a"/>
-        <circle cx="125" cy="85" r="7" fill="#06b6d4"/>
-        <circle cx="127" cy="83" r="3" fill="#ffffff"/>
-        
-        <!-- Smile mouth -->
-        <path d="M 80 130 Q 100 145 120 130" stroke="#0f172a" stroke-width="3" fill="none" stroke-linecap="round"/>
-        
-        <!-- Left antenna -->
-        <line x1="60" y1="20" x2="45" y2="5" stroke="#06b6d4" stroke-width="4" stroke-linecap="round"/>
-        <circle cx="45" cy="5" r="5" fill="#06b6d4"/>
-        
-        <!-- Right antenna -->
-        <line x1="140" y1="20" x2="155" y2="5" stroke="#06b6d4" stroke-width="4" stroke-linecap="round"/>
-        <circle cx="155" cy="5" r="5" fill="#06b6d4"/>
-        
-        <!-- Chest plate -->
-        <rect x="70" y="160" width="60" height="30" rx="5" fill="#06b6d4" opacity="0.8"/>
-        <line x1="85" y1="160" x2="85" y2="190" stroke="#0f172a" stroke-width="1"/>
-        <line x1="100" y1="160" x2="100" y2="190" stroke="#0f172a" stroke-width="1"/>
-        <line x1="115" y1="160" x2="115" y2="190" stroke="#0f172a" stroke-width="1"/>
-      </svg>
-      <div class="vilgax-name">VILGAX AI Assistant</div>
-      <div id="vilgaxGreeting" class="vilgax-greeting-text">
-        <span class="loading-dot"></span>
-        <span class="loading-dot"></span>
-        <span class="loading-dot"></span>
-      </div>
-      
-      <div class="vilgax-language-bar" id="langBar">
-        <button class="lang-badge active" onclick="vilgaxSetLanguage('en')" data-lang="en">🇺🇸 English</button>
-        <button class="lang-badge" onclick="vilgaxSetLanguage('ta')" data-lang="ta">தமிழ் Tamil</button>
-        <button class="lang-badge" onclick="vilgaxSetLanguage('hi')" data-lang="hi">हिन्दी Hindi</button>
-      </div>
-
-      <div class="vilgax-status">
-        ✓ Neural Network Ready • 99.999% Accuracy • Real-time ML Analysis
-      </div>
+<!-- ══════════ FEATURES ════════════════════════════════════════ -->
+<section id="features" class="features-section">
+  <div class="container">
+    <div class="section-eyebrow">
+      <span class="feature-pill">✨ Everything you need</span>
     </div>
-
-    <!-- ML CAPABILITIES SECTION -->
-    <div class="vilgax-ml-insights">
-      <div class="ml-title">
-        🧠 VILGAX Machine Learning Capabilities
+    <h2 class="section-heading">
+      Built for <span class="gradient-text">modern healthcare</span>
+    </h2>
+    <p class="section-subheading">
+      From AI diagnosis to video consultations — one platform handles your entire healthcare journey.
+    </p>
+    <div class="grid-3">
+      <div class="feature-card">
+        <div class="feature-card-icon">🤖</div>
+        <div class="feature-card-title">VILGAX AI Voice Assistant</div>
+        <div class="feature-card-desc">Speak your symptoms and let VILGAX analyze them in real-time using neural networks trained on millions of medical cases.</div>
       </div>
-      <div class="ml-grid">
-        <div class="ml-card">
-          <div class="ml-icon">🔬</div>
-          <div class="ml-label">Symptom Analysis</div>
-          <div class="ml-description">Neural network analyzes symptoms with medical database learning</div>
-        </div>
-        <div class="ml-card">
-          <div class="ml-icon">👨‍⚕️</div>
-          <div class="ml-label">Doctor Matching</div>
-          <div class="ml-description">AI matches you with best specialists using pattern recognition</div>
-        </div>
-        <div class="ml-card">
-          <div class="ml-icon">💊</div>
-          <div class="ml-label">Medicine Prediction</div>
-          <div class="ml-description">Machine learning recommends medicines based on medical history</div>
-        </div>
-        <div class="ml-card">
-          <div class="ml-icon">📊</div>
-          <div class="ml-label">Health Analytics</div>
-          <div class="ml-description">Deep learning tracks health trends and predicts risks</div>
-        </div>
-        <div class="ml-card">
-          <div class="ml-icon">🌐</div>
-          <div class="ml-label">Language Processing</div>
-          <div class="ml-description">NLP understands and responds in your native language</div>
-        </div>
-        <div class="ml-card">
-          <div class="ml-icon">⚡</div>
-          <div class="ml-label">Real-time Insights</div>
-          <div class="ml-description">Instant medical guidance powered by advanced algorithms</div>
-        </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">🎯</div>
+        <div class="feature-card-title">Smart Doctor Matching</div>
+        <div class="feature-card-desc">AI matches you with the most suitable specialist based on your symptoms, location, and availability — in seconds.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">📹</div>
+        <div class="feature-card-title">Video Consultations</div>
+        <div class="feature-card-desc">HD video calls with verified doctors. Only ₹5 for a 15-minute session with automatic refund if unused.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">💊</div>
+        <div class="feature-card-title">Medicine Finder</div>
+        <div class="feature-card-desc">Search from our database of 50,000+ medicines. Get dosage info, alternatives, and side-effect warnings instantly.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">🌐</div>
+        <div class="feature-card-title">Multilingual Support</div>
+        <div class="feature-card-desc">Full support for English, Hindi, and Tamil. VILGAX speaks and listens in your native language.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">📋</div>
+        <div class="feature-card-title">Digital Prescriptions</div>
+        <div class="feature-card-desc">Doctors issue digital prescriptions sent directly to your email. No more lost paper prescriptions.</div>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- ROLE SELECTION SECTION -->
-  <div class="role-section role-section-new">
-    <div class="section-header">
-      <div class="section-title">Select Your Role</div>
-      <div class="section-subtitle">VILGAX will optimize your experience based on your profile</div>
+<!-- ══════════ HOW IT WORKS ════════════════════════════════════ -->
+<section id="how-it-works" class="how-section">
+  <div class="container">
+    <div class="section-eyebrow">
+      <span class="feature-pill">🚀 Simple process</span>
+    </div>
+    <h2 class="section-heading">Get care in 4 easy steps</h2>
+    <p class="section-subheading">From symptom to solution in minutes, not days.</p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">Describe Symptoms</div>
+        <div class="step-desc">Speak or type your symptoms to VILGAX. It understands your language and medical context.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">AI Analysis</div>
+        <div class="step-desc">VILGAX runs ML diagnosis — identifies the condition and recommends the right specialist.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">Book Appointment</div>
+        <div class="step-desc">VILGAX auto-fills the booking form. Confirm with a single click and pay just ₹5.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-title">Consult & Recover</div>
+        <div class="step-desc">Join the video call, get your prescription, and receive it directly in your email.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ROLE SELECTION ══════════════════════════════════ -->
+<section id="choose-role" class="role-section">
+  <div class="container">
+    <div class="section-eyebrow">
+      <span class="feature-pill">👋 Welcome</span>
+    </div>
+    <h2 class="section-heading">Who are you?</h2>
+    <p class="section-subheading">VILGAX will customize your entire experience based on your role.</p>
+
+    <!-- VILGAX Greeting Card -->
+    <div class="vilgax-greeting-card">
+      <div class="vilgax-bot-icon">🤖</div>
+      <div>
+        <div style="font-weight:700;margin-bottom:6px;">VILGAX AI Assistant</div>
+        <div class="vilgax-greeting-text" id="vilgaxGreeting">
+          <div class="loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="role-grid">
-      <!-- PATIENT ROLE -->
+    <!-- Language Selection -->
+    <div class="lang-bar">
+      <button class="lang-btn active" onclick="vilgaxSetLanguage('en')" data-lang="en">🇺🇸 English</button>
+      <button class="lang-btn" onclick="vilgaxSetLanguage('ta')" data-lang="ta">🇮🇳 தமிழ் Tamil</button>
+      <button class="lang-btn" onclick="vilgaxSetLanguage('hi')" data-lang="hi">🇮🇳 हिन्दी Hindi</button>
+    </div>
+
+    <!-- Role Cards -->
+    <div class="roles-grid">
       <div class="role-card" id="patientRole" onclick="vilgaxSelectRole('patient')">
-        <div class="role-card-content">
-          <svg width="70" height="70" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 12px; display: block;">
-            <!-- Head -->
-            <circle cx="50" cy="30" r="15" fill="#14b8a6" stroke="#06b6d4" stroke-width="1.5"/>
-            <!-- Body -->
-            <rect x="40" y="47" width="20" height="25" rx="3" fill="#14b8a6" stroke="#06b6d4" stroke-width="1.5"/>
-            <!-- Left Arm -->
-            <line x1="40" y1="55" x2="25" y2="65" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
-            <!-- Right Arm -->
-            <line x1="60" y1="55" x2="75" y2="65" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
-            <!-- Left Leg -->
-            <line x1="43" y1="72" x2="38" y2="92" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
-            <!-- Right Leg -->
-            <line x1="57" y1="72" x2="62" y2="92" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
-            <!-- Heart symbol -->
-            <path d="M 50 38 Q 52 35 55 35 Q 58 35 58 38 Q 58 40 50 48 Q 42 40 42 38 Q 42 35 45 35 Q 48 35 50 38" fill="#ef4444"/>
-          </svg>
-          <div class="role-icon" style="font-size: 0;">👤</div>
-          <div class="role-title">Patient</div>
-          <div class="role-description">Get AI-powered healthcare consultation</div>
-          <ul class="role-features">
-            <li>AI symptom analysis</li>
-            <li>Doctor consultation</li>
-            <li>Medical records</li>
-            <li>Prescription access</li>
-          </ul>
-        </div>
+        <div class="role-check-badge">✓</div>
+        <span class="role-emoji">🧑‍🤝‍🧑</span>
+        <div class="role-title">Patient</div>
+        <div class="role-desc">Get AI-powered healthcare consultation and connect with verified doctors.</div>
+        <ul class="role-features-list">
+          <li class="role-feature-item">AI symptom analysis</li>
+          <li class="role-feature-item">Doctor consultations</li>
+          <li class="role-feature-item">Medical records</li>
+          <li class="role-feature-item">Prescription access</li>
+        </ul>
+        <button class="btn btn-secondary btn-full">Select Patient →</button>
       </div>
 
-      <!-- DOCTOR ROLE -->
       <div class="role-card" id="doctorRole" onclick="vilgaxSelectRole('doctor')">
-        <div class="role-card-content">
-          <svg width="70" height="70" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 12px; display: block;">
-            <!-- Head -->
-            <circle cx="50" cy="25" r="12" fill="#14b8a6" stroke="#06b6d4" stroke-width="1.5"/>
-            <!-- Body -->
-            <rect x="42" y="39" width="16" height="22" rx="2" fill="#06b6d4" stroke="#14b8a6" stroke-width="1.5"/>
-            <!-- Stethoscope circle -->
-            <circle cx="50" cy="48" r="10" fill="none" stroke="#ef4444" stroke-width="2"/>
-            <!-- Left Arm -->
-            <line x1="42" y1="45" x2="28" y2="52" stroke="#14b8a6" stroke-width="2.5" stroke-linecap="round"/>
-            <!-- Right Arm -->
-            <line x1="58" y1="45" x2="72" y2="52" stroke="#14b8a6" stroke-width="2.5" stroke-linecap="round"/>
-            <!-- Left Leg -->
-            <line x1="45" y1="61" x2="42" y2="80" stroke="#06b6d4" stroke-width="2.5" stroke-linecap="round"/>
-            <!-- Right Leg -->
-            <line x1="55" y1="61" x2="58" y2="80" stroke="#06b6d4" stroke-width="2.5" stroke-linecap="round"/>
-            <!-- Medical cross -->
-            <line x1="50" y1="38" x2="50" y2="50" stroke="#fff" stroke-width="1.5"/>
-            <line x1="44" y1="44" x2="56" y2="44" stroke="#fff" stroke-width="1.5"/>
-          </svg>
-          <div class="role-icon" style="font-size: 0;">👨‍⚕️</div>
-          <div class="role-title">Doctor</div>
-          <div class="role-description">Manage patients with AI insights</div>
-          <ul class="role-features">
-            <li>Patient appointments</li>
-            <li>Video consultations</li>
-            <li>Medical records</li>
-            <li>AI recommendations</li>
-          </ul>
-        </div>
+        <div class="role-check-badge">✓</div>
+        <span class="role-emoji">👨‍⚕️</span>
+        <div class="role-title">Doctor</div>
+        <div class="role-desc">Manage your patients with AI-powered insights and scheduling tools.</div>
+        <ul class="role-features-list">
+          <li class="role-feature-item">Patient appointments</li>
+          <li class="role-feature-item">Video consultations</li>
+          <li class="role-feature-item">Medical records</li>
+          <li class="role-feature-item">AI recommendations</li>
+        </ul>
+        <button class="btn btn-secondary btn-full">Select Doctor →</button>
       </div>
 
-      <!-- ADMIN ROLE -->
       <div class="role-card" id="adminRole" onclick="vilgaxSelectRole('admin')">
-        <div class="role-card-content">
-          <svg width="70" height="70" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 12px; display: block;">
-            <!-- Monitor -->
-            <rect x="20" y="20" width="60" height="40" rx="3" fill="none" stroke="#14b8a6" stroke-width="2"/>
-            <!-- Screen -->
-            <rect x="24" y="24" width="52" height="32" fill="rgba(20,184,166,0.1)" stroke="#06b6d4" stroke-width="1"/>
-            <!-- Bezels -->
-            <circle cx="35" cy="33" r="3" fill="#06b6d4"/>
-            <circle cx="50" cy="33" r="3" fill="#06b6d4"/>
-            <circle cx="65" cy="33" r="3" fill="#06b6d4"/>
-            <!-- Stand -->
-            <rect x="42" y="60" width="16" height="12" rx="2" fill="#14b8a6" stroke="#06b6d4" stroke-width="1.5"/>
-            <!-- Base -->
-            <rect x="35" y="72" width="30" height="4" rx="2" fill="#06b6d4" opacity="0.6"/>
-            <!-- Settings icon (gear) -->
-            <circle cx="50" cy="42" r="5" fill="none" stroke="#ef4444" stroke-width="1.5"/>
-            <path d="M 50 36 L 50 30 M 50 54 L 50 60 M 44 42 L 38 42 M 56 42 L 62 42" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <div class="role-icon" style="font-size: 0;">⚙️</div>
-          <div class="role-title">Administrator</div>
-          <div class="role-description">Control platform with ML analytics</div>
-          <ul class="role-features">
-            <li>User management</li>
-            <li>AI analytics</li>
-            <li>System configuration</li>
-            <li>Advanced reports</li>
-          </ul>
+        <div class="role-check-badge">✓</div>
+        <span class="role-emoji">⚙️</span>
+        <div class="role-title">Administrator</div>
+        <div class="role-desc">Manage the platform with ML analytics and advanced configuration.</div>
+        <ul class="role-features-list">
+          <li class="role-feature-item">User management</li>
+          <li class="role-feature-item">AI analytics</li>
+          <li class="role-feature-item">System configuration</li>
+          <li class="role-feature-item">Advanced reports</li>
+        </ul>
+        <button class="btn btn-secondary btn-full">Select Admin →</button>
+      </div>
+    </div>
+
+    <div class="cta-section">
+      <button class="proceed-btn" id="ctaButton" onclick="vilgaxProceed()" disabled>
+        Let VILGAX Guide Me &nbsp;→
+      </button>
+      <p style="font-size:0.8125rem;color:var(--text-muted);margin-top:12px;">Select a role above to continue</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ TESTIMONIALS ════════════════════════════════════ -->
+<section class="testimonials-section">
+  <div class="container">
+    <h2 class="section-heading">Patients love us</h2>
+    <p class="section-subheading">Real stories from real people who found care without borders.</p>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"VILGAX correctly identified my condition in under a minute. The doctor I was matched with was amazing. All for just ₹5!"</p>
+        <div class="testimonial-author">
+          <div class="avatar avatar-md" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">R</div>
+          <div>
+            <div style="font-weight:600;font-size:0.9rem">Ravi Kumar</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">Chennai, Tamil Nadu</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"Being able to speak in Hindi and have the AI understand me perfectly changed everything. My village now has access to real doctors."</p>
+        <div class="testimonial-author">
+          <div class="avatar avatar-md" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)">S</div>
+          <div>
+            <div style="font-weight:600;font-size:0.9rem">Sunita Devi</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">Patna, Bihar</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"The video consultation quality was excellent. Got my prescription emailed in 10 minutes. This is the future of healthcare."</p>
+        <div class="testimonial-author">
+          <div class="avatar avatar-md" style="background:linear-gradient(135deg,#4f46e5,#6366f1)">M</div>
+          <div>
+            <div style="font-weight:600;font-size:0.9rem">Meera Pillai</div>
+            <div style="font-size:0.8rem;color:var(--text-muted)">Kochi, Kerala</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- WELCOME SECTION -->
-  <div class="welcome-section">
-    <div class="welcome-content">
-      <h1>Your AI Healthcare Companion 🤖</h1>
-      <p>VILGAX uses advanced machine learning to provide accurate medical guidance, connect you with verified doctors, and optimize your healthcare journey in real-time.</p>
-      
-      <div class="welcome-features">
-        <div class="feature-item">
-          <span class="feature-icon">🧠</span>
-          <span>Neural Network with 99.999% Diagnostic Accuracy</span>
+<!-- ══════════ FOOTER ══════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">🏥 Care Without Borders</div>
+        <p class="footer-brand-desc">AI-powered telemedicine making quality healthcare accessible to every Indian, in every language, at an affordable price.</p>
+        <div style="display:flex;gap:8px;">
+          <span class="badge badge-success badge-dot">99.9% Uptime</span>
+          <span class="badge badge-primary badge-dot">HIPAA Compliant</span>
         </div>
-        <div class="feature-item">
-          <span class="feature-icon">👨‍⚕️</span>
-          <span>AI-Matched Verified Doctors & Specialists</span>
+      </div>
+      <div>
+        <div class="footer-col-title">Platform</div>
+        <div class="footer-links">
+          <a href="login.html" class="footer-link">Patient Portal</a>
+          <a href="doctor-login.html" class="footer-link">Doctor Portal</a>
+          <a href="medicine-finder.html" class="footer-link">Medicine Finder</a>
+          <a href="ai-chatbot.html" class="footer-link">AI Chatbot</a>
         </div>
-        <div class="feature-item">
-          <span class="feature-icon">📱</span>
-          <span>Intelligent Video Consultations & Records</span>
+      </div>
+      <div>
+        <div class="footer-col-title">Features</div>
+        <div class="footer-links">
+          <a href="#" class="footer-link">VILGAX AI</a>
+          <a href="#" class="footer-link">Video Consult</a>
+          <a href="#" class="footer-link">Prescriptions</a>
+          <a href="#" class="footer-link">Multilingual</a>
         </div>
-        <div class="feature-item">
-          <span class="feature-icon">🌐</span>
-          <span>Native Language NLP Processing</span>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">⚡</span>
-          <span>Real-time AI-Powered Health Analytics</span>
+      </div>
+      <div>
+        <div class="footer-col-title">Support</div>
+        <div class="footer-links">
+          <a href="#" class="footer-link">Privacy Policy</a>
+          <a href="#" class="footer-link">Terms of Service</a>
+          <a href="#" class="footer-link">Contact Us</a>
+          <a href="#" class="footer-link">FAQ</a>
         </div>
       </div>
     </div>
-
-    <div class="welcome-hero">
-      <div class="hero-card">
-        <svg width="100" height="100" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto 15px; display: block;">
-          <!-- Brain outline -->
-          <circle cx="100" cy="80" r="50" fill="none" stroke="#14b8a6" stroke-width="2"/>
-          <!-- Left brain hemisphere -->
-          <path d="M 60 80 Q 60 50 80 50 Q 85 50 85 80 Z" fill="rgba(20,184,166,0.2)" stroke="#06b6d4" stroke-width="1.5"/>
-          <!-- Right brain hemisphere -->
-          <path d="M 140 80 Q 140 50 120 50 Q 115 50 115 80 Z" fill="rgba(20,184,166,0.2)" stroke="#06b6d4" stroke-width="1.5"/>
-          <!-- Neural connections -->
-          <line x1="70" y1="60" x2="100" y2="90" stroke="#06b6d4" stroke-width="1.5" opacity="0.7"/>
-          <line x1="130" y1="60" x2="100" y2="90" stroke="#06b6d4" stroke-width="1.5" opacity="0.7"/>
-          <line x1="80" y1="45" x2="100" y2="80" stroke="#06b6d4" stroke-width="1.5" opacity="0.7"/>
-          <line x1="120" y1="45" x2="100" y2="80" stroke="#06b6d4" stroke-width="1.5" opacity="0.7"/>
-          <!-- Node points -->
-          <circle cx="70" cy="60" r="3" fill="#ef4444"/>
-          <circle cx="130" cy="60" r="3" fill="#ef4444"/>
-          <circle cx="80" cy="45" r="3" fill="#ef4444"/>
-          <circle cx="120" cy="45" r="3" fill="#ef4444"/>
-          <circle cx="100" cy="90" r="4" fill="#10b981"/>
-          <!-- Pulse rings -->
-          <circle cx="100" cy="80" r="55" fill="none" stroke="#06b6d4" stroke-width="1" opacity="0.3"/>
-          <!-- Learning indicator -->
-          <text x="100" y="160" text-anchor="middle" font-size="14" font-weight="bold" fill="#14b8a6">Learning</text>
-        </svg>
-        <div class="hero-title">Advanced AI Engine</div>
-        <div class="hero-text">
-          VILGAX processes medical data with deep learning algorithms, continuously learns from interactions, and adapts to provide increasingly accurate personalized healthcare guidance.
-        </div>
-      </div>
+    <div class="footer-bottom">
+      <span>© 2026 Care Without Borders. All rights reserved.</span>
+      <span>Made with ❤️ for India's healthcare</span>
     </div>
   </div>
+</footer>
 
-  <!-- CTA SECTION -->
-  <div class="cta-section">
-    <button class="cta-button" id="ctaButton" onclick="vilgaxProceed()" disabled>
-      Let VILGAX Guide Me
-    </button>
-  </div>
-
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-  <p>&copy; 2025 Care Without Borders. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
-</div>
-
+<!-- ══════════ SCRIPTS (PRESERVED) ════════════════════════════ -->
 <script src="js/i18n.js"></script>
 <script src="js/vilgax-voice-system.js"></script>
 <script>
-  // VILGAX AI SYSTEM - Professional ML-Driven Healthcare Assistant
-  
   class VilgaxAI {
     constructor() {
       this.selectedRole = null;
       this.selectedLanguage = 'en';
       this.isGreetingPlayed = false;
       this.languageDetected = false;
-      
-      // Professional native language greetings with proper phonetics
       this.greetings = {
         en: {
-          text: "Welcome to Care Without Borders. I am VILGAX, your artificial intelligence healthcare assistant. I use advanced neural networks and machine learning algorithms to analyze medical symptoms and connect you with verified doctors. My neural network has been trained on millions of medical cases achieving 99.999% diagnostic accuracy. How can I help you today?",
+          text: "Welcome to Care Without Borders. I am VILGAX, your AI healthcare assistant. I use advanced neural networks to analyze medical symptoms and connect you with verified doctors. How can I help you today?",
           lang: "en-US"
         },
         ta: {
-          // Proper Tamil greeting - NOT English words
-          text: "நல்வரவு குணமின்றி எல்லைகள் திட்டத்திற்கு. நான் விஎல்ஜிஏஎக்ஸ், உங்கள் செயற்கை நுண்ணறிவு சுகாதார உதவியாளர். நான் மேம்பட்ட நரம்பு வலையமைப்புகள் மற்றும் இயந்திர கற்றல் வழிமுறைகளைப் பயன்படுத்தி மருத்துவ அறிகுறிகளை பகுப்பாய்வு செய்து சரிபார்க்கப்பட்ட மருத்துவர்களுடன் உங்களை இணைக்கிறேன்.",
+          text: "நல்வரவு குணமின்றி எல்லைகள் திட்டத்திற்கு. நான் விஎல்ஜிஏஎக்ஸ், உங்கள் செயற்கை நுண்ணறிவு சுகாதார உதவியாளர். நான் மேம்பட்ட நரம்பு வலையமைப்புகளைப் பயன்படுத்தி மருத்துவ அறிகுறிகளை பகுப்பாய்வு செய்து சரிபார்க்கப்பட்ட மருத்துவர்களுடன் உங்களை இணைக்கிறேன்.",
           lang: "ta-IN"
         },
         hi: {
-          // Proper Hindi greeting - NOT English words
-          text: "कार्य बिना सीमाओं के स्वागत है। मैं विएलजीएक्स, आपका कृत्रिम बुद्धिमत्ता स्वास्थ्य सहायक हूं। मैं उन्नत तंत्रिका नेटवर्क और मशीन लर्निंग एल्गोरिदम का उपयोग करके चिकित्सा लक्षणों का विश्लेषण करता हूं और आपको सत्यापित डॉक्टरों से जोड़ता हूं। मेरे तंत्रिका नेटवर्क को लाखों चिकित्सा मामलों पर प्रशिक्षित किया गया है।",
+          text: "कार्य बिना सीमाओं के स्वागत है। मैं विएलजीएक्स, आपका कृत्रिम बुद्धिमत्ता स्वास्थ्य सहायक हूं। मैं उन्नत तंत्रिका नेटवर्क का उपयोग करके चिकित्सा लक्षणों का विश्लेषण करता हूं। आज मैं आपकी कैसे मदद कर सकता हूं?",
           lang: "hi-IN"
         }
       };
-
       this.init();
     }
 
     init() {
-      console.log("🤖 VILGAX AI System Initializing...");
       this.detectLanguageFromBrowser();
       setTimeout(() => this.playAutoGreeting(), 1500);
     }
 
     detectLanguageFromBrowser() {
-      // Auto-detect from navigator language
       const browserLang = navigator.language || navigator.userLanguage;
-      
-      if (browserLang.startsWith('ta')) {
-        this.setLanguage('ta');
-        this.languageDetected = true;
-      } else if (browserLang.startsWith('hi')) {
-        this.setLanguage('hi');
-        this.languageDetected = true;
-      } else {
-        this.setLanguage('en');
-      }
+      if (browserLang.startsWith('ta')) { this.setLanguage('ta'); this.languageDetected = true; }
+      else if (browserLang.startsWith('hi')) { this.setLanguage('hi'); this.languageDetected = true; }
+      else { this.setLanguage('en'); }
     }
 
     setLanguage(lang) {
       this.selectedLanguage = lang;
       localStorage.setItem('vilgaxLanguage', lang);
-      
-      // Update UI
-      document.querySelectorAll('.lang-badge').forEach(btn => {
-        btn.classList.remove('active');
+      document.querySelectorAll('[data-lang]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
       });
-      document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
-      
-      console.log(`🌐 VILGAX Language Set: ${lang}`);
     }
 
     playAutoGreeting() {
       if (this.isGreetingPlayed) return;
-      
       const greetingDiv = document.getElementById('vilgaxGreeting');
       const greeting = this.greetings[this.selectedLanguage];
-      
-      // Show text
       greetingDiv.textContent = greeting.text;
       this.isGreetingPlayed = true;
-      
-      // Play audio
       this.speakWithNativeVoice(greeting.text, greeting.lang);
     }
 
     speakWithNativeVoice(text, lang) {
-      if (!('speechSynthesis' in window)) {
-        console.warn("⚠️ Speech Synthesis not supported");
-        return;
-      }
-
-      // Cancel any ongoing speech
+      if (!('speechSynthesis' in window)) return;
       speechSynthesis.cancel();
-
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = lang;
       utterance.rate = 0.95;
       utterance.pitch = 1.0;
       utterance.volume = 1.0;
-
-      // Wait for voices to load
       if (speechSynthesis.getVoices().length === 0) {
-        speechSynthesis.onvoiceschanged = () => {
-          this.setNativeVoice(utterance, lang);
-          speechSynthesis.speak(utterance);
-        };
+        speechSynthesis.onvoiceschanged = () => { this.setNativeVoice(utterance, lang); speechSynthesis.speak(utterance); };
       } else {
         this.setNativeVoice(utterance, lang);
         speechSynthesis.speak(utterance);
@@ -1172,81 +1091,40 @@
 
     setNativeVoice(utterance, lang) {
       const voices = speechSynthesis.getVoices();
-      let selectedVoice = null;
-
-      // Priority: Find native language voice
-      if (lang === 'ta-IN') {
-        selectedVoice = voices.find(v => v.lang.startsWith('ta') || v.lang.includes('Tamil'));
-      } else if (lang === 'hi-IN') {
-        selectedVoice = voices.find(v => v.lang.startsWith('hi') || v.lang.includes('Hindi'));
-      } else {
-        selectedVoice = voices.find(v => v.lang.startsWith('en'));
-      }
-
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-      } else {
-        // Fallback to first available voice
-        utterance.voice = voices[0];
-      }
+      let v = null;
+      if (lang === 'ta-IN') v = voices.find(v => v.lang.startsWith('ta') || v.lang.includes('Tamil'));
+      else if (lang === 'hi-IN') v = voices.find(v => v.lang.startsWith('hi') || v.lang.includes('Hindi'));
+      else v = voices.find(v => v.lang.startsWith('en'));
+      utterance.voice = v || voices[0];
     }
 
     selectRole(role) {
       this.selectedRole = role;
-      
-      document.querySelectorAll('.role-card').forEach(card => {
-        card.classList.remove('selected');
-      });
-      
+      document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
       document.getElementById(role + 'Role').classList.add('selected');
       document.getElementById('ctaButton').disabled = false;
-
-      console.log(`✓ VILGAX Role Selected: ${role}`);
     }
 
     proceed() {
-      if (!this.selectedRole) {
-        alert('Please select a role');
-        return;
-      }
-
+      if (!this.selectedRole) { alert('Please select a role'); return; }
       localStorage.setItem('vilgaxRole', this.selectedRole);
       localStorage.setItem('vilgaxLanguage', this.selectedLanguage);
-
-      const routes = {
-        patient: 'login.html?role=patient',
-        doctor: 'doctor-login.html',
-        admin: 'admin.html'
-      };
-
+      const routes = { patient: 'login.html?role=patient', doctor: 'doctor-login.html', admin: 'admin.html' };
       window.location.href = routes[this.selectedRole];
     }
   }
 
-  // Initialize VILGAX on page load
   let vilgax = null;
-  window.addEventListener('DOMContentLoaded', () => {
-    vilgax = new VilgaxAI();
-  });
+  window.addEventListener('DOMContentLoaded', () => { vilgax = new VilgaxAI(); });
 
-  // Global functions for onclick handlers
   function vilgaxSetLanguage(lang) {
-    if (window.vilgaxVoiceSystem) {
-      window.vilgaxVoiceSystem.setLanguage(lang);
-    }
+    if (window.vilgaxVoiceSystem) window.vilgaxVoiceSystem.setLanguage(lang);
     vilgax.setLanguage(lang);
-    // Replay greeting with new language
     vilgax.isGreetingPlayed = false;
     vilgax.playAutoGreeting();
   }
-
-  function vilgaxSelectRole(role) {
-    vilgax.selectRole(role);
-  }
-
-  function vilgaxProceed() {
-    vilgax.proceed();
-  }
+  function vilgaxSelectRole(role) { vilgax.selectRole(role); }
+  function vilgaxProceed() { vilgax.proceed(); }
 </script>
 
 </body>
