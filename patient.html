@@ -40,40 +40,41 @@
       overflow: hidden;
     }
 
-    /* SIDEBAR */
+    /* SIDEBAR (Vercel Style) */
     .sidebar {
       width: 280px;
-      background: var(--surface);
-      border-right: 1px solid var(--border-color);
-      padding: 24px 20px;
+      background: var(--bg);
+      border-right: 1px solid var(--border);
+      padding: 24px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      box-shadow: var(--shadow-sm);
       z-index: 10;
     }
 
     .sidebar-header {
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
     }
 
     .sidebar-logo {
-      font-size: 24px;
-      font-weight: 800;
-      color: var(--primary-cyan);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--primary);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .user-info {
-      margin-top: 15px;
-      padding: 12px;
-      background: rgba(20, 184, 166, 0.1);
-      border-left: 3px solid var(--primary-cyan);
-      border-radius: 8px;
+      margin-top: 24px;
+      padding: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
       font-size: 13px;
     }
 
@@ -161,21 +162,23 @@
     }
 
     .content-header {
-      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-      padding: 40px;
-      color: white;
-      box-shadow: var(--shadow-md);
+      background: var(--surface);
+      padding: 48px;
+      border-bottom: 1px solid var(--border);
     }
 
     .content-header h1 {
-      font-size: 36px;
+      font-size: 32px;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
       margin-bottom: 8px;
-      font-weight: 800;
+      font-weight: 600;
     }
 
     .content-header p {
       font-size: 15px;
-      opacity: 0.9;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
     }
 
     .content-body {
@@ -248,16 +251,15 @@
     /* CARDS */
     .card {
       background: var(--surface);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 25px;
+      padding: 32px;
       margin-bottom: 24px;
       transition: all var(--transition);
       box-shadow: var(--shadow-sm);
     }
 
     .card:hover {
-      border-color: var(--primary-light);
       box-shadow: var(--shadow-md);
     }
 
@@ -284,19 +286,21 @@
 
     .grid-card {
       background: var(--surface);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 24px 20px;
+      padding: 24px;
       cursor: pointer;
       transition: all var(--transition);
-      text-align: center;
+      text-align: left;
       box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
     }
 
     .grid-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--primary);
+      transform: translateY(-2px);
       box-shadow: var(--shadow-md);
+      border-color: var(--accent);
     }
 
     .grid-card-icon {
@@ -371,7 +375,7 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
+      background: var(--primary);
       color: white;
     }
 
