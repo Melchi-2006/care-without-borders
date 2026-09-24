@@ -724,7 +724,7 @@
 
 <!-- SCRIPTS -->
 <script src="js/i18n.js"></script>
-<script src="js/disease-medicine-database.js"></script>
+<script src="js/disease-medicine-database.js?v=2"></script>
 <script src="js/advanced-symptom-analyzer.js"></script>
 <script src="js/disease-database-generator.js"></script>
 <script src="js/vilgax-voice-system.js"></script>
@@ -866,68 +866,113 @@
   }
 
   // ==================== MEDICINE SEARCH ====================
+  window.CARE_MEDICINE_FALLBACK_DB = {
+    paracetamol: {
+      name: 'Paracetamol',
+      dosage: '500mg',
+      frequency: 'Every 6 hours',
+      forCondition: 'Fever, pain relief'
+    },
+    ibuprofen: {
+      name: 'Ibuprofen',
+      dosage: '400mg',
+      frequency: 'Every 8 hours',
+      forCondition: 'Fever, inflammation, pain'
+    },
+    amoxicillin: {
+      name: 'Amoxicillin',
+      dosage: '500mg',
+      frequency: '3 times daily',
+      forCondition: 'Bacterial infections'
+    },
+    omeprazole: {
+      name: 'Omeprazole',
+      dosage: '20mg',
+      frequency: 'Daily',
+      forCondition: 'Acid reflux, stomach ulcers'
+    },
+    cetirizine: {
+      name: 'Cetirizine',
+      dosage: '10mg',
+      frequency: 'Once daily',
+      forCondition: 'Allergy, sneezing, runny nose'
+    },
+    metformin: {
+      name: 'Metformin',
+      dosage: '500mg',
+      frequency: 'Twice daily',
+      forCondition: 'Type 2 diabetes'
+    },
+    azithromycin: {
+      name: 'Azithromycin',
+      dosage: '500mg',
+      frequency: 'Daily',
+      forCondition: 'Respiratory and bacterial infections'
+    }
+  };
+
   function searchMedicine() {
     const medicineInput = document.getElementById('medicineInput');
-    const searchQuery = medicineInput.value.trim();
+    const searchQuery = (medicineInput.value || '').trim();
     
     if (!searchQuery) {
       alert('Please enter a medicine name or symptom');
       return;
     }
 
-    // Use advanced analyzer to find matching conditions first
-    const conditionAnalysis = window.vilgaxAnalyzer.analyzeSymptoms(searchQuery);
+    const normalizedQuery = searchQuery.toLowerCase();
     const results = [];
-
-    // Extract medicines from matched conditions
-    if (conditionAnalysis.success && conditionAnalysis.matches.length > 0) {
-      conditionAnalysis.matches.forEach(match => {
-        match.medicines.forEach(med => {
-          if (!results.find(r => r.name === med.name)) {
-            results.push({
-              name: med.name,
-              dosage: med.dosage,
-              frequency: med.frequency,
-              forCondition: match.disease
-            });
-          }
+    const addMed = (med, conditionName) => {
+      if (!med || !med.name) return;
+      const key = med.name.toLowerCase();
+      if (!results.find(r => r.name.toLowerCase() === key)) {
+        results.push({
+          name: med.name,
+          dosage: med.dosage || 'As prescribed',
+          frequency: med.frequency || 'As directed',
+          forCondition: conditionName || med.forCondition || 'General use'
         });
-      });
+      }
+    };
+
+    const fallbackEntries = Object.entries(window.CARE_MEDICINE_FALLBACK_DB || {});
+    for (const [, med] of fallbackEntries) {
+      const searchable = `${med.name} ${med.forCondition}`.toLowerCase();
+      if (searchable.includes(normalizedQuery)) {
+        addMed(med, med.forCondition);
+      }
     }
 
-    // Also search in disease database
-    if (window.DISEASE_MEDICINE_DATABASE) {
-      for (const [disease, details] of Object.entries(window.DISEASE_MEDICINE_DATABASE)) {
-        const searchLower = searchQuery.toLowerCase();
-        if (disease.toLowerCase().includes(searchLower) || details.symptoms.toLowerCase().includes(searchLower)) {
-          details.medicines.forEach(med => {
-            if (!results.find(r => r.name === med.name)) {
-              results.push({
-                name: med.name,
-                dosage: med.dosage,
-                frequency: med.frequency,
-                forCondition: disease
-              });
-            }
-          });
-        }
-
-        details.medicines.forEach(med => {
-          if (med.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-            if (!results.find(r => r.name === med.name)) {
-              results.push({
-                name: med.name,
-                dosage: med.dosage,
-                frequency: med.frequency,
-                forCondition: disease
-              });
-            }
+    if (window.vilgaxAnalyzer && typeof window.vilgaxAnalyzer.analyzeSymptoms === 'function') {
+      const conditionAnalysis = window.vilgaxAnalyzer.analyzeSymptoms(searchQuery);
+      if (conditionAnalysis && conditionAnalysis.matches) {
+        conditionAnalysis.matches.forEach(match => {
+          if (match && match.medicines) {
+            match.medicines.forEach(med => addMed(med, match.disease));
           }
         });
       }
     }
 
-    // Display results
+    if (window.DISEASE_MEDICINE_DATABASE && typeof window.DISEASE_MEDICINE_DATABASE === 'object') {
+      for (const [disease, details] of Object.entries(window.DISEASE_MEDICINE_DATABASE)) {
+        const diseaseName = (disease || '').toLowerCase();
+        const symptomText = (details && details.symptoms ? details.symptoms : '').toLowerCase();
+        const isMatch = diseaseName.includes(normalizedQuery) || symptomText.includes(normalizedQuery);
+        if (isMatch && details && Array.isArray(details.medicines)) {
+          details.medicines.forEach(med => addMed(med, disease));
+        }
+
+        if (details && Array.isArray(details.medicines)) {
+          details.medicines.forEach(med => {
+            if ((med.name || '').toLowerCase().includes(normalizedQuery)) {
+              addMed(med, disease);
+            }
+          });
+        }
+      }
+    }
+
     const resultDiv = document.getElementById('medicineResult') || createMedicineResultDiv();
     let html = '<div style="background: rgba(20,184,166,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-cyan);">';
     
@@ -952,7 +997,9 @@
     resultDiv.innerHTML = html;
     medicineInput.value = '';
 
-    window.vilgaxVoiceSystem.speak(`Found ${results.length} medicines matching your search. ${results.length > 0 ? results[0].name + ' is commonly used' : 'No results found'}`);
+    if (window.vilgaxVoiceSystem && typeof window.vilgaxVoiceSystem.speak === 'function') {
+      window.vilgaxVoiceSystem.speak(`Found ${results.length} medicines matching your search. ${results.length > 0 ? results[0].name + ' is commonly used' : 'No results found'}`);
+    }
   }
 
   function createMedicineResultDiv() {

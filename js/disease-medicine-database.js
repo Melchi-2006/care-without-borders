@@ -835,9 +835,4 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = { DISEASE_MEDICINE_DATABASE: window.DISEASE_MEDICINE_DATABASE, MEDICAL_ABBREVIATIONS, SYMPTOMS_TO_DISEASES };
 }
 
-// ES6 Module export for browser/Webpack compatibility
-export const DISEASE_MEDICINE_DATABASE = window.DISEASE_MEDICINE_DATABASE;
-export const MEDICAL_ABBREVIATIONS_EXPORT = MEDICAL_ABBREVIATIONS;
-export const SYMPTOMS_TO_DISEASES_EXPORT = SYMPTOMS_TO_DISEASES;
-
 console.log('✅ Disease-Medicine Database loaded - ' + Object.keys(window.DISEASE_MEDICINE_DATABASE).length + ' conditions available');
