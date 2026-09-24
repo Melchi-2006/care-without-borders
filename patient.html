@@ -692,9 +692,31 @@
       <div id="records" class="page-section">
         <div class="card">
           <h3>📋 Medical Records</h3>
-          <p>Your consultation history and medical documents.</p>
+          <p>Add previous medical records and keep your consultation history in one place.</p>
+          <form onsubmit="addPreviousMedicalRecord(event)" style="margin-top: 20px; padding: 20px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px;">
+            <h4 style="color: var(--primary-cyan); margin-bottom: 16px;">➕ Add Previous Record</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="previousRecordDate">Record Date *</label>
+                <input type="date" id="previousRecordDate" required>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="previousRecordTitle">Condition or Record Title *</label>
+                <input type="text" id="previousRecordTitle" placeholder="e.g., Blood test, Fever treatment" required>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="previousRecordDoctor">Doctor or Hospital</label>
+                <input type="text" id="previousRecordDoctor" placeholder="Optional">
+              </div>
+            </div>
+            <div class="form-group" style="margin-top: 16px; margin-bottom: 16px;">
+              <label for="previousRecordNotes">Notes</label>
+              <textarea id="previousRecordNotes" placeholder="Add diagnosis, treatment, medicines, or other details..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Medical Record</button>
+          </form>
           <div id="recordsList" style="margin-top: 15px;">
-            <p style="color: #999; text-align: center;">No medical records yet. Schedule a consultation to create records.</p>
+            <p style="color: var(--text-light); text-align: center;">No medical records yet.</p>
           </div>
         </div>
       </div>
@@ -1247,9 +1269,93 @@
     }
   }
 
+  function readMedicalRecords() {
+    try {
+      const records = JSON.parse(localStorage.getItem('patientMedicalRecords') || '[]');
+      return Array.isArray(records) ? records : [];
+    } catch (error) {
+      console.warn('Unable to read medical records:', error);
+      return [];
+    }
+  }
+
+  function escapeRecordText(value) {
+    return String(value || '').replace(/[&<>'"]/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    }[character]));
+  }
+
+  function formatRecordDate(dateValue) {
+    if (!dateValue) return 'Date not provided';
+    const date = new Date(`${dateValue}T00:00:00`);
+    return Number.isNaN(date.getTime()) ? escapeRecordText(dateValue) : date.toLocaleDateString();
+  }
+
+  function renderMedicalRecords() {
+    const recordsList = document.getElementById('recordsList');
+    if (!recordsList) return;
+
+    const records = readMedicalRecords().sort((first, second) => {
+      return new Date(second.date || 0).getTime() - new Date(first.date || 0).getTime();
+    });
+
+    if (records.length === 0) {
+      recordsList.innerHTML = '<p style="color: var(--text-light); text-align: center;">No medical records yet.</p>';
+      return;
+    }
+
+    recordsList.innerHTML = records.map(record => {
+      const title = record.title || record.diagnosis || 'Medical record';
+      const doctor = record.doctorName || record.doctor || '';
+      const notes = record.notes || record.treatment || '';
+      return `<article style="padding: 16px; margin-bottom: 12px; background: var(--bg); border: 1px solid var(--border); border-left: 4px solid var(--primary-cyan); border-radius: 8px;">
+        <div style="display: flex; justify-content: space-between; gap: 12px; align-items: flex-start;">
+          <div>
+            <h4 style="color: var(--primary-cyan); margin-bottom: 6px;">${escapeRecordText(title)}</h4>
+            <p style="margin: 0 0 6px; color: var(--text-light);">📅 ${formatRecordDate(record.date)}</p>
+            ${doctor ? `<p style="margin: 0 0 6px; color: var(--text-light);">👨‍⚕️ ${escapeRecordText(doctor)}</p>` : ''}
+            ${notes ? `<p style="margin: 8px 0 0; color: var(--text-light); white-space: pre-wrap;">${escapeRecordText(notes)}</p>` : ''}
+          </div>
+          <button type="button" onclick="deleteMedicalRecord('${escapeRecordText(record.id)}')" style="border: 1px solid var(--danger); background: transparent; color: var(--danger); border-radius: 6px; padding: 6px 10px; cursor: pointer;">Delete</button>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  function addPreviousMedicalRecord(event) {
+    event.preventDefault();
+    const date = document.getElementById('previousRecordDate').value;
+    const title = document.getElementById('previousRecordTitle').value.trim();
+    const doctor = document.getElementById('previousRecordDoctor').value.trim();
+    const notes = document.getElementById('previousRecordNotes').value.trim();
+
+    const records = readMedicalRecords();
+    records.push({
+      id: 'REC-' + Date.now(),
+      type: 'previous',
+      date,
+      title,
+      doctor,
+      notes
+    });
+    localStorage.setItem('patientMedicalRecords', JSON.stringify(records));
+    event.target.reset();
+    document.getElementById('previousRecordDate').value = new Date().toISOString().split('T')[0];
+    renderMedicalRecords();
+    alert('Medical record saved successfully.');
+  }
+
+  function deleteMedicalRecord(recordId) {
+    const records = readMedicalRecords().filter(record => String(record.id) !== String(recordId));
+    localStorage.setItem('patientMedicalRecords', JSON.stringify(records));
+    renderMedicalRecords();
+  }
+
   // ==================== PAGE LOAD ====================
   window.addEventListener('DOMContentLoaded', () => {
     console.log('✓ Patient Dashboard loaded');
+    document.getElementById('previousRecordDate').value = new Date().toISOString().split('T')[0];
+    renderMedicalRecords();
     
     // ==================== RESTORE PATIENT PROFILE ====================
     // Load patient profile data from localStorage on page load
